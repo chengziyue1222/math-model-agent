@@ -79,6 +79,21 @@ rank = topsis(decision_matrix, weights, benefit_indicators)
 | 工作流 | 10 | `/commit`, `/checkpoint`, `/learn` |
 | 审计验证 | 3 | `/deep-audit`, `/verify-claims` |
 
+### 📐 国赛论文排版模板 / CUMCM Paper Template (`template/`)
+
+从校赛获奖论文中提炼的国赛标准排版规范，开箱即用：
+
+| 排版要素 | 实现方式 |
+|---------|---------|
+| 一级标题 | 居中 16pt 黑体，中文数字编号（一、二、三...）自动生成 |
+| 二级/三级标题 | 左对齐正文黑体，阿拉伯数字编号（1.1 / 1.1.1） |
+| 正文引用 | `\cite{key}` 自动渲染为右上角角标 `[1]` |
+| 参考文献 | `thebibliography` 按正文中首次引用顺序排列 |
+| 附录代码框 | `pycode` 环境：10.5pt 等宽字体、行号、灰背景、单线框 |
+| 图表 | 图题在下居中、表题在上居中、三线表、`\tabnote{}` 表注 |
+
+编译方式：`xelatex` × 2（无需 bibtex）
+
 ### 📋 竞赛工作流 / Competition Workflow
 
 ```
@@ -125,6 +140,8 @@ math-model-agent/
 │   ├── lecture/             # 讲座课程 (3)
 │   ├── workflow/             # 工作流 (10)
 │   └── audit/               # 审计验证 (3)
+├── template/                # 国赛 LaTeX 论文排版模板
+│   └── cume-template.tex    # 完整模板（标题/引用/代码框/图表格式）
 ├── patterns/                # 6 个模式库
 ├── data/                    # 示例数据
 ├── figures/                 # 示例图表

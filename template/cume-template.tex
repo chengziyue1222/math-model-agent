@@ -1,0 +1,336 @@
+% ============================================================
+%  国赛数学建模论文 LaTeX 模板
+%  参考来源：肇庆学院校赛 C 题论文排版规范
+%  编译方式：xelatex → xelatex（thebibliography 无需 bibtex）
+% ============================================================
+\documentclass[12pt,a4paper]{article}
+
+% ============ 页面与字体 ============
+\usepackage{geometry}
+\geometry{a4paper,left=3.17cm,right=3.17cm,top=2.54cm,bottom=2.54cm,centering}
+\usepackage{fontspec}
+\setmainfont{SimSun}[BoldFont=SimHei,BoldFeatures={FakeBold=1.5}]
+\setmonofont{SimSun}[AutoFakeBold=1.5]
+\XeTeXlinebreaklocale "zh"
+\XeTeXlinebreakskip = 0pt plus 2pt minus 0.5pt
+\newfontfamily\heitifont{SimHei}[AutoFakeBold=1.5]
+\newfontfamily\songfont{SimSun}[AutoFakeBold=1.5]
+\newfontfamily\tnrfont{Times New Roman}
+
+% ============ 数学与图形 ============
+\usepackage{amsmath,amssymb,amsfonts}
+\usepackage{graphicx,array}
+\usepackage{xcolor}
+\usepackage{listings}
+\usepackage{float}
+\usepackage{tabularx}
+\usepackage{longtable}
+\usepackage{booktabs}
+\usepackage{makecell}
+\usepackage{multirow}
+\usepackage{calc}
+
+% ============ 图表中文标签 ============
+\renewcommand{\figurename}{图}
+\renewcommand{\tablename}{表}
+\renewcommand{\arraystretch}{1.25}
+\renewcommand{\refname}{参考文献}
+
+% ============ 标题格式（核心排版） ============
+\usepackage{titlesec}
+% 中文数字编号转换：1→一、2→二、...
+\newcommand{\zhsectionnum}[1]{%
+  \ifcase#1\or 一\or 二\or 三\or 四\or 五\or 六\or 七\or 八\or 九\or 十\else #1\fi}
+% 编号格式
+\renewcommand{\thesection}{\arabic{section}}
+\renewcommand{\thesubsection}{\arabic{section}.\arabic{subsection}}
+\renewcommand{\thesubsubsection}{\arabic{section}.\arabic{subsection}.\arabic{subsubsection}}
+% 一级标题：居中、16pt黑体、"一、"前缀
+\titleformat{\section}
+  {\fontsize{16pt}{24pt}\selectfont\bfseries\heitifont\centering}
+  {}{0em}{\zhsectionnum{\value{section}}、}
+\titleformat{name=\section,numberless}
+  {\large\bfseries\heitifont\centering}{}{0em}{}
+\titlespacing{\section}{0pt}{18pt}{10pt}
+% 二级标题：左对齐、正文大小黑体
+\titleformat{\subsection}
+  {\normalsize\bfseries\heitifont}{\thesubsection}{0.8em}{}
+\titlespacing{\subsection}{0pt}{14pt}{8pt}
+% 三级标题：左对齐、正文大小黑体
+\titleformat{\subsubsection}
+  {\normalsize\bfseries\heitifont}{\thesubsubsection}{0.8em}{}
+\titlespacing{\subsubsection}{0pt}{10pt}{6pt}
+\setcounter{secnumdepth}{3}
+
+% ============ 段落与行距 ============
+\setlength{\parindent}{2em}
+\linespread{1.5}
+\setlength{\parskip}{0pt}
+\tolerance=800
+\hbadness=4000
+\frenchspacing
+\widowpenalty=10000
+\clubpenalty=10000
+\raggedbottom
+
+% 英文术语断词规则（消除表格 Overfull hbox）
+\hyphenation{Ran-dom-For-est Grad-i-ent-Boost-ing Lo-gis-tic-Re-gres-sion}
+
+% ============ 图表标题格式 ============
+\makeatletter
+\long\def\@makecaption#1#2{%
+  \vskip 2pt%
+  \begin{center}%
+  \parbox{0.92\hsize}{\centering{\footnotesize\heitifont #1}\hspace{0.5em}{\footnotesize\heitifont #2}}%
+  \end{center}%
+  \vskip 2pt%
+}
+\makeatother
+
+% ============ 引用上标（核心：正文 \cite{} 自动变右上角角标） ============
+\makeatletter
+\renewcommand{\@cite}[2]{\textsuperscript{[#1\if@tempswa , #2\fi]}}
+\makeatother
+
+% ============ 浮动体间距 ============
+\setlength{\floatsep}{6pt plus 2pt minus 2pt}
+\setlength{\textfloatsep}{7pt plus 2pt minus 2pt}
+\setlength{\intextsep}{6pt plus 2pt minus 2pt}
+\renewcommand{\topfraction}{0.9}
+\renewcommand{\bottomfraction}{0.8}
+\renewcommand{\textfraction}{0.08}
+\renewcommand{\floatpagefraction}{0.75}
+\AtBeginEnvironment{table}{\footnotesize}
+\AtBeginEnvironment{longtable}{\footnotesize}
+\setlength{\heavyrulewidth}{0.5pt}
+\setlength{\lightrulewidth}{0.5pt}
+\setlength{\aboverulesep}{0pt}
+\setlength{\belowrulesep}{0pt}
+
+% ============ 代码框格式（核心：附录代码排版） ============
+\lstdefinestyle{modelcode}{
+    language=Python,
+    basicstyle=\ttfamily\fontsize{10.5pt}{13pt}\selectfont,
+    keywordstyle=\bfseries,
+    commentstyle=\itshape\color{gray},
+    numbers=left,
+    numberstyle=\scriptsize\ttfamily\color{gray},
+    stepnumber=1,
+    numbersep=10pt,
+    frame=single,
+    rulecolor=\color{black!30},
+    backgroundcolor=\color{gray!4},
+    breaklines=true,
+    tabsize=4,
+    showstringspaces=false,
+    columns=fullflexible,
+    keepspaces=true,
+    xleftmargin=2.8em,
+    xrightmargin=0.5em,
+    framexleftmargin=2.4em
+}
+\lstdefinestyle{dgcupPython}{style=modelcode}
+\renewcommand{\lstlistingname}{算法}
+\lstnewenvironment{pycode}[1][]{\lstset{style=dgcupPython,#1}}{}
+
+% ============ 表注命令 ============
+\newcommand{\unirule}{\Xhline{0.8pt}}
+\newcommand{\tabnote}[1]{%
+  \par\vspace{0.3em}%
+  \noindent
+  \begin{minipage}{0.88\linewidth}%
+  \raggedright\footnotesize\songfont #1%
+  \end{minipage}%
+  \par\vspace{0.5em}%
+}
+
+% ============ 超链接 ============
+\usepackage[hidelinks]{hyperref}
+
+% ============================================================
+%  论文正文开始
+% ============================================================
+\title{在此填写论文标题}
+\author{学校名称}
+\date{2026年X月}
+
+\begin{document}
+
+% ============ 封面 ============
+\thispagestyle{empty}\pagenumbering{gobble}
+\vspace*{7cm}
+\begin{center}
+  {\fontsize{22pt}{33pt}\selectfont\bfseries 在此填写论文标题\par}
+  \vspace{2cm}
+  {\fontsize{14pt}{21pt}\selectfont 学校名称数学建模竞赛\par}
+  \vspace{1cm}
+  {\normalsize 2026年X月\par}
+\end{center}
+\newpage
+
+% ============ 摘要 ============
+\thispagestyle{empty}
+\begin{center}
+  {\fontsize{14pt}{21pt}\selectfont\bfseries 摘\quad 要}
+\end{center}\vspace{0.6cm}
+
+% 摘要正文：概述问题、方法、主要结果（300-500字）
+在此填写摘要内容。针对XX问题，本文建立了XX模型。通过XX方法，得到XX结果。
+
+\noindent{\bfseries 关键词：}关键词1；关键词2；关键词3；关键词4
+
+\newpage
+
+% ============ 正文 ============
+\pagestyle{plain}\pagenumbering{arabic}\setcounter{page}{1}
+
+% ---------- 一级标题示例：中文数字编号，居中 ----------
+\section{问题重述}
+
+% ---------- 二级标题示例：阿拉伯数字编号，左对齐 ----------
+\subsection{问题背景}
+
+在此填写问题背景。引用示例\cite{Si2020}。
+
+\subsection{需要求解的问题}
+
+在此列出需要求解的问题。
+
+\section{问题分析}
+
+\subsection{问题一分析}
+
+在此分析问题一。可以引用多篇文献\cite{Hoerl1970,Bishop2006}。
+
+\subsection{问题二分析}
+
+在此分析问题二。
+
+\section{模型假设}
+
+所有假设如表~\ref{tab:assumptions}~所示。
+
+\begin{center}\textbf{表1 模型假设}\end{center}
+
+\begin{longtable}[]{@{}
+  >{\centering\arraybackslash}p{(\linewidth - 4\tabcolsep) * \real{0.15}}
+  >{\centering\arraybackslash}p{(\linewidth - 4\tabcolsep) * \real{0.35}}
+  >{\centering\arraybackslash}p{(\linewidth - 4\tabcolsep) * \real{0.50}}@{}}
+\toprule\noalign{}
+\begin{minipage}[b]{\linewidth}\centering
+\textbf{编号}
+\end{minipage} & \begin{minipage}[b]{\linewidth}\centering
+\textbf{假设}
+\end{minipage} & \begin{minipage}[b]{\linewidth}\centering
+\textbf{合理性论证}
+\end{minipage} \\
+\midrule\noalign{}
+\endhead
+\bottomrule\noalign{}
+\endlastfoot
+1 & 假设内容 & 论证内容 \\
+2 & 假设内容 & 论证内容 \\
+\end{longtable}
+\label{tab:assumptions}
+
+\tabnote{注：此处为表注示例，使用\texttt{\textbackslash tabnote}命令生成。}
+
+\section{符号说明}
+
+本文主要符号说明如表2所示。
+
+\section{模型的建立与求解}
+
+\subsection{数据预处理与特征工程}
+
+在此描述数据预处理方法。图~\ref{fig:example}~为示例图片。
+
+\begin{figure}[htbp]\centering
+  % \includegraphics[width=\textwidth]{figures/example.png}
+  \fbox{\parbox{0.8\textwidth}{\centering\vspace{3cm}此处插入图片\vspace{3cm}}}
+  \caption{示例图片标题}
+  \label{fig:example}
+\end{figure}
+
+\subsection{问题一}
+
+\subsubsection{模型建立}
+
+在此建立数学模型。公式示例：
+\begin{equation}
+  \min_w \|Xw - y\|^2 + \alpha\|w\|^2
+\end{equation}
+
+\subsubsection{模型求解}
+
+在此求解模型。
+
+\subsubsection{结果分析}
+
+在此分析结果。
+
+\subsection{问题二}
+
+% 按需继续添加子问题...
+
+\section{模型的评价与推广}
+
+\subsection{模型的优点}
+
+（1）优点一。（2）优点二。
+
+\subsection{模型的缺点}
+
+（1）缺点一。（2）缺点二。
+
+% ============ 参考文献 ============
+% 【重要】按正文中首次出现顺序排列
+% 格式：[编号] 作者. 标题[文献类型]. 出版信息, 年份.
+\clearpage
+\section{参考文献}
+
+\begin{thebibliography}{99}
+\setlength{\itemsep}{2pt}
+\setlength{\topsep}{0pt}
+\setlength{\labelsep}{0.5em}
+\bibitem{Si2020} 司守奎, 孙兆亮. 数学建模算法与应用(第3版)[M]. 北京: 国防工业出版社, 2020.
+\bibitem{Hoerl1970} Hoerl A E, Kennard R W. Ridge Regression: Biased Estimation for Nonorthogonal Problems[J]. Technometrics, 1970, 12(1): 55-67.
+\bibitem{Bishop2006} Bishop C M. Pattern Recognition and Machine Learning[M]. Springer, 2006.
+% 继续添加参考文献，按首次引用顺序排列...
+\end{thebibliography}
+
+% ============ 附录 ============
+\clearpage
+\section{附录}
+
+\subsection*{附录A\quad 数据预处理代码（preprocess.py 节选）}
+
+以下为核心代码节选，完整代码见随附文件\texttt{src/preprocess.py}。
+
+\begin{pycode}
+import pandas as pd
+import numpy as np
+from pathlib import Path
+
+def load_data(data_dir="data"):
+    """加载原始数据"""
+    data_dir = Path(data_dir)
+    df = pd.read_csv(data_dir / "data.csv")
+    return df
+\end{pycode}
+
+\subsection*{附录B\quad 模型训练代码（model.py 节选）}
+
+以下为核心代码节选，完整代码见随附文件\texttt{src/model.py}。
+
+\begin{pycode}
+from sklearn.linear_model import Ridge
+
+def train_model(X_train, y_train, alpha=1.0):
+    """训练 Ridge 回归模型"""
+    model = Ridge(alpha=alpha)
+    model.fit(X_train, y_train)
+    return model
+\end{pycode}
+
+\end{document}
