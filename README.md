@@ -16,14 +16,14 @@
 | `grey_system.py` | GM(1,1)、灰色关联 | 小样本预测、因素分析 |
 | `regression.py` | 多元回归、岭回归、Lasso、Logistic | 数据拟合、因果分析、二分类 |
 | `interpolation.py` | Lagrange、样条、径向基 | 曲面重建、缺失值填补 |
-| `graph_theory.py` | Dijkstra、Floyd、Kruskal | 最短路径、网络优化 |
+| `graph_theory.py` | Dijkstra、Floyd、Kruskal、最小费用流、图染色、Euler路径、匈牙利匹配 | 最短路径、网络优化、指派问题 |
 | `fuzzy_math.py` | 隶属函数、模糊评价 | 不确定性建模 |
 | `neural_network.py` | BP、RBF、SVM、MIV变量重要性 | 分类、回归、特征筛选 |
 | `metaheuristic.py` | GA、SA、PSO、蚁群 | 组合优化、参数搜索 |
 | `cellular_automata.py` | 1D/2D CA、生命游戏、NaSch交通流 | 交通流、传染病扩散、森林火灾 |
 | `monte_carlo.py` | 积分、优化、M/M/c、M/M/S/k、随机游走 | 随机模拟、风险分析、排队论 |
 | `image_processing.py` | 边缘检测、分割、形态学 | 遥感、医学影像 |
-| `time_series.py` | 移动平均、指数平滑、Gompertz/Logistic 曲线 | 趋势预测、增长模型 |
+| `time_series.py` | 移动平均、指数平滑、趋势外推、自适应滤波 | 趋势预测、信号去噪 |
 | `math_programming.py` | 线性规划、整数规划、目标规划、非线性规划 | 资源分配、背包问题、选址 |
 | `evaluation.py` | TOPSIS、DEA、PCA、RSR | 综合评价、效率分析 |
 | `sci_figures.py` | 11 种科研图表 | 论文可视化 |

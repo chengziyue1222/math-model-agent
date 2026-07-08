@@ -1,9 +1,9 @@
 """
 时间序列分析工具箱
 ==================
-包含：移动平均法、指数平滑法（一/二/三次）、趋势外推预测
+包含：移动平均法、指数平滑法（一/二/三次）、趋势外推预测、自适应滤波
 
-竞赛中常用于：数据预处理、趋势预测、异常值平滑
+竞赛中常用于：数据预处理、趋势预测、异常值平滑、信号去噪
 
 参考：Algorithms_MathModels/TimeSeries时间序列函数/
       HuangCongQing/Algorithms_MathModels（MATLAB实现转Python）
@@ -502,6 +502,102 @@ def modified_exponential_curve(
         result['y_predict'] = mod_exp(np.asarray(t_predict), *popt)
 
     return result
+
+
+# ============================================================
+# 6. 自适应滤波法
+# ============================================================
+def adaptive_filter(
+    data: np.ndarray,
+    window: int = 5,
+    learning_rate: float = 0.01,
+    n_epochs: int = 100,
+    forecast_periods: int = 1,
+) -> Dict:
+    """
+    自适应滤波法（LMS 算法）
+
+    根据预测误差自动调整滤波器权重，适合非平稳时间序列。
+    原理：w(t+1) = w(t) + 2*mu*e(t)*x(t)，其中 e(t)=y(t)-y_hat(t)
+
+    竞赛中常用于：噪声数据的趋势预测、信号去噪。
+
+    Parameters
+    ----------
+    data : np.ndarray, shape (n,)
+        原始时间序列
+    window : int
+        滤波器窗口长度（使用前 window 个值预测下一个）
+    learning_rate : float
+        学习率 mu（越大收敛越快但可能震荡）
+    n_epochs : int
+        训练轮数（遍历完整序列的次数）
+    forecast_periods : int
+        向前预测步数
+
+    Returns
+    -------
+    dict:
+        - weights: 最终权重
+        - predictions: 拟合值
+        - errors: 预测误差
+        - forecast: 预测值
+        - mse: 均方误差
+
+    参考
+    ----
+    HuangCongQing/Algorithms_MathModels/TimeSeries/自适应滤波法/main.m
+    """
+    data = np.asarray(data, dtype=float).ravel()
+    n = len(data)
+
+    # 数据标准化（防止溢出）
+    mu_data = np.mean(data)
+    sigma_data = np.std(data)
+    if sigma_data == 0:
+        sigma_data = 1.0
+    data_norm = (data - mu_data) / sigma_data
+
+    # 初始化权重
+    weights = np.ones(window) / window
+
+    # 训练（归一化数据上）
+    for epoch in range(n_epochs):
+        for t in range(window, n):
+            x = data_norm[t - window:t][::-1]
+            y_hat = np.dot(weights, x)
+            e = data_norm[t] - y_hat
+            # LMS 权重更新（带裁剪防溢出）
+            update = 2 * learning_rate * e * x
+            weights = np.clip(weights + update, -10, 10)
+
+    # 最终拟合
+    predictions = np.full(n, np.nan)
+    errors = np.full(n, np.nan)
+    for t in range(window, n):
+        x = data_norm[t - window:t][::-1]
+        pred_norm = np.dot(weights, x)
+        predictions[t] = pred_norm * sigma_data + mu_data
+        errors[t] = data[t] - predictions[t]
+
+    # 预测
+    forecast = np.zeros(forecast_periods)
+    recent = list(data_norm[-window:][::-1])
+    for i in range(forecast_periods):
+        x = np.array(recent[:window])
+        pred_norm = np.dot(weights, x)
+        forecast[i] = pred_norm * sigma_data + mu_data
+        recent.insert(0, pred_norm)
+
+    mse = np.nanmean(errors[window:] ** 2)
+
+    return {
+        'weights': weights,
+        'predictions': predictions,
+        'errors': errors,
+        'forecast': forecast,
+        'mse': mse,
+    }
 
 
 # ============================================================

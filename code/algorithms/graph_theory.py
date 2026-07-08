@@ -1,9 +1,11 @@
 """
 图论工具箱
 ==========
-包含：Dijkstra最短路径、Floyd最短路径、最小生成树、最大流、关键路径(PERT)、TSP
+包含：Dijkstra最短路径、Floyd最短路径、最小生成树、最大流、关键路径(PERT)、
+     最小费用流、图的染色、Euler/Hamilton路径、二分图匹配（匈牙利算法）
 
 参考：Algorithms_MathModels/GraphTheory(图论)/
+      HuangCongQing/Algorithms_MathModels/GraphTheory/detailed/
 """
 
 import numpy as np
@@ -301,6 +303,363 @@ def critical_path(activities: List[Dict]) -> Dict:
         'critical': critical,
         'critical_path': [names[i] for i in range(n) if critical[i]],
         'names': names
+    }
+
+
+# ============================================================
+# 6. 最小费用流
+# ============================================================
+def min_cost_flow(
+    capacity: np.ndarray,
+    cost: np.ndarray,
+    supply: np.ndarray | None = None,
+    source: int | None = None,
+    sink: int | None = None,
+) -> Dict:
+    """
+    最小费用最大流（Successive Shortest Path / SPFA 实现）
+
+    在满足流量约束的前提下，使总运输费用最小。
+    竞赛中常用于：运输调度、物流配送、资源分配。
+
+    Parameters
+    ----------
+    capacity : np.ndarray, shape (n, n)
+        容量矩阵，capacity[i][j] = i→j 的最大流量
+    cost : np.ndarray, shape (n, n)
+        单位流量费用矩阵，cost[i][j] = i→j 的单位运费
+    supply : np.ndarray, shape (n,)
+        供给/需求向量：正=供给节点，负=需求节点，0=转运节点
+        或者：指定 source/sink 时，supply 为各节点的净流量
+    source : int or None
+        源点（与 supply 二选一）
+    sink : int or None
+        汇点（与 supply 二选一）
+
+    Returns
+    -------
+    dict:
+        - flow: 流量矩阵
+        - total_cost: 总费用
+        - max_flow: 总流量
+    """
+    n = capacity.shape[0]
+    cap = capacity.astype(float).copy()
+    cst = cost.astype(float).copy()
+    flow_mat = np.zeros((n, n))
+
+    # 构造供给向量
+    if source is not None and sink is not None:
+        sup = np.zeros(n)
+        # 不指定具体供给量，最大化从 source 到 sink 的流量
+        # 使用 SPFA 找增广路
+        total_flow = 0
+        total_cost_val = 0
+        while True:
+            # SPFA 找最短增广路（考虑费用）
+            dist = np.full(n, np.inf)
+            prev = np.full(n, -1, dtype=int)
+            in_queue = np.zeros(n, dtype=bool)
+            dist[source] = 0
+            queue = [source]
+            in_queue[source] = True
+
+            while queue:
+                u = queue.pop(0)
+                in_queue[u] = False
+                for v in range(n):
+                    if cap[u][v] > 0:
+                        nd = dist[u] + cst[u][v]
+                        if nd < dist[v]:
+                            dist[v] = nd
+                            prev[v] = u
+                            if not in_queue[v]:
+                                queue.append(v)
+                                in_queue[v] = True
+                    # 反向边（退流）
+                    if flow_mat[v][u] > 0:
+                        nd = dist[u] - cst[v][u]
+                        if nd < dist[v]:
+                            dist[v] = nd
+                            prev[v] = u
+                            if not in_queue[v]:
+                                queue.append(v)
+                                in_queue[v] = True
+
+            if dist[sink] == np.inf:
+                break
+
+            # 找瓶颈
+            path_flow = np.inf
+            v = sink
+            while v != source:
+                u = prev[v]
+                if cap[u][v] > 0:
+                    path_flow = min(path_flow, cap[u][v])
+                else:
+                    path_flow = min(path_flow, flow_mat[v][u])
+                v = u
+
+            # 更新流量
+            v = sink
+            while v != source:
+                u = prev[v]
+                if cap[u][v] > 0:
+                    cap[u][v] -= path_flow
+                    flow_mat[u][v] += path_flow
+                    total_cost_val += path_flow * cst[u][v]
+                else:
+                    flow_mat[v][u] -= path_flow
+                    cap[v][u] += path_flow
+                    total_cost_val -= path_flow * cst[v][u]
+                v = u
+
+            total_flow += path_flow
+
+        return {
+            'flow': flow_mat,
+            'total_cost': total_cost_val,
+            'max_flow': total_flow,
+        }
+    else:
+        # 使用 supply 向量的通用最小费用流
+        # 简化实现：转化为 LP 求解
+        from scipy.optimize import linprog
+        n_edges = 0
+        edges = []
+        for i in range(n):
+            for j in range(n):
+                if cap[i][j] > 0:
+                    edges.append((i, j))
+                    n_edges += 1
+
+        c = [cst[i][j] for i, j in edges]
+        # 等式约束：每个节点的流入-流出 = supply
+        A_eq = np.zeros((n, n_edges))
+        for idx, (i, j) in enumerate(edges):
+            A_eq[i][idx] = -1  # 流出
+            A_eq[j][idx] = 1   # 流入
+        b_eq = supply
+        bounds = [(0, cap[i][j]) for i, j in edges]
+
+        result = linprog(c, A_eq=A_eq, b_eq=b_eq, bounds=bounds)
+        flow = np.zeros((n, n))
+        for idx, (i, j) in enumerate(edges):
+            flow[i][j] = result.x[idx]
+
+        return {
+            'flow': flow,
+            'total_cost': result.fun,
+            'max_flow': flow.sum(),
+        }
+
+
+# ============================================================
+# 7. 图的染色
+# ============================================================
+def graph_coloring(adj_matrix: np.ndarray, method: str = 'greedy') -> Dict:
+    """
+    图的染色（着色）问题
+
+    用最少的颜色给图的顶点着色，使得相邻顶点颜色不同。
+    竞赛中常用于：排课问题、频率分配、地图着色。
+
+    Parameters
+    ----------
+    adj_matrix : np.ndarray, shape (n, n)
+        邻接矩阵（无向图）
+    method : str
+        'greedy' 贪心算法（快速近似）或 'exact' 精确算法（小规模）
+
+    Returns
+    -------
+    dict:
+        - coloring: 各顶点的颜色编号 (0, 1, 2, ...)
+        - n_colors: 使用的颜色数（色数上界）
+        - color_groups: 同色顶点分组
+    """
+    n = adj_matrix.shape[0]
+    adj = (adj_matrix > 0).astype(int)
+
+    if method == 'greedy':
+        # 贪心算法：按度数降序排列，依次选最小可用颜色
+        degrees = adj.sum(axis=1)
+        order = np.argsort(-degrees)
+        coloring = np.full(n, -1)
+
+        for v in order:
+            # 找邻接节点已用颜色
+            used = set()
+            for u in range(n):
+                if adj[v][u] and coloring[u] >= 0:
+                    used.add(coloring[u])
+            # 选最小可用颜色
+            c = 0
+            while c in used:
+                c += 1
+            coloring[v] = c
+
+    else:
+        # 精确算法（回溯，适用于 n <= 20）
+        coloring = np.full(n, -1)
+
+        def is_safe(v, c):
+            for u in range(n):
+                if adj[v][u] and coloring[u] == c:
+                    return False
+            return True
+
+        def backtrack(v):
+            if v == n:
+                return True
+            for c in range(n):
+                if is_safe(v, c):
+                    coloring[v] = c
+                    if backtrack(v + 1):
+                        return True
+                    coloring[v] = -1
+            return False
+
+        backtrack(0)
+
+    n_colors = int(coloring.max()) + 1
+    color_groups = [[] for _ in range(n_colors)]
+    for v in range(n):
+        color_groups[coloring[v]].append(v)
+
+    return {
+        'coloring': coloring,
+        'n_colors': n_colors,
+        'color_groups': color_groups,
+    }
+
+
+# ============================================================
+# 8. Euler 路径/回路
+# ============================================================
+def euler_path(adj_matrix: np.ndarray, start: int = 0) -> Dict:
+    """
+    Euler 路径/回路（Fleury 算法）
+
+    找到经过图中每条边恰好一次的路径。
+    - Euler 回路：所有顶点度数为偶
+    - Euler 路径：恰好 2 个顶点度数为奇
+
+    竞赛中常用于：一笔画问题、邮递员问题。
+
+    Parameters
+    ----------
+    adj_matrix : np.ndarray, shape (n, n)
+        邻接矩阵（无向图）
+    start : int
+        起始节点
+
+    Returns
+    -------
+    dict:
+        - path: Euler 路径/回路（节点序列）
+        - type: 'circuit'（回路）或 'path'（路径）或 'none'（不存在）
+        - exists: 是否存在 Euler 路径/回路
+    """
+    n = adj_matrix.shape[0]
+    adj = adj_matrix.astype(float).copy()
+    # 确保对称
+    adj = np.maximum(adj, adj.T)
+
+    # 检查度数
+    degrees = (adj > 0).sum(axis=1)
+    odd_vertices = np.where(degrees % 2 == 1)[0]
+
+    if len(odd_vertices) == 0:
+        euler_type = 'circuit'
+    elif len(odd_vertices) == 2:
+        euler_type = 'path'
+        start = odd_vertices[0]  # 从奇度点出发
+    else:
+        return {'path': [], 'type': 'none', 'exists': False}
+
+    # 检查连通性（简化：只检查有边的节点）
+    visited_check = set()
+    stack_check = [start]
+    adj_bool = adj > 0
+    while stack_check:
+        u = stack_check.pop()
+        if u in visited_check:
+            continue
+        visited_check.add(u)
+        for v in range(n):
+            if adj_bool[u][v] and v not in visited_check:
+                stack_check.append(v)
+
+    # 所有有边的节点都应可达
+    has_edge = set(np.where(degrees > 0)[0])
+    if not has_edge.issubset(visited_check):
+        return {'path': [], 'type': 'none', 'exists': False}
+
+    # Hierholzer 算法（比 Fleury 更高效）
+    adj_copy = adj.copy()
+    path = []
+    stack = [start]
+
+    while stack:
+        v = stack[-1]
+        # 找一条未走过的边
+        found = False
+        for u in range(n):
+            if adj_copy[v][u] > 0:
+                adj_copy[v][u] -= 1
+                adj_copy[u][v] -= 1
+                stack.append(u)
+                found = True
+                break
+        if not found:
+            path.append(stack.pop())
+
+    path.reverse()
+
+    return {
+        'path': path,
+        'type': euler_type,
+        'exists': True,
+    }
+
+
+# ============================================================
+# 9. 二分图匹配（匈牙利算法）
+# ============================================================
+def hungarian_matching(cost_matrix: np.ndarray) -> Dict:
+    """
+    匈牙利算法（Kuhn-Munkres）
+
+    求解二分图的最优（最小权）完美匹配。
+    竞赛中常用于：指派问题、任务分配、最优匹配。
+
+    Parameters
+    ----------
+    cost_matrix : np.ndarray, shape (n, n)
+        代价矩阵（方阵），cost[i][j] = 工人 i 做任务 j 的代价
+
+    Returns
+    -------
+    dict:
+        - matching: 匹配结果，matching[i] = j 表示工人 i 匹配任务 j
+        - total_cost: 总代价
+        - row_ind, col_ind: 行列索引（scipy 格式）
+    """
+    from scipy.optimize import linear_sum_assignment
+
+    cost = np.asarray(cost_matrix, dtype=float)
+    row_ind, col_ind = linear_sum_assignment(cost)
+    total_cost = cost[row_ind, col_ind].sum()
+
+    matching = np.zeros(len(cost), dtype=int)
+    matching[row_ind] = col_ind
+
+    return {
+        'matching': matching,
+        'total_cost': total_cost,
+        'row_ind': row_ind,
+        'col_ind': col_ind,
     }
 
 

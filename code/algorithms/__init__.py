@@ -27,7 +27,7 @@ from .ahp import ahp_weight, consistency_check, hierarchical_ahp
 from .grey_system import gm11_predict, grey_correlation, grey_clustering, grey_auto_predict
 from .interpolation import lagrange_interp, newton_interp, cubic_spline_interp
 from .regression import linear_regression, polynomial_regression, ridge_regression, stepwise_regression, nonlinear_regression, logistic_regression
-from .graph_theory import dijkstra, floyd, prim_mst, max_flow, critical_path
+from .graph_theory import dijkstra, floyd, prim_mst, max_flow, critical_path, min_cost_flow, graph_coloring, euler_path, hungarian_matching
 from .fuzzy_math import fuzzy_comprehensive_evaluation, fuzzy_cmeans, multi_level_fuzzy_evaluation
 from .neural_network import BPNeuralNetwork, RBFNetwork, SOM, miv_variable_importance
 from .metaheuristic import genetic_algorithm, particle_swarm, simulated_annealing, ant_colony_tsp
@@ -60,7 +60,7 @@ from .image_processing import (
 from .time_series import (
     simple_moving_average, weighted_moving_average, trend_moving_average,
     single_exponential_smoothing, double_exponential_smoothing, triple_exponential_smoothing,
-    gompertz_curve, logistic_curve, modified_exponential_curve,
+    gompertz_curve, logistic_curve, modified_exponential_curve, adaptive_filter,
 )
 from .math_programming import (
     linear_programming, integer_programming, goal_programming, nonlinear_programming,
@@ -78,6 +78,7 @@ __all__ = [
     'stepwise_regression', 'nonlinear_regression', 'logistic_regression',
     # 图论
     'dijkstra', 'floyd', 'prim_mst', 'max_flow', 'critical_path',
+    'min_cost_flow', 'graph_coloring', 'euler_path', 'hungarian_matching',
     # 模糊数学
     'fuzzy_comprehensive_evaluation', 'fuzzy_cmeans', 'multi_level_fuzzy_evaluation',
     # 神经网络
@@ -109,7 +110,7 @@ __all__ = [
     # 时间序列
     'simple_moving_average', 'weighted_moving_average', 'trend_moving_average',
     'single_exponential_smoothing', 'double_exponential_smoothing', 'triple_exponential_smoothing',
-    'gompertz_curve', 'logistic_curve', 'modified_exponential_curve',
+    'gompertz_curve', 'logistic_curve', 'modified_exponential_curve', 'adaptive_filter',
     # 数学规划
     'linear_programming', 'integer_programming', 'goal_programming', 'nonlinear_programming',
 ]

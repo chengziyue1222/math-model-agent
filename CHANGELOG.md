@@ -1,5 +1,20 @@
 # CHANGELOG - Math Model Skill
 
+## v6.4 (2026-07-01)
+
+### 新增算法（继续从 Algorithms_MathModels MATLAB 转 Python）
+
+图论扩展（graph_theory.py）:
+- **最小费用流** `min_cost_flow` — SPFA 增广路算法
+- **图的染色** `graph_coloring` — 贪心/精确回溯
+- **Euler 路径/回路** `euler_path` — Hierholzer 算法
+- **二分图匹配** `hungarian_matching` — 匈牙利算法
+
+时间序列扩展（time_series.py）:
+- **自适应滤波** `adaptive_filter` — LMS 算法，自动调权重
+
+算法库导出从 101 → 106 个
+
 ## v6.3 (2026-07-01)
 
 ### 新增模块（从 HuangCongQing/Algorithms_MathModels MATLAB 实现转 Python）
