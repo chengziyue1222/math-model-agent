@@ -1,10 +1,9 @@
 """
-sci_figures.py - 高质量科研图表模板库
+科研图表模板 (SCI Figures)
+===========================
+11 种 Nature/Science 风格科研可视化模板，适用于数学建模论文。
 
-从 MathModelAgent (https://github.com/jihe520/MathModelAgent) 提取的 11 种
-Nature/Science 风格科研可视化模板，适用于数学建模论文。
-
-模板列表:
+包含类:
   1. TaylorDiagram        - 多模型评价泰勒图
   2. PairedRaincloud      - 配对云雨图（前后对比）
   3. CvRocCurve            - 交叉验证 ROC 曲线与置信区间
@@ -17,7 +16,13 @@ Nature/Science 风格科研可视化模板，适用于数学建模论文。
   10. ChordDiagram         - Nature 风格和弦图
   11. ShapBeeswarm         - 多分类 SHAP 柱状+蜂群图
 
-Usage:
+竞赛场景:
+- 模型评价可视化（泰勒图、ROC 曲线）
+- 数据探索（相关性矩阵、分布图）
+- 结果展示（组合对比图、热图）
+
+使用:
+    from algorithms import TaylorDiagram, save_sci_figure
     from algorithms.sci_figures import TaylorDiagram, save_figure
 
     fig = TaylorDiagram(models=[...], panels={...})

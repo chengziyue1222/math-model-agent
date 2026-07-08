@@ -1,14 +1,24 @@
 """
-蒙特卡罗算法模块 — 随机模拟、概率估算、风险分析
+蒙特卡罗算法 (Monte Carlo)
+===========================
+随机模拟、概率估算、风险分析、排队论仿真。
 
-包含方法:
+包含函数:
 - monte_carlo_integration: 蒙特卡罗数值积分
-- monte_carlo_pi: 蒙特卡罗估算π
+- monte_carlo_pi: 蒙特卡罗估算 π
 - monte_carlo_optimization: 蒙特卡罗随机搜索优化
-- monte_carlo_simulation: 通用蒙特卡罗仿真
+- monte_carlo_simulation: 通用蒙特卡罗仿真（指定分布）
 - queuing_simulation: 排队论蒙特卡罗仿真 (M/M/c)
-- queuing_mmsk: M/M/S/k 有限容量排队论（解析+仿真）
+- queuing_mmsk: M/M/S/k 有限容量排队论（解析解 + 仿真验证）
 - random_walk: 随机游走模拟
+
+竞赛场景:
+- 复杂积分近似求解
+- 风险分析、可靠性评估
+- 排队系统设计（银行、医院、呼叫中心）
+- 随机过程模拟
+
+参考: ravenxrz/Mathematical-Modeling/queuing_theory/
 """
 
 from __future__ import annotations

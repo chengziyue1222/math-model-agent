@@ -1,13 +1,23 @@
 """
-图像处理算法模块 — 边缘检测、图像分割、特征提取、形态学操作
+图像处理 (Image Processing)
+============================
+边缘检测、图像分割、特征提取、形态学操作、噪声滤波。
 
-包含方法:
+包含函数:
 - edge_detection: 边缘检测 (Sobel/Canny/Roberts/Prewitt)
 - image_segmentation: 图像分割 (阈值/K-means/分水岭)
 - morphological_ops: 形态学操作 (膨胀/腐蚀/开运算/闭运算)
 - histogram_analysis: 直方图分析与增强
+- histogram_equalization: 直方图均衡化
 - feature_extraction: 图像特征提取 (纹理/形状/Hu矩)
 - noise_filter: 噪声滤波 (均值/中值/高斯/双边)
+
+竞赛场景:
+- 遥感图像分析、医学影像处理
+- 图像去噪、边缘检测、目标分割
+- 纹理特征提取用于分类
+
+参考: Algorithms_MathModels/MATLAB图像处理源文件/
 """
 
 from __future__ import annotations

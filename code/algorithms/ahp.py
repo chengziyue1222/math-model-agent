@@ -1,9 +1,19 @@
 """
 AHP 层次分析法 (Analytic Hierarchy Process)
 ============================================
-适用于：多准则决策、权重确定、方案排序
+通过构造判断矩阵，将定性决策转化为定量权重排序。
 
-参考：Algorithms_MathModels/AHP层次分析法/
+包含函数:
+- ahp_weight: 计算权重向量 + 一致性检验 (CR < 0.1)
+- consistency_check: 单独检验判断矩阵一致性
+- hierarchical_ahp: 多层次 AHP 综合权重
+
+竞赛场景:
+- 多准则决策（选址、评价、方案优选）
+- 与 TOPSIS 结合: ahp_topsis（见 evaluation.py）
+- 与模糊评价结合: fuzzy_comprehensive_evaluation（见 fuzzy_math.py）
+
+参考: Algorithms_MathModels/AHP层次分析法/
 """
 
 import numpy as np

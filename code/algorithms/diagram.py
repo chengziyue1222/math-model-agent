@@ -1,8 +1,21 @@
 """
-图表绘制工具集 - 从 diagram-tools 项目提取的核心算法
-用于数学建模论文中的流程图、ER图、系统模块图、学术三线表等生成
+图表绘制工具 (Diagram)
+=======================
+数学建模论文中的流程图、ER图、系统模块图、学术三线表等自动生成。
 
-核心算法来源: https://github.com/kanerel/diagram-tools
+包含类:
+- FlowchartLayout: 流程图自动布局（Sugiyama 算法）
+- ERDiagramLayout: ER 图布局（实体-关系图）
+- SystemModuleLayout: 系统模块图布局
+- AcademicTable: 学术三线表生成
+- SQLParser: SQL 建表语句解析 → ER 图
+
+竞赛场景:
+- 论文中的系统架构图、算法流程图
+- 数据库设计 ER 图
+- 三线表自动生成（LaTeX/HTML/Markdown）
+
+参考: https://github.com/kanerel/diagram-tools
 """
 
 import math

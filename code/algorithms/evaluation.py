@@ -1,9 +1,9 @@
 """
-evaluation.py - 综合评价方法库
-===============================
+综合评价方法库 (Evaluation)
+============================
 数学建模竞赛常用的综合评价与决策方法，补充 AHP 和模糊评价之外的评价工具。
 
-方法列表:
+包含函数:
 - entropy_weight: 熵权法（客观赋权）
 - topsis: TOPSIS 逼近理想解排序
 - ahp_topsis: AHP+TOPSIS 组合评价
@@ -14,8 +14,13 @@ evaluation.py - 综合评价方法库
 - grey_relational: 灰色关联分析（简化接口）
 - combined_weight: 组合赋权（主观+客观）
 
-Usage:
-    from algorithms.evaluation import topsis, entropy_weight, dea
+竞赛场景:
+- 方案优选、城市排名、环境评价
+- 指标体系构建 + 客观赋权
+- 多方法组合评价（AHP+TOPSIS、熵权+TOPSIS）
+
+使用:
+    from algorithms import topsis, entropy_weight
     import numpy as np
 
     data = np.array([[...], ...])

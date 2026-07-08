@@ -1,10 +1,13 @@
 """
-paper_check.py - 论文质量检查与验收工具
+论文质量检查 (Paper Check)
+===========================
+论文提交前的质量门禁：结构、图表、引用、数值一致性检查。
 
-从 MathModelAgent (https://github.com/jihe520/MathModelAgent) 的 6verity skill
-提取的论文质量门禁逻辑，支持 Typst 和 LaTeX 双引擎。
+包含类/函数:
+- PaperChecker: 论文质量检查器（支持 Typst / LaTeX）
+- check_paper: 快捷检查函数
 
-功能:
+检查项:
   1. 章节结构检查（include/input 顺序、标题完整性）
   2. 图表引用检查（图片是否存在、是否被引用）
   3. 占位符与泄露检查（TODO、内部文件名）
@@ -12,12 +15,13 @@ paper_check.py - 论文质量检查与验收工具
   5. 引用检查（参考文献、引用标记）
   6. 编译检查（Typst / LaTeX）
 
-Usage:
-    from algorithms.paper_check import PaperChecker
+竞赛场景:
+- 论文终稿提交前的最终检查
+- 批量检查多篇论文
 
-    checker = PaperChecker(
-        paper_dir="paper",
-        main_file="paper/main.typ",
+使用:
+    from algorithms import PaperChecker
+    checker = PaperChecker(paper_dir="paper", main_file="paper/main.tex")
         figures_dir="figures",
         results_file="reports/RESULTS_REPORT.md",
     )

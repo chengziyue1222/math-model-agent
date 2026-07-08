@@ -10,25 +10,69 @@
 
 ### 🧮 算法库 / Algorithm Library (`code/algorithms/`)
 
+109 个导出，17 个模块，分 9 大类：
+
+**决策与评价 (19)**
+
 | 模块 | 核心方法 | 竞赛场景 |
 |------|---------|---------|
-| `ahp.py` | AHP、CR 检验 | 多准则决策、权重分配 |
-| `grey_system.py` | GM(1,1)、灰色关联 | 小样本预测、因素分析 |
+| `ahp.py` | AHP、CR 检验、层次 AHP | 多准则决策、权重分配 |
+| `fuzzy_math.py` | 模糊综合评价、模糊 C-means、多层次模糊 | 不确定性建模、风险评估 |
+| `evaluation.py` | TOPSIS、熵权法、DEA、PCA、RSR、FAHP | 综合评价、效率分析、排名 |
+
+**预测与回归 (20)**
+
+| 模块 | 核心方法 | 竞赛场景 |
+|------|---------|---------|
+| `grey_system.py` | GM(1,1)、灰色关联、灰色聚类 | 小样本预测、因素分析 |
 | `regression.py` | 多元回归、岭回归、Lasso、Logistic | 数据拟合、因果分析、二分类 |
-| `interpolation.py` | Lagrange、样条、径向基 | 曲面重建、缺失值填补 |
-| `graph_theory.py` | Dijkstra、Floyd、Kruskal、最小费用流、图染色、Euler路径、匈牙利匹配 | 最短路径、网络优化、指派问题 |
-| `fuzzy_math.py` | 隶属函数、模糊评价 | 不确定性建模 |
-| `neural_network.py` | BP、RBF、SVM、MIV变量重要性 | 分类、回归、特征筛选 |
-| `metaheuristic.py` | GA、SA、PSO、蚁群 | 组合优化、参数搜索 |
-| `cellular_automata.py` | 1D/2D CA、生命游戏、NaSch交通流 | 交通流、传染病扩散、森林火灾 |
-| `monte_carlo.py` | 积分、优化、M/M/c、M/M/S/k、随机游走 | 随机模拟、风险分析、排队论 |
-| `image_processing.py` | 边缘检测、分割、形态学 | 遥感、医学影像 |
-| `time_series.py` | 移动平均、指数平滑、趋势外推、自适应滤波 | 趋势预测、信号去噪 |
-| `math_programming.py` | 线性规划、整数规划、目标规划、非线性规划 | 资源分配、背包问题、选址 |
-| `evaluation.py` | TOPSIS、DEA、PCA、RSR | 综合评价、效率分析 |
-| `sci_figures.py` | 11 种科研图表 | 论文可视化 |
-| `diagram.py` | TikZ 图表生成 | LaTeX 配图 |
-| `paper_check.py` | 论文质量检查 | 格式、引用、一致性 |
+| `interpolation.py` | Lagrange、Newton、三次样条 | 曲面重建、缺失值填补 |
+| `time_series.py` | 移动平均、指数平滑、Gompertz/Logistic、自适应滤波 | 趋势预测、增长模型、信号去噪 |
+
+**优化与规划 (8)**
+
+| 模块 | 核心方法 | 竞赛场景 |
+|------|---------|---------|
+| `metaheuristic.py` | GA、PSO、SA、蚁群 | 组合优化、参数搜索 |
+| `math_programming.py` | 线性规划、整数规划、目标规划、非线性规划 | 资源分配、背包、选址 |
+
+**图论与网络 (9)**
+
+| 模块 | 核心方法 | 竞赛场景 |
+|------|---------|---------|
+| `graph_theory.py` | Dijkstra、Floyd、最小生成树、最大流、最小费用流、图染色、Euler路径、匈牙利匹配 | 最短路径、网络优化、指派问题 |
+
+**随机模拟 (8)**
+
+| 模块 | 核心方法 | 竞赛场景 |
+|------|---------|---------|
+| `monte_carlo.py` | 积分、优化、M/M/c、M/M/S/k、随机游走 | 风险分析、排队论、随机过程 |
+
+**机器学习 (4)**
+
+| 模块 | 核心方法 | 竞赛场景 |
+|------|---------|---------|
+| `neural_network.py` | BP、RBF、SOM、MIV 变量重要性 | 分类、回归、特征筛选 |
+
+**元胞自动机 (6)**
+
+| 模块 | 核心方法 | 竞赛场景 |
+|------|---------|---------|
+| `cellular_automata.py` | 生命游戏、森林火灾、DLA、SIRS、NaSch 交通流 | 交通流、传染病、自组织临界 |
+
+**图像处理 (7)**
+
+| 模块 | 核心方法 | 竞赛场景 |
+|------|---------|---------|
+| `image_processing.py` | 边缘检测、分割、形态学、特征提取 | 遥感、医学影像、去噪 |
+
+**论文与图表 (25)**
+
+| 模块 | 核心方法 | 竞赛场景 |
+|------|---------|---------|
+| `sci_figures.py` | 泰勒图、云雨图、ROC、SHAP 等 11 种 | 论文可视化 |
+| `diagram.py` | 流程图、ER 图、三线表、SQL 解析 | LaTeX 配图 |
+| `paper_check.py` | 论文质量检查（结构/图表/引用/数值） | 提交前终检 |
 
 **快速使用 / Quick Start:**
 
