@@ -110,45 +110,127 @@ Day 5: 全文审校 → 格式排版 → 最终检查
 
 ```
 math-model-agent/
-├── code/
-│   ├── algorithms/          # 15 个 Python 算法模块
-│   │   ├── __init__.py      # 统一导出入口
-│   │   ├── ahp.py           # 层次分析法
-│   │   ├── grey_system.py   # 灰色系统
-│   │   ├── regression.py    # 回归分析
-│   │   ├── interpolation.py # 插值拟合
-│   │   ├── graph_theory.py  # 图论算法
-│   │   ├── fuzzy_math.py    # 模糊数学
-│   │   ├── neural_network.py# 神经网络
-│   │   ├── metaheuristic.py # 元启发式
-│   │   ├── cellular_automata.py # 元胞自动机
-│   │   ├── monte_carlo.py   # 蒙特卡罗
-│   │   ├── image_processing.py # 图像处理
-│   │   ├── evaluation.py    # 综合评价
-│   │   ├── sci_figures.py   # 科研图表
-│   │   ├── diagram.py       # TikZ 图表
-│   │   └── paper_check.py   # 论文检查
-│   ├── solve.py             # 求解脚本示例
-│   └── visualize.py         # 可视化示例
-├── skill/
-│   ├── core/                # 16 个核心建模 Skills
-│   ├── latex/               # LaTeX 编译 (5)
-│   ├── paper/               # 论文写作 (6)
-│   ├── research/            # 研究构思 (5)
-│   ├── data/                # 数据分析 (4)
-│   ├── quarto/              # Quarto 部署 (3)
-│   ├── lecture/             # 讲座课程 (3)
-│   ├── workflow/             # 工作流 (10)
-│   └── audit/               # 审计验证 (3)
-├── template/                # 国赛 LaTeX 论文排版模板
-│   └── cume-template.tex    # 完整模板（标题/引用/代码框/图表格式）
-├── patterns/                # 6 个模式库
-├── data/                    # 示例数据
-├── figures/                 # 示例图表
-├── paper/                   # 论文模板
-├── 使用说明.md              # 完整使用指南
-├── CHANGELOG.md             # 版本历史
-└── README.md                # 本文件
+│
+├── code/                            # 🔧 代码模块
+│   ├── algorithms/                  # 15 个 Python 算法模块（可直接 import）
+│   │   ├── __init__.py              # 统一导出入口，from algorithms import * 即用
+│   │   ├── ahp.py                   # 层次分析法：AHP 构造、一致性检验 CR
+│   │   ├── grey_system.py           # 灰色系统：GM(1,1) 预测、灰色关联分析
+│   │   ├── regression.py            # 回归分析：多元回归、岭回归、Lasso
+│   │   ├── interpolation.py         # 插值拟合：Lagrange、样条、径向基
+│   │   ├── graph_theory.py          # 图论算法：Dijkstra、Floyd、Kruskal 最小生成树
+│   │   ├── fuzzy_math.py            # 模糊数学：隶属函数、模糊综合评价
+│   │   ├── neural_network.py        # 神经网络：BP、RBF、SVM
+│   │   ├── metaheuristic.py         # 元启发式优化：遗传算法 GA、模拟退火 SA、粒子群 PSO、蚁群
+│   │   ├── cellular_automata.py     # 元胞自动机：1D/2D CA、生命游戏
+│   │   ├── monte_carlo.py           # 蒙特卡罗：积分、优化、排队系统、随机游走
+│   │   ├── image_processing.py      # 图像处理：边缘检测、分割、形态学
+│   │   ├── evaluation.py            # 综合评价：TOPSIS、DEA、PCA、RSR
+│   │   ├── sci_figures.py           # 科研图表：11 种标准科研可视化
+│   │   ├── diagram.py               # TikZ 图表生成：LaTeX 配图自动化
+│   │   └── paper_check.py           # 论文检查：格式、引用、一致性审查
+│   ├── solve.py                     # 求解脚本示例（2022 国赛 A 题波浪能）
+│   ├── visualize.py                 # 可视化示例脚本
+│   └── results.json                 # 求解结果存档
+│
+├── skill/                           # 🎯 55 个 Slash Commands（Claude Code Skills）
+│   ├── README.md                    # Skills 索引与使用说明
+│   │
+│   ├── core/                        # 📦 16 个核心建模 Skills
+│   │   ├── math_model_skill.md      # 五层能力架构总控
+│   │   ├── model_selector.md        # 18 种问题类型 → 模型决策树
+│   │   ├── model_library.md         # 15 个模块模型库速查
+│   │   ├── model_library_extended.md# 扩展模型库（更多方法）
+│   │   ├── modeling_pipeline.md     # 11 步统一建模流程
+│   │   ├── modeling_norms.md        # 建模规范与最佳实践
+│   │   ├── judge_engine.md          # 六维度评审引擎
+│   │   ├── paper_generator.md       # 结构化论文生成
+│   │   ├── paper_check.md           # 论文质量检查清单
+│   │   ├── python_mapping.md        # MATLAB → Python 映射表
+│   │   ├── evaluation.md            # 综合评价方法指南
+│   │   ├── monte_carlo.md           # 蒙特卡罗决策与模板
+│   │   ├── image_processing.md      # 图像处理流水线
+│   │   ├── sci_figures.md           # 11 种科研图表规范
+│   │   ├── diagram_tools.md         # TikZ / 图表工具指南
+│   │   └── math_competition_guide.md# 竞赛实战全流程指南
+│   │
+│   ├── latex/                       # 📄 5 个 LaTeX 编译 Skills
+│   │   ├── compile-latex.md         # XeLaTeX 自动编译（含错误修复重试）
+│   │   ├── extract-tikz.md          # 提取 TikZ 图表转 SVG
+│   │   ├── new-diagram.md           # 从模板生成 TikZ 图表
+│   │   ├── proofread.md             # 语法拼写检查
+│   │   └── visual-audit.md          # 视觉布局审计
+│   │
+│   ├── paper/                       # ✍️ 6 个论文写作 Skills
+│   │   ├── review-paper.md          # 论文审阅（七维度）
+│   │   ├── seven-pass-review.md     # 七遍审稿法
+│   │   ├── validate-bib.md          # 参考文献一致性检查
+│   │   ├── humanize.md              # AI 痕迹消除、人味润色
+│   │   ├── preregister.md           # 预注册研究方案
+│   │   └── respond-to-referees.md   # 审稿回复信撰写
+│   │
+│   ├── research/                    # 🔬 5 个研究构思 Skills
+│   │   ├── lit-review.md            # 文献综述系统梳理
+│   │   ├── ideation.md              # 研究选题与创意生成
+│   │   ├── interview-me.md          # 苏格拉底式提问引导
+│   │   ├── devils-advocate.md       # 魔鬼代言人（挑刺反驳）
+│   │   └── research.md              # 研究设计全流程
+│   │
+│   ├── data/                        # 📊 4 个数据分析 Skills
+│   │   ├── data-analysis.md         # 数据清洗 / EDA / 统计检验 / 特征工程
+│   │   ├── audit-reproducibility.md # 可复现性审计
+│   │   ├── review-r.md              # R 代码审查
+│   │   └── stata-replication.md     # Stata 复现映射
+│   │
+│   ├── quarto/                      # 🌐 3 个 Quarto 部署 Skills
+│   │   ├── deploy.md                # 部署到 GitHub Pages
+│   │   ├── translate-to-quarto.md   # LaTeX → Quarto 转换
+│   │   └── qa-quarto.md             # Quarto 质量对比检查
+│   │
+│   ├── lecture/                     # 🎓 3 个讲座课程 Skills
+│   │   ├── create-lecture.md        # 课程/讲座创建
+│   │   ├── pedagogy-review.md       # 教学法审查
+│   │   └── slide-excellence.md      # 幻灯片优化
+│   │
+│   ├── workflow/                    # ⚙️ 10 个工作流 Skills
+│   │   ├── commit.md                # Git 智能提交
+│   │   ├── checkpoint.md            # 检查点保存
+│   │   ├── learn.md                 # 学习模式
+│   │   ├── prompt.md                # 提示词优化
+│   │   ├── deep-prompt.md           # 深度提示词
+│   │   ├── prompt-only.md           # 仅提示词模式
+│   │   ├── compress-session.md      # 会话压缩
+│   │   ├── context-status.md        # 上下文状态查看
+│   │   ├── promote-memory.md        # 记忆提升
+│   │   └── standard-save.md         # 标准保存
+│   │
+│   └── audit/                       # 🔍 3 个审计验证 Skills
+│       ├── deep-audit.md            # 深度审计
+│       ├── verify-claims.md         # 声明验证
+│       └── permission-check.md      # 权限检查
+│
+├── template/                        # 📐 国赛 LaTeX 论文排版模板
+│   └── cume-template.tex            # 完整模板（标题等级/角标引用/代码框/三线表）
+│
+├── patterns/                        # 📝 6 个获奖论文模式库
+│   ├── abstract_patterns.md         # 摘要写作模式（问题→方法→结果→关键词）
+│   ├── model_selection_rules.md     # 模型选择决策规则
+│   ├── discussion_rules.md          # 讨论/分析写作规范
+│   ├── evaluation_rules.md          # 模型评价写作规范
+│   ├── appendix_rules.md            # 附录代码排版规范
+│   └── visual_rules.md             # 图表可视化规范
+│
+├── data/                            # 📁 示例数据集（空，竞赛时放入题目数据）
+├── figures/                         # 🖼️ 示例图表（2022 国赛 A 题波浪能配图）
+│   ├── fig01_time_history.png       # 时序图
+│   ├── fig02_power_vs_damping.png   # 功率-阻尼关系图
+│   ├── fig03_power_heatmap.png      # 功率热力图
+│   └── fig04_sensitivity.png        # 敏感性分析图
+├── paper/                           # 📄 论文输出目录（空，编译产物存放处）
+│
+├── 使用说明.md                      # 📖 完整使用指南（含工作流演示）
+├── CHANGELOG.md                     # 📋 版本历史（v1.0 ~ v6.1）
+└── README.md                        # 📖 本文件
 ```
 
 ---
