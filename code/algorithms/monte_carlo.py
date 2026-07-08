@@ -6,7 +6,8 @@
 - monte_carlo_pi: 蒙特卡罗估算π
 - monte_carlo_optimization: 蒙特卡罗随机搜索优化
 - monte_carlo_simulation: 通用蒙特卡罗仿真
-- queuing_simulation: 排队论蒙特卡罗仿真
+- queuing_simulation: 排队论蒙特卡罗仿真 (M/M/c)
+- queuing_mmsk: M/M/S/k 有限容量排队论（解析+仿真）
 - random_walk: 随机游走模拟
 """
 
@@ -42,35 +43,58 @@ def monte_carlo_integration(
     b: np.ndarray,
     n_samples: int = 100000,
     seed: int | None = None,
+    vectorized: bool = True,
 ) -> MCResult:
     """蒙特卡罗数值积分
 
     估算 ∫f(x)dx 在 [a, b] 区间上的积分值。
 
     Args:
-        f: 被积函数，接受向量输入
+        f: 被积函数。
+            - vectorized=True 时：接受 (n, d) 数组，返回 (n,) 数组（推荐）
+            - vectorized=False 时：接受 (d,) 数组，返回标量
         a: 积分下限（标量或向量）
         b: 积分上限（标量或向量）
         n_samples: 采样点数
         seed: 随机种子
+        vectorized: 是否使用向量化计算（快 10-100x）
 
     Returns:
         MCResult 包含积分估计值
 
     Examples:
         >>> import numpy as np
-        >>> result = monte_carlo_integration(lambda x: np.sin(x), 0, np.pi, 100000)
+        >>> # 向量化模式（推荐）：f 接受 (n,d) 数组
+        >>> result = monte_carlo_integration(lambda x: np.sin(x[:, 0]), 0, np.pi, 100000)
         >>> print(f"∫sin(x)dx ≈ {result.estimate:.4f}")  # ≈ 2.0
     """
     rng = np.random.default_rng(seed)
     a = np.atleast_1d(np.asarray(a, dtype=float))
     b = np.atleast_1d(np.asarray(b, dtype=float))
+    dim = len(a)
 
     # 生成均匀随机点
-    points = rng.uniform(a, b, size=(n_samples, len(a)))
+    points = rng.uniform(a, b, size=(n_samples, dim))
 
-    # 计算函数值
-    values = np.array([f(p) for p in points])
+    # 计算函数值：向量化 vs 逐点
+    if vectorized and dim == 1:
+        # 1D: f 接受 (n,) 数组，返回 (n,) 数组
+        try:
+            values = np.asarray(f(points[:, 0]), dtype=float)
+            if values.shape != (n_samples,):
+                raise ValueError("shape mismatch")
+        except Exception:
+            values = np.array([f(p[0]) for p in points])
+    elif vectorized:
+        # 多维: f 接受 (n, d) 数组，返回 (n,) 数组
+        try:
+            values = np.asarray(f(points), dtype=float)
+            if values.shape != (n_samples,):
+                raise ValueError("shape mismatch")
+        except Exception:
+            values = np.array([f(p) for p in points])
+    else:
+        values = np.array([f(p) for p in points])
 
     # 积分 = 体积 * 平均函数值
     volume = np.prod(b - a)
@@ -128,25 +152,30 @@ def monte_carlo_optimization(
     n_samples: int = 100000,
     minimize: bool = True,
     seed: int | None = None,
+    vectorized: bool = True,
 ) -> tuple[np.ndarray, float, MCResult]:
     """蒙特卡罗随机搜索优化
 
     通过随机采样寻找最优解，适用于无梯度、非凸优化问题。
 
     Args:
-        objective: 目标函数
+        objective: 目标函数。
+            - vectorized=True 时：接受 (n, d) 数组，返回 (n,) 数组（推荐）
+            - vectorized=False 时：接受 (d,) 数组，返回标量
         bounds: 各变量的上下界 [(lo, hi), ...]
         n_samples: 采样点数
         minimize: True为最小化，False为最大化
         seed: 随机种子
+        vectorized: 是否使用向量化计算
 
     Returns:
         (最优解, 最优值, MCResult)
 
     Examples:
-        >>> def sphere(x): return sum(xi**2 for xi in x)
+        >>> # 向量化模式
+        >>> def sphere_batch(X): return np.sum(X**2, axis=1)
         >>> best_x, best_val, result = monte_carlo_optimization(
-        ...     sphere, [(-5, 5), (-5, 5)], 100000
+        ...     sphere_batch, [(-5, 5), (-5, 5)], 100000
         ... )
     """
     rng = np.random.default_rng(seed)
@@ -156,7 +185,17 @@ def monte_carlo_optimization(
 
     # 生成随机点
     points = rng.uniform(lower, upper, size=(n_samples, dim))
-    values = np.array([objective(p) for p in points])
+
+    # 计算目标值：向量化 vs 逐点
+    if vectorized:
+        try:
+            values = np.asarray(objective(points), dtype=float)
+            if values.shape != (n_samples,):
+                raise ValueError("shape mismatch")
+        except Exception:
+            values = np.array([objective(p) for p in points])
+    else:
+        values = np.array([objective(p) for p in points])
 
     if minimize:
         best_idx = np.argmin(values)
@@ -180,16 +219,19 @@ def monte_carlo_simulation(
     input_distributions: list[Callable[[], float]],
     n_samples: int = 10000,
     seed: int | None = None,
+    vectorized_model: Callable[[np.ndarray], np.ndarray] | None = None,
 ) -> dict:
     """通用蒙特卡罗仿真
 
     对任意模型进行蒙特卡罗仿真，分析输出的统计特性。
 
     Args:
-        model: 仿真模型，接受输入数组，返回输出数组
+        model: 仿真模型，接受 (d,) 输入数组，返回标量或数组
         input_distributions: 输入随机变量的采样函数列表
         n_samples: 仿真次数
         seed: 随机种子
+        vectorized_model: 向量化版本模型，接受 (n, d) 输入，返回 (n,) 输出。
+            提供此参数可大幅加速仿真（快 10-100x）。
 
     Returns:
         字典包含输出的均值、标准差、分位数等统计量
@@ -205,14 +247,30 @@ def monte_carlo_simulation(
         ... )
     """
     rng = np.random.default_rng(seed)
-    outputs = []
+    n_inputs = len(input_distributions)
 
-    for _ in range(n_samples):
-        inputs = np.array([dist() for dist in input_distributions])
-        output = model(inputs)
-        outputs.append(output)
+    # 尝试向量化模式
+    if vectorized_model is not None:
+        try:
+            # 批量生成所有输入
+            all_inputs = np.column_stack([
+                np.array([dist() for _ in range(n_samples)])
+                for dist in input_distributions
+            ])  # shape: (n_samples, n_inputs)
+            outputs = np.asarray(vectorized_model(all_inputs))
+            if outputs.ndim == 1:
+                outputs = outputs.reshape(-1, 1)
+        except Exception:
+            vectorized_model = None  # fallback
 
-    outputs = np.array(outputs)
+    # 逐点模式
+    if vectorized_model is None:
+        outputs = []
+        for _ in range(n_samples):
+            inputs = np.array([dist() for dist in input_distributions])
+            output = model(inputs)
+            outputs.append(output)
+        outputs = np.array(outputs)
 
     if outputs.ndim == 1:
         outputs = outputs.reshape(-1, 1)
@@ -289,6 +347,171 @@ def queuing_simulation(
         "max_wait_time": float(np.max(wait_times)),
         "p_wait": float(np.mean(wait_times > 0)),
         "n_customers": n_customers,
+    }
+
+
+def queuing_mmsk(
+    arrival_rate: float,
+    service_rate: float,
+    n_servers: int = 1,
+    capacity: int | None = None,
+    n_customers: int = 100000,
+    seed: int | None = None,
+) -> dict:
+    """
+    M/M/S/k 排队论模型（有限容量 / 有限等待空间）
+
+    解析计算 + 蒙特卡罗仿真双重验证。
+    M/M/S/k: S 个服务台，系统总容量为 k（含正在服务的），
+    到达过程为泊松过程，服务时间服从指数分布。
+
+    当 k=None 时退化为 M/M/S（无限容量）。
+    当 S=1, k=None 时退化为 M/M/1。
+
+    Parameters
+    ----------
+    arrival_rate : float
+        到达率 λ（单位时间平均到达数）
+    service_rate : float
+        服务率 μ（单位时间每个服务台平均服务数）
+    n_servers : int
+        服务台数量 S
+    capacity : int or None
+        系统总容量 k（含服务中的）。None 表示无限容量
+    n_customers : int
+        仿真顾客数
+    seed : int or None
+        随机种子
+
+    Returns
+    -------
+    dict:
+        - rho: 服务强度 ρ = λ/(S·μ)
+        - p0: 系统空闲概率
+        - pk: 顾客被拒/损失概率（仅有限容量）
+        - avg_queue_length: 平均队列长度 Lq
+        - avg_system_length: 平均系统中顾客数 L
+        - avg_wait_time: 平均等待时间 Wq
+        - avg_sojourn_time: 平均逗留时间 W
+        - utilization: 服务台利用率
+        - sim_*: 仿真对应指标
+
+    参考
+    ----
+    ravenxrz/Mathematical-Modeling/queuing_theory/MMSkteam.m
+    """
+    lam = arrival_rate
+    mu = service_rate
+    S = n_servers
+    rho = lam / (S * mu)
+
+    # ============ 解析解 ============
+    # 先计算 p0（系统空闲概率）
+    def _factorial(n):
+        r = 1
+        for i in range(2, n + 1):
+            r *= i
+        return r
+
+    if capacity is not None:
+        k = capacity
+        # M/M/S/k 解析解
+        a = lam / mu  # 话务强度
+
+        # p0
+        sum1 = sum((a ** n) / _factorial(n) for n in range(S))
+        if abs(rho - 1.0) < 1e-10:
+            sum2 = ((a ** S) / _factorial(S)) * (k - S + 1)
+        else:
+            sum2 = ((a ** S) / _factorial(S)) * (1 - rho ** (k - S + 1)) / (1 - rho)
+        p0 = 1.0 / (sum1 + sum2)
+
+        # pn
+        def pn(n):
+            if n < S:
+                return (a ** n) / _factorial(n) * p0
+            else:
+                return (a ** n) / (_factorial(S) * (S ** (n - S))) * p0
+
+        pk = pn(k)
+        avg_L = sum(n * pn(n) for n in range(k + 1))
+        avg_Lq = sum((n - S) * pn(n) for n in range(S, k + 1))
+        avg_Lq = max(0, avg_Lq)
+
+        effective_lambda = lam * (1 - pk)
+        avg_W = avg_L / effective_lambda if effective_lambda > 0 else 0
+        avg_Wq = avg_Lq / effective_lambda if effective_lambda > 0 else 0
+        utilization = 1 - p0
+
+    else:
+        # M/M/S 无限容量
+        a = lam / mu
+        sum1 = sum((a ** n) / _factorial(n) for n in range(S))
+        sum2 = ((a ** S) / _factorial(S)) * (1 / (1 - rho)) if rho < 1 else 0
+        p0 = 1.0 / (sum1 + sum2) if (sum1 + sum2) > 0 else 0
+
+        # Erlang C 公式
+        pc = ((a ** S) / _factorial(S)) * (1 / (1 - rho)) * p0 if rho < 1 else 1.0
+
+        avg_Wq = pc / (S * mu - lam) if (S * mu - lam) > 0 else float('inf')
+        avg_W = avg_Wq + 1 / mu
+        avg_Lq = lam * avg_Wq
+        avg_L = lam * avg_W
+        pk = 0.0  # 无限容量无损失
+        utilization = rho
+
+    # ============ 蒙特卡罗仿真 ============
+    rng = np.random.default_rng(seed)
+    inter_arrival = rng.exponential(1.0 / lam, n_customers)
+    service_times = rng.exponential(1.0 / mu, n_customers)
+    arrival_times = np.cumsum(inter_arrival)
+
+    departure_times = []
+    wait_times = []
+    rejected = 0
+    server_free_at = np.zeros(S)
+    queue = []  # (start_service_time, departure_time)
+
+    for i in range(n_customers):
+        at = arrival_times[i]
+
+        # 清理已离开的
+        queue = [(s, d) for s, d in queue if d > at]
+
+        if capacity is not None and len(queue) >= capacity:
+            rejected += 1
+            continue
+
+        # 找最早空闲服务台
+        server_idx = np.argmin(server_free_at)
+        start = max(at, server_free_at[server_idx])
+        wait = start - at
+        dep = start + service_times[i]
+
+        wait_times.append(wait)
+        departure_times.append(dep)
+        server_free_at[server_idx] = dep
+        queue.append((start, dep))
+
+    sim_wq = np.mean(wait_times) if wait_times else 0
+    sim_w = sim_wq + 1 / mu
+    sim_pk = rejected / n_customers if n_customers > 0 else 0
+    sim_util = 1 - (np.sum(np.diff(np.concatenate([[0], departure_times])) > 1.0 / mu) / n_customers) if departure_times else 0
+
+    return {
+        'rho': rho,
+        'p0': p0,
+        'pk': pk,
+        'avg_queue_length': avg_Lq,
+        'avg_system_length': avg_L,
+        'avg_wait_time': avg_Wq,
+        'avg_sojourn_time': avg_W,
+        'utilization': utilization,
+        'sim_avg_wait_time': float(sim_wq),
+        'sim_avg_sojourn_time': float(sim_w),
+        'sim_pk': float(sim_pk),
+        'n_customers': n_customers,
+        'n_rejected': rejected,
     }
 
 

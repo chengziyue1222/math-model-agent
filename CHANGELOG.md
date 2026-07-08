@@ -1,5 +1,14 @@
 # CHANGELOG - Math Model Skill
 
+## v6.2 (2026-07-01)
+
+### 新增算法（从 ravenxrz/Mathematical-Modeling 学习并转写为 Python）
+
+- **Logistic 回归** (`regression.py`) — 梯度下降法实现二分类，自动标准化 + 截距项
+- **MIV 变量重要性** (`neural_network.py`) — 基于 BP 神经网络的 Mean Impact Value 特征筛选
+- **NaSch 交通流模型** (`cellular_automata.py`) — Nagel-Schreckenberg 元胞自动机，含流量-密度基本图
+- **M/M/S/k 排队论** (`monte_carlo.py`) — 有限容量排队模型，解析解 + 蒙特卡罗仿真双重验证
+
 ## v6.1 (2026-07-01)
 
 ### 新增

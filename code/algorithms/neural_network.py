@@ -1,10 +1,11 @@
 """
 神经网络工具箱
 ==============
-包含：BP神经网络、RBF神经网络、SOM自组织映射、Elman网络
+包含：BP神经网络、RBF神经网络、SOM自组织映射、MIV变量重要性筛选
 全部基于 numpy 实现, 不依赖深度学习框架
 
 参考：Algorithms_MathModels/HeuristicAlgorithm/神经网络算法/
+      ravenxrz/Mathematical-Modeling (MIV算法)
 """
 
 import numpy as np
@@ -242,6 +243,109 @@ class SOM:
             bmu = np.unravel_index(np.argmin(dists), (self.grid_h, self.grid_w))
             labels[i] = bmu[0] * self.grid_w + bmu[1]
         return labels
+
+
+# ============================================================
+# 4. MIV 变量重要性筛选
+# ============================================================
+def miv_variable_importance(
+    X: np.ndarray,
+    y: np.ndarray,
+    change_ratio: float = 0.1,
+    hidden_sizes: Tuple[int, ...] = (8,),
+    learning_rate: float = 0.05,
+    max_epochs: int = 2000,
+    n_runs: int = 3,
+    seed: int | None = 42,
+) -> Dict:
+    """
+    MIV (Mean Impact Value) 变量重要性筛选
+
+    通过 BP 神经网络评估各输入变量对输出的影响程度。
+    原理：对每个特征分别增减 change_ratio，观察网络输出变化的均值。
+    MIV > 0 表示正向影响，MIV < 0 表示负向影响，|MIV| 越大影响越强。
+
+    Parameters
+    ----------
+    X : np.ndarray, shape (n_samples, n_features)
+        输入特征矩阵
+    y : np.ndarray, shape (n_samples,) or (n_samples, 1)
+        目标值
+    change_ratio : float
+        特征扰动比例 (默认 ±10%)
+    hidden_sizes : tuple
+        隐藏层节点数 (默认 (8,))
+    learning_rate : float
+        BP 网络学习率
+    max_epochs : int
+        最大训练轮数
+    n_runs : int
+        重复运行次数取平均，消除随机性
+    seed : int or None
+        随机种子
+
+    Returns
+    -------
+    dict:
+        - miv: 各特征的 MIV 值 (n_features,)
+        - abs_miv: |MIV| 绝对值 (n_features,)
+        - rank: 按 |MIV| 降序排列的特征索引
+        - importance_pct: 各特征重要性百分比
+
+    参考
+    ----
+    ravenxrz/Mathematical-Modeling/neural_network/neural_network_miv.m
+    """
+    if y.ndim == 1:
+        y = y.reshape(-1, 1)
+    n_samples, n_features = X.shape
+    rng = np.random.RandomState(seed)
+
+    all_miv = []
+    for run in range(n_runs):
+        # 训练 BP 网络
+        layer_sizes = [n_features] + list(hidden_sizes) + [y.shape[1]]
+        bp = BPNeuralNetwork(
+            layer_sizes,
+            learning_rate=learning_rate,
+            max_epochs=max_epochs,
+            tol=1e-8,
+        )
+        bp.train(X, y)
+
+        miv_run = np.zeros(n_features)
+        for j in range(n_features):
+            # 构造增减数据
+            X_inc = X.copy()
+            X_dec = X.copy()
+            X_inc[:, j] *= (1 + change_ratio)
+            X_dec[:, j] *= (1 - change_ratio)
+
+            # 预测
+            pred_inc = bp.predict(X_inc)
+            pred_dec = bp.predict(X_dec)
+            if pred_inc.ndim == 1:
+                pred_inc = pred_inc.reshape(-1, 1)
+            if pred_dec.ndim == 1:
+                pred_dec = pred_dec.reshape(-1, 1)
+
+            # MIV = mean(pred_inc - pred_dec)
+            miv_run[j] = np.mean(pred_inc - pred_dec)
+
+        all_miv.append(miv_run)
+
+    miv_values = np.mean(all_miv, axis=0)
+    abs_miv = np.abs(miv_values)
+    total = abs_miv.sum()
+    importance_pct = abs_miv / total * 100 if total > 0 else abs_miv
+    rank = np.argsort(-abs_miv)
+
+    return {
+        'miv': miv_values,
+        'abs_miv': abs_miv,
+        'rank': rank,
+        'importance_pct': importance_pct,
+    }
 
 
 # ============================================================

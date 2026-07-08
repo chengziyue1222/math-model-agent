@@ -1,9 +1,10 @@
 """
 回归分析工具箱
 ==============
-包含：线性回归、多项式回归、逐步回归、岭回归、Lasso回归、非线性回归
+包含：线性回归、多项式回归、逐步回归、岭回归、Lasso回归、非线性回归、Logistic回归
 
 参考：Algorithms_MathModels/RegressionAnalysis回归分析/
+      ravenxrz/Mathematical-Modeling/forecast/Logistic/
 """
 
 import numpy as np
@@ -285,6 +286,129 @@ def nonlinear_regression(x: np.ndarray, y: np.ndarray,
         'R2': R2,
         'predict': lambda x_new: model_func(x_new, *popt)
     }
+
+
+# ============================================================
+# 7. Logistic 回归（二分类）
+# ============================================================
+def logistic_regression(
+    X: np.ndarray,
+    y: np.ndarray,
+    X_new: np.ndarray | None = None,
+    threshold: float = 0.5,
+    max_iter: int = 100,
+    lr: float = 0.01,
+    tol: float = 1e-6,
+) -> Dict:
+    """
+    Logistic 回归（二分类）
+
+    使用梯度下降法求解。适用于因变量为 0/1 二分类的场景。
+
+    Parameters
+    ----------
+    X : np.ndarray, shape (n_samples, n_features)
+        自变量矩阵（不含常数项，函数自动添加截距）
+    y : np.ndarray, shape (n_samples,)
+        因变量（0 或 1）
+    X_new : np.ndarray or None
+        待预测的新数据（不含常数项）
+    threshold : float
+        分类阈值（默认 0.5）
+    max_iter : int
+        最大迭代次数
+    lr : float
+        学习率
+    tol : float
+        收敛阈值
+
+    Returns
+    -------
+    dict:
+        - coefficients: 回归系数 [截距, b1, b2, ...]
+        - probabilities: 训练集预测概率
+        - predictions: 训练集预测类别 (0/1)
+        - accuracy: 训练集准确率
+        - new_predictions: X_new 的预测类别（如提供）
+        - new_probabilities: X_new 的预测概率（如提供）
+        - predict: 可调用的预测函数 predict(X) -> (classes, probs)
+
+    示例
+    ----
+    >>> result = logistic_regression(X_train, y_train, X_test)
+    >>> print(result['accuracy'])
+    >>> print(result['new_predictions'])
+    """
+    X = np.asarray(X, dtype=float)
+    y = np.asarray(y, dtype=float).ravel()
+    n, p = X.shape
+
+    # 标准化（提升梯度下降稳定性）
+    mu = X.mean(axis=0)
+    sigma = X.std(axis=0)
+    sigma[sigma == 0] = 1.0
+    X_std = (X - mu) / sigma
+
+    # 添加截距
+    X_aug = np.column_stack([np.ones(n), X_std])
+
+    # sigmoid
+    def sigmoid(z):
+        z = np.clip(z, -500, 500)
+        return 1.0 / (1.0 + np.exp(-z))
+
+    # 梯度下降
+    w = np.zeros(p + 1)
+    for iteration in range(max_iter):
+        z = X_aug @ w
+        h = sigmoid(z)
+        grad = X_aug.T @ (h - y) / n
+        w_new = w - lr * grad
+        if np.max(np.abs(w_new - w)) < tol:
+            w = w_new
+            break
+        w = w_new
+
+    # 训练集预测
+    probs = sigmoid(X_aug @ w)
+    preds = (probs >= threshold).astype(int)
+    accuracy = np.mean(preds == y)
+
+    # 系数还原到原始尺度
+    # 标准化后: z = b0 + b1*(x1-mu1)/sig1 + ...
+    # 原始尺度: z = (b0 - sum(bi*mu_i/sig_i)) + b1/sig_i * x_i
+    coef_original = np.zeros(p + 1)
+    coef_original[0] = w[0] - np.sum(w[1:] * mu / sigma)
+    coef_original[1:] = w[1:] / sigma
+
+    result = {
+        'coefficients': coef_original,
+        'probabilities': probs,
+        'predictions': preds,
+        'accuracy': accuracy,
+        'new_predictions': None,
+        'new_probabilities': None,
+        'predict': None,
+    }
+
+    # 预测函数
+    def predict_func(X_pred):
+        X_pred = np.asarray(X_pred, dtype=float)
+        X_pred_std = (X_pred - mu) / sigma
+        X_pred_aug = np.column_stack([np.ones(X_pred.shape[0]), X_pred_std])
+        p_vals = sigmoid(X_pred_aug @ w)
+        c_vals = (p_vals >= threshold).astype(int)
+        return c_vals, p_vals
+
+    result['predict'] = predict_func
+
+    # 新数据预测
+    if X_new is not None:
+        c, p_vals = predict_func(X_new)
+        result['new_predictions'] = c
+        result['new_probabilities'] = p_vals
+
+    return result
 
 
 # ============================================================

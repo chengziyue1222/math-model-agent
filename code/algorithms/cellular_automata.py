@@ -1,9 +1,10 @@
 """
 元胞自动机工具箱
 ================
-包含：生命游戏、森林火灾、扩散聚集(DLA)、初等元胞自动机、SIRS 模型
+包含：生命游戏、森林火灾、扩散聚集(DLA)、初等元胞自动机、SIRS 模型、NaSch 交通流
 
 参考：Algorithms_MathModels/CellularAutomata元胞向量机/
+      ravenxrz/Mathematical-Modeling/CA_NS/ (Nagel-Schreckenberg 模型)
 """
 
 import numpy as np
@@ -291,6 +292,154 @@ class SIRSModel:
         for _ in range(n_steps):
             self.step()
         return self.stats
+
+
+# ============================================================
+# 6. NaSch 交通流模型 (Nagel-Schreckenberg)
+# ============================================================
+class NaSchTraffic:
+    """
+    Nagel-Schreckenberg 元胞自动机交通流模型
+
+    一维单车道交通流仿真，每辆车有速度 0~v_max，
+    每步执行：加速 → 减速（与前车距离）→ 随机慢化 → 移动。
+
+    可分析流量-密度关系、相变现象、交通拥堵的形成与传播。
+
+    Parameters
+    ----------
+    road_length : int
+        道路长度（元胞数）
+    n_cars : int or None
+        车辆数（与 density 二选一）
+    density : float or None
+        车辆密度 (0,1)（与 n_cars 二选一）
+    v_max : int
+        最大速度（默认 5）
+    p_slow : float
+        随机慢化概率（默认 0.3）
+    seed : int or None
+        随机种子
+    """
+
+    def __init__(self, road_length: int = 100, n_cars: int | None = None,
+                 density: float | None = None, v_max: int = 5,
+                 p_slow: float = 0.3, seed: int | None = None):
+        self.L = road_length
+        self.v_max = v_max
+        self.p_slow = p_slow
+        self.rng = np.random.RandomState(seed)
+
+        if n_cars is not None:
+            self.n_cars = n_cars
+        elif density is not None:
+            self.n_cars = max(1, int(density * road_length))
+        else:
+            self.n_cars = road_length // 5  # 默认密度 0.2
+
+        # 初始化：随机放置车辆
+        positions = sorted(self.rng.choice(road_length, self.n_cars, replace=False))
+        self.positions = np.array(positions, dtype=int)
+        self.velocities = np.zeros(self.n_cars, dtype=int)
+        self.step_count = 0
+        self.history = [self.positions.copy()]
+        self.flow_history = []
+
+    def step(self):
+        """执行一个时间步"""
+        if self.n_cars == 0:
+            return
+
+        # 排序（按位置）
+        order = np.argsort(self.positions)
+        self.positions = self.positions[order]
+        self.velocities = self.velocities[order]
+
+        # 计算与前车的距离（环形边界）
+        gaps = np.roll(self.positions, -1) - self.positions
+        gaps[-1] = (self.positions[0] + self.L - self.positions[-1]) % self.L
+
+        # 1. 加速
+        self.velocities = np.minimum(self.velocities + 1, self.v_max)
+
+        # 2. 减速（与前车距离）
+        self.velocities = np.minimum(self.velocities, gaps - 1)
+        self.velocities = np.maximum(self.velocities, 0)
+
+        # 3. 随机慢化
+        slow_mask = self.rng.random(self.n_cars) < self.p_slow
+        self.velocities[slow_mask] = np.maximum(self.velocities[slow_mask] - 1, 0)
+
+        # 4. 移动
+        self.positions = (self.positions + self.velocities) % self.L
+
+        self.step_count += 1
+        self.history.append(self.positions.copy())
+        # 流量 = 单位时间通过某截面的车辆数（简化为平均速度 * 密度）
+        self.flow_history.append(np.mean(self.velocities) * self.n_cars / self.L)
+
+    def run(self, n_steps: int = 100) -> Dict:
+        """运行 n_steps 步"""
+        for _ in range(n_steps):
+            self.step()
+        return self.get_stats()
+
+    def get_stats(self) -> Dict:
+        """获取统计信息"""
+        return {
+            'step': self.step_count,
+            'n_cars': self.n_cars,
+            'density': self.n_cars / self.L,
+            'avg_velocity': np.mean(self.velocities),
+            'avg_flow': np.mean(self.flow_history) if self.flow_history else 0.0,
+            'positions': self.positions.copy(),
+            'velocities': self.velocities.copy(),
+        }
+
+    def fundamental_diagram(self, densities: list | None = None,
+                            warmup: int = 200, measure: int = 100) -> Dict:
+        """
+        生成流量-密度基本图（交通流理论核心关系）
+
+        Parameters
+        ----------
+        densities : list or None
+            要测试的密度列表（默认 0.05~0.95 步长 0.05）
+        warmup : int
+            预热步数
+        measure : int
+            测量步数
+
+        Returns
+        -------
+        dict: densities, flows, velocities 三个列表
+        """
+        if densities is None:
+            densities = np.arange(0.05, 1.0, 0.05)
+
+        flows = []
+        avg_vels = []
+        for d in densities:
+            sim = NaSchTraffic(
+                road_length=self.L, density=d,
+                v_max=self.v_max, p_slow=self.p_slow, seed=self.rng.randint(10000)
+            )
+            sim.run(warmup)
+            # 测量阶段
+            flow_sum = 0
+            vel_sum = 0
+            for _ in range(measure):
+                sim.step()
+                vel_sum += np.mean(sim.velocities)
+                flow_sum += sim.flow_history[-1]
+            flows.append(flow_sum / measure)
+            avg_vels.append(vel_sum / measure)
+
+        return {
+            'densities': list(densities),
+            'flows': flows,
+            'velocities': avg_vels,
+        }
 
 
 # ============================================================

@@ -14,14 +14,14 @@
 |------|---------|---------|
 | `ahp.py` | AHP、CR 检验 | 多准则决策、权重分配 |
 | `grey_system.py` | GM(1,1)、灰色关联 | 小样本预测、因素分析 |
-| `regression.py` | 多元回归、岭回归、Lasso | 数据拟合、因果分析 |
+| `regression.py` | 多元回归、岭回归、Lasso、Logistic | 数据拟合、因果分析、二分类 |
 | `interpolation.py` | Lagrange、样条、径向基 | 曲面重建、缺失值填补 |
 | `graph_theory.py` | Dijkstra、Floyd、Kruskal | 最短路径、网络优化 |
 | `fuzzy_math.py` | 隶属函数、模糊评价 | 不确定性建模 |
-| `neural_network.py` | BP、RBF、SVM | 分类、回归、模式识别 |
+| `neural_network.py` | BP、RBF、SVM、MIV变量重要性 | 分类、回归、特征筛选 |
 | `metaheuristic.py` | GA、SA、PSO、蚁群 | 组合优化、参数搜索 |
-| `cellular_automata.py` | 1D/2D CA、生命游戏 | 交通流、传染病扩散 |
-| `monte_carlo.py` | 积分、优化、排队、随机游走 | 随机模拟、风险分析 |
+| `cellular_automata.py` | 1D/2D CA、生命游戏、NaSch交通流 | 交通流、传染病扩散、森林火灾 |
+| `monte_carlo.py` | 积分、优化、M/M/c、M/M/S/k、随机游走 | 随机模拟、风险分析、排队论 |
 | `image_processing.py` | 边缘检测、分割、形态学 | 遥感、医学影像 |
 | `evaluation.py` | TOPSIS、DEA、PCA、RSR | 综合评价、效率分析 |
 | `sci_figures.py` | 11 种科研图表 | 论文可视化 |
