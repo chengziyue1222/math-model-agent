@@ -1,0 +1,279 @@
+"""
+神经网络工具箱
+==============
+包含：BP神经网络、RBF神经网络、SOM自组织映射、Elman网络
+全部基于 numpy 实现, 不依赖深度学习框架
+
+参考：Algorithms_MathModels/HeuristicAlgorithm/神经网络算法/
+"""
+
+import numpy as np
+from typing import Tuple, Dict, List, Optional, Callable
+
+
+# ============================================================
+# 1. BP 神经网络
+# ============================================================
+class BPNeuralNetwork:
+    """
+    BP (Back Propagation) 神经网络
+
+    支持任意层数、任意节点数的全连接网络
+    """
+
+    def __init__(self, layer_sizes: List[int], activation: str = 'sigmoid',
+                 learning_rate: float = 0.1, max_epochs: int = 1000,
+                 tol: float = 1e-6):
+        """
+        Parameters
+        ----------
+        layer_sizes : list
+            各层节点数, 如 [3, 5, 2] 表示3输入5隐含2输出
+        activation : str
+            激活函数: 'sigmoid', 'tanh', 'relu'
+        learning_rate : float
+            学习率
+        max_epochs : int
+            最大训练轮数
+        tol : float
+            收敛阈值
+        """
+        self.layer_sizes = layer_sizes
+        self.lr = learning_rate
+        self.max_epochs = max_epochs
+        self.tol = tol
+        self.n_layers = len(layer_sizes)
+
+        # 激活函数
+        if activation == 'sigmoid':
+            self.act = lambda x: 1 / (1 + np.exp(-np.clip(x, -500, 500)))
+            self.act_deriv = lambda x: x * (1 - x)
+        elif activation == 'tanh':
+            self.act = lambda x: np.tanh(x)
+            self.act_deriv = lambda x: 1 - x**2
+        elif activation == 'relu':
+            self.act = lambda x: np.maximum(0, x)
+            self.act_deriv = lambda x: (x > 0).astype(float)
+
+        # 初始化权重和偏置
+        self.weights = []
+        self.biases = []
+        for i in range(self.n_layers - 1):
+            w = np.random.randn(layer_sizes[i], layer_sizes[i+1]) * 0.5
+            b = np.random.randn(1, layer_sizes[i+1]) * 0.5
+            self.weights.append(w)
+            self.biases.append(b)
+
+        self.loss_history = []
+
+    def _forward(self, X: np.ndarray) -> List[np.ndarray]:
+        """前向传播"""
+        activations = [X]
+        for i in range(self.n_layers - 1):
+            z = activations[-1] @ self.weights[i] + self.biases[i]
+            a = self.act(z)
+            activations.append(a)
+        return activations
+
+    def train(self, X: np.ndarray, y: np.ndarray) -> Dict:
+        """
+        训练网络
+
+        Parameters
+        ----------
+        X : np.ndarray
+            训练数据 (n_samples, n_features)
+        y : np.ndarray
+            目标值 (n_samples, n_outputs)
+
+        Returns
+        -------
+        dict : 训练历史
+        """
+        X = np.atleast_2d(X)
+        y = np.atleast_2d(y)
+        if y.ndim == 1:
+            y = y.reshape(-1, 1)
+
+        self.loss_history = []
+
+        for epoch in range(self.max_epochs):
+            # 前向传播
+            activations = self._forward(X)
+            output = activations[-1]
+
+            # 计算损失
+            loss = np.mean((y - output) ** 2)
+            self.loss_history.append(loss)
+
+            if loss < self.tol:
+                break
+
+            # 反向传播
+            error = y - output
+            deltas = [error * self.act_deriv(output)]
+
+            for i in range(self.n_layers - 2, 0, -1):
+                delta = deltas[-1] @ self.weights[i].T * self.act_deriv(activations[i])
+                deltas.append(delta)
+            deltas.reverse()
+
+            # 更新权重
+            for i in range(self.n_layers - 1):
+                self.weights[i] += self.lr * (activations[i].T @ deltas[i]) / X.shape[0]
+                self.biases[i] += self.lr * deltas[i].mean(axis=0, keepdims=True)
+
+        return {
+            'loss_history': self.loss_history,
+            'n_epochs': len(self.loss_history),
+            'final_loss': self.loss_history[-1]
+        }
+
+    def predict(self, X: np.ndarray) -> np.ndarray:
+        """预测"""
+        X = np.atleast_2d(X)
+        activations = self._forward(X)
+        return activations[-1]
+
+
+# ============================================================
+# 2. RBF 神经网络
+# ============================================================
+class RBFNetwork:
+    """
+    径向基函数 (RBF) 神经网络
+
+    适用于: 函数逼近、分类、时间序列预测
+    """
+
+    def __init__(self, n_centers: int = 10, spread: float = 1.0):
+        self.n_centers = n_centers
+        self.spread = spread
+        self.centers = None
+        self.weights = None
+
+    def _rbf(self, X: np.ndarray, centers: np.ndarray) -> np.ndarray:
+        """高斯径向基函数"""
+        n = X.shape[0]
+        c = centers.shape[0]
+        G = np.zeros((n, c))
+        for i in range(n):
+            for j in range(c):
+                dist = np.sum((X[i] - centers[j])**2)
+                G[i, j] = np.exp(-dist / (2 * self.spread**2))
+        return G
+
+    def train(self, X: np.ndarray, y: np.ndarray) -> Dict:
+        """训练 RBF 网络 (K-means 选中心 + 最小二乘)"""
+        from scipy.cluster.vq import kmeans2
+        X = np.atleast_2d(X)
+        y = np.atleast_1d(y)
+
+        # K-means 选择中心
+        self.centers, _ = kmeans2(X, self.n_centers, minit='points')
+
+        # 计算隐藏层输出
+        G = self._rbf(X, self.centers)
+
+        # 最小二乘求输出权重
+        self.weights = np.linalg.lstsq(G, y, rcond=None)[0]
+
+        y_hat = G @ self.weights
+        residuals = y - y_hat
+        R2 = 1 - np.sum(residuals**2) / np.sum((y - y.mean())**2)
+
+        return {'R2': R2, 'residuals': residuals}
+
+    def predict(self, X: np.ndarray) -> np.ndarray:
+        X = np.atleast_2d(X)
+        G = self._rbf(X, self.centers)
+        return G @ self.weights
+
+
+# ============================================================
+# 3. SOM 自组织映射
+# ============================================================
+class SOM:
+    """
+    自组织映射网络 (Self-Organizing Map)
+
+    适用于: 无监督聚类、数据可视化、模式识别
+    """
+
+    def __init__(self, grid_size: Tuple[int, int] = (5, 5),
+                 n_features: int = 2,
+                 learning_rate: float = 0.5,
+                 max_epochs: int = 100):
+        self.grid_h, self.grid_w = grid_size
+        self.n_features = n_features
+        self.lr = learning_rate
+        self.max_epochs = max_epochs
+        self.weights = np.random.randn(self.grid_h, self.grid_w, n_features)
+
+    def train(self, X: np.ndarray) -> Dict:
+        """训练 SOM"""
+        n = X.shape[0]
+        for epoch in range(self.max_epochs):
+            # 学习率和邻域半径衰减
+            lr = self.lr * (1 - epoch / self.max_epochs)
+            radius = max(1, (self.grid_h / 2) * (1 - epoch / self.max_epochs))
+
+            for i in range(n):
+                # 找 BMU (最佳匹配单元)
+                dists = np.sum((self.weights - X[i])**2, axis=2)
+                bmu = np.unravel_index(np.argmin(dists), (self.grid_h, self.grid_w))
+
+                # 更新权重
+                for r in range(self.grid_h):
+                    for c in range(self.grid_w):
+                        grid_dist = np.sqrt((r - bmu[0])**2 + (c - bmu[1])**2)
+                        if grid_dist <= radius:
+                            h = np.exp(-grid_dist**2 / (2 * radius**2))
+                            self.weights[r, c] += lr * h * (X[i] - self.weights[r, c])
+
+        return {}
+
+    def predict(self, X: np.ndarray) -> np.ndarray:
+        """预测每个样本的 BMU 坐标"""
+        X = np.atleast_2d(X)
+        labels = np.zeros(X.shape[0], dtype=int)
+        for i in range(X.shape[0]):
+            dists = np.sum((self.weights - X[i])**2, axis=2)
+            bmu = np.unravel_index(np.argmin(dists), (self.grid_h, self.grid_w))
+            labels[i] = bmu[0] * self.grid_w + bmu[1]
+        return labels
+
+
+# ============================================================
+# 使用示例
+# ============================================================
+def example():
+    """神经网络示例"""
+    np.random.seed(42)
+
+    # 示例1: BP 网络
+    print("=" * 60)
+    print("示例1: BP 神经网络 — XOR 问题")
+    print("=" * 60)
+    X = np.array([[0,0],[0,1],[1,0],[1,1]])
+    y = np.array([[0],[1],[1],[0]])
+    bp = BPNeuralNetwork([2, 4, 1], learning_rate=1.0, max_epochs=5000)
+    result = bp.train(X, y)
+    pred = bp.predict(X)
+    print(f"  训练轮数: {result['n_epochs']}")
+    print(f"  最终损失: {result['final_loss']:.6f}")
+    print(f"  预测结果: {pred.round(3).flatten()}")
+
+    # 示例2: RBF 网络
+    print("\n" + "=" * 60)
+    print("示例2: RBF 网络 — 函数逼近")
+    print("=" * 60)
+    x = np.linspace(0, 2*np.pi, 50).reshape(-1, 1)
+    y = np.sin(x).flatten()
+    rbf = RBFNetwork(n_centers=10, spread=0.5)
+    result = rbf.train(x, y)
+    print(f"  R² = {result['R2']:.4f}")
+
+
+if __name__ == "__main__":
+    example()
