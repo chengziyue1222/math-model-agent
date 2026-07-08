@@ -19,6 +19,8 @@
 - paper_check: 论文质量检查与验收
 - monte_carlo: 蒙特卡罗算法 (随机模拟, 排队仿真M/M/c, M/M/S/k, 随机游走)
 - image_processing: 图像处理 (边缘检测, 图像分割, 形态学, 特征提取)
+- time_series: 时间序列分析 (移动平均, 指数平滑, 趋势外推)
+- math_programming: 数学规划 (线性规划, 整数规划, 目标规划, 非线性规划)
 """
 
 from .ahp import ahp_weight, consistency_check, hierarchical_ahp
@@ -54,6 +56,14 @@ from .monte_carlo import (
 from .image_processing import (
     noise_filter, edge_detection, image_segmentation, morphological_ops,
     histogram_analysis, histogram_equalization, feature_extraction,
+)
+from .time_series import (
+    simple_moving_average, weighted_moving_average, trend_moving_average,
+    single_exponential_smoothing, double_exponential_smoothing, triple_exponential_smoothing,
+    gompertz_curve, logistic_curve, modified_exponential_curve,
+)
+from .math_programming import (
+    linear_programming, integer_programming, goal_programming, nonlinear_programming,
 )
 
 __all__ = [
@@ -96,4 +106,10 @@ __all__ = [
     # 图像处理
     'noise_filter', 'edge_detection', 'image_segmentation', 'morphological_ops',
     'histogram_analysis', 'histogram_equalization', 'feature_extraction',
+    # 时间序列
+    'simple_moving_average', 'weighted_moving_average', 'trend_moving_average',
+    'single_exponential_smoothing', 'double_exponential_smoothing', 'triple_exponential_smoothing',
+    'gompertz_curve', 'logistic_curve', 'modified_exponential_curve',
+    # 数学规划
+    'linear_programming', 'integer_programming', 'goal_programming', 'nonlinear_programming',
 ]

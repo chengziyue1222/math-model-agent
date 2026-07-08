@@ -1,5 +1,21 @@
 # CHANGELOG - Math Model Skill
 
+## v6.3 (2026-07-01)
+
+### 新增模块（从 HuangCongQing/Algorithms_MathModels MATLAB 实现转 Python）
+
+- **time_series.py** — 时间序列分析模块（全新文件）
+  - 简单/加权/趋势移动平均
+  - 一次/二次/三次指数平滑（Holt-Winters）
+  - 趋势外推：Gompertz、Logistic、修正指数曲线
+- **math_programming.py** — 数学规划模块（全新文件）
+  - 线性规划 LP（scipy.optimize.linprog）
+  - 整数规划 MILP（scipy.optimize.milp）
+  - 目标规划 Goal Programming（偏差最小化）
+  - 非线性规划 NLP（scipy.optimize.minimize）
+
+算法库导出从 88 → 101 个
+
 ## v6.2 (2026-07-01)
 
 ### 新增算法（从 ravenxrz/Mathematical-Modeling 学习并转写为 Python）

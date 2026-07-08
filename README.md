@@ -23,6 +23,8 @@
 | `cellular_automata.py` | 1D/2D CA、生命游戏、NaSch交通流 | 交通流、传染病扩散、森林火灾 |
 | `monte_carlo.py` | 积分、优化、M/M/c、M/M/S/k、随机游走 | 随机模拟、风险分析、排队论 |
 | `image_processing.py` | 边缘检测、分割、形态学 | 遥感、医学影像 |
+| `time_series.py` | 移动平均、指数平滑、Gompertz/Logistic 曲线 | 趋势预测、增长模型 |
+| `math_programming.py` | 线性规划、整数规划、目标规划、非线性规划 | 资源分配、背包问题、选址 |
 | `evaluation.py` | TOPSIS、DEA、PCA、RSR | 综合评价、效率分析 |
 | `sci_figures.py` | 11 种科研图表 | 论文可视化 |
 | `diagram.py` | TikZ 图表生成 | LaTeX 配图 |
@@ -128,7 +130,9 @@ math-model-agent/
 │   │   ├── evaluation.py            # 综合评价：TOPSIS、DEA、PCA、RSR
 │   │   ├── sci_figures.py           # 科研图表：11 种标准科研可视化
 │   │   ├── diagram.py               # TikZ 图表生成：LaTeX 配图自动化
-│   │   └── paper_check.py           # 论文检查：格式、引用、一致性审查
+│   │   ├── paper_check.py           # 论文检查：格式、引用、一致性审查
+│   │   ├── time_series.py           # 时间序列：移动平均、指数平滑、趋势外推
+│   │   └── math_programming.py      # 数学规划：线性/整数/目标/非线性规划
 │   ├── solve.py                     # 求解脚本示例（2022 国赛 A 题波浪能）
 │   ├── visualize.py                 # 可视化示例脚本
 │   └── results.json                 # 求解结果存档
