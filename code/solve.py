@@ -4,9 +4,14 @@
 """
 
 import numpy as np
-from scipy import optimize
-from scipy.integrate import odeint
+from scipy.integrate import solve_ivp
 import json
+import os
+import sys
+
+# 使用项目自带的算法库（dogfooding），而非裸调 scipy
+sys.path.insert(0, os.path.dirname(os.path.abspath(__file__)))
+from algorithms import nonlinear_programming
 
 # ============ 物理常数 ============
 RHO = 1025.0      # 海水密度 kg/m^3
@@ -32,13 +37,24 @@ def wave_params(H, T, h):
     return omega, kw
 
 
+def radiation_damping_coeff(kw, r):
+    """辐射阻尼系数 Cr，作为无量纲参数 kw*r 的函数。
+
+    对垂荡圆柱体，辐射阻尼源于表面波的辐射：低频时几乎无辐射（Cr→0），
+    在 kw*r≈1 附近达到峰值，高频时由于波长远小于圆柱尺度而衰减。
+    简化拟合 Cr = (kw*r) / (1 + (kw*r)^2)，峰值 0.5 出现在 kw*r=1。
+    """
+    kwr = kw * r
+    return kwr / (1.0 + kwr * kwr)
+
+
 def added_mass_and_damping(r, d, omega, kw):
     """计算附加质量和辐射阻尼"""
     # 附加质量（圆柱近似）
     Ca = 1.0
     ma = RHO * PI * r**2 * d * Ca
-    # 辐射阻尼
-    Cr = 0.5  # 简化近似
+    # 辐射阻尼（Cr 依赖 kw*r，非硬编码常数）
+    Cr = radiation_damping_coeff(kw, r)
     cr = RHO * G * PI * r**2 / omega * Cr
     return ma, cr
 
@@ -78,11 +94,6 @@ def average_power(params, omega, kw, H, h):
     return P
 
 
-def neg_power(params, omega, kw, H, h):
-    """负功率（用于最小化求最大）"""
-    return -average_power(params, omega, kw, H, h)
-
-
 def solve_optimization():
     """求解优化问题"""
     omega, kw = wave_params(H, T_wave, h)
@@ -99,10 +110,13 @@ def solve_optimization():
         (100, 1e5),      # cd 阻尼系数
     ]
 
+    # 使用项目自带算法库 nonlinear_programming 求解（dogfooding）
+    def objective(params):
+        return average_power(params, omega, kw, H, h)
+
     # 多起点优化
     best_P = 0
     best_params = None
-    best_result = None
 
     for i in range(50):
         # 随机初始点
@@ -113,18 +127,16 @@ def solve_optimization():
             np.random.uniform(100, 1e5),
         ])
 
-        result = optimize.minimize(
-            neg_power,
-            x0,
-            args=(omega, kw, H, h),
-            method='L-BFGS-B',
-            bounds=bounds,
+        result = nonlinear_programming(
+            objective, x0, bounds=bounds, method='SLSQP', maximize=True,
         )
 
-        if result.success and -result.fun > best_P:
-            best_P = -result.fun
-            best_params = result.x
-            best_result = result
+        if result['success'] and result['fun'] > best_P:
+            best_P = result['fun']
+            best_params = result['x']
+
+    if best_params is None:
+        raise RuntimeError("50 个优化起点均未得到可行解")
 
     r, d, ks, cd = best_params
     m = RHO * PI * r**2 * d
@@ -177,16 +189,19 @@ def solve_optimization():
     C_total = cr + cd
     K_total = ks + RHO * G * PI * r**2
 
-    def motion_eq(y, t, M, C, K, F0, omega):
+    def motion_eq(t, y, M, C, K, F0, omega):
         z, zdot = y
         zddot = (F0 * np.cos(omega * t) - C * zdot - K * z) / M
         return [zdot, zddot]
 
     y0 = [0, 0]
-    sol = odeint(motion_eq, y0, t, args=(M_total, C_total, K_total, F0, omega))
+    sol = solve_ivp(
+        motion_eq, (t[0], t[-1]), y0, t_eval=t,
+        args=(M_total, C_total, K_total, F0, omega), method='RK45',
+    )
 
-    z_t = sol[:, 0]
-    zdot_t = sol[:, 1]
+    z_t = sol.y[0]
+    zdot_t = sol.y[1]
     P_inst = cd * zdot_t**2
 
     print(f"  稳态振幅（数值）: {np.max(z_t[-200:]):.4f} m")
@@ -219,9 +234,10 @@ def solve_optimization():
         },
     }
 
-    with open("results.json", "w") as f:
+    results_path = os.path.join(os.path.dirname(os.path.abspath(__file__)), "results.json")
+    with open(results_path, "w") as f:
         json.dump(results, f, indent=2, ensure_ascii=False)
-    print("\n结果已保存到 results.json")
+    print(f"\n结果已保存到 {results_path}")
 
     return results
 
