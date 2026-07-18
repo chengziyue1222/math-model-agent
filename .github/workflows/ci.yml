@@ -37,6 +37,9 @@ jobs:
       - name: Validate historical benchmark catalog
         run: python scripts/validate_benchmarks.py
 
+      - name: Validate legacy compatibility archive
+        run: python scripts/validate_legacy_archive.py
+
       - name: Run Ruff
         run: python -m ruff check code skills scripts
 

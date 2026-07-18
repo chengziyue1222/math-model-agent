@@ -5,7 +5,7 @@ include coverage-policy.json
 recursive-include skills *
 recursive-include benchmarks *.yaml *.json
 recursive-include schemas *.json
-recursive-include skill *.md
+recursive-include legacy *.md *.yaml
 recursive-include patterns *.md
 recursive-include template *.tex
 recursive-include scripts *.py

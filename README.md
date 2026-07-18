@@ -1,6 +1,6 @@
 # Math Model Agent
 
-> **数学建模 AI 助手** — 56 个 skill 文件 + 17 个算法模块，覆盖从选题到答辩的完整竞赛工作流。
+> **数学建模 AI 助手** — 8 个标准 Codex Skills + 17 个算法模块，覆盖从选题到答辩的完整竞赛工作流。
 >
 > An AI-powered toolkit for mathematical modeling competitions: 56 skill files + 17 algorithm modules, covering the full workflow from problem selection to final presentation.
 
@@ -89,48 +89,13 @@ edges = edge_detection(image, method='canny')
 rank = topsis(decision_matrix, weights, benefit_indicators)
 ```
 
-### 🎯 Skills 体系 / Slash Commands (`skill/`)
+### 🎯 标准 Codex Skills (`skills/`)
 
 **Codex 标准 Skills (`skills/`)：**
 
 `run-modeling-project`、`select-model`、`solve-model`、`analyze-model-data`、`research-model-literature`、`make-model-figures`、`write-model-paper`、`review-model-paper`。每个技能均包含可触发的 `SKILL.md` 和 `agents/openai.yaml`，详细知识按需放在 `references/`，确定性检查放在 `scripts/`。其中 `run-modeling-project` 负责严格阶段门、断点恢复、运行清单和交接，其余七个 Skill 承担具体建模任务。
 
-原 `skill/` 目录继续保留 56 个 Claude Code 风格命令文档，作为迁移期知识库。
-
-**17 个核心 skill 文件 (`skill/core/`):**
-
-| Skill | 用途 |
-|-------|------|
-| `/math-model-skill` | 五层能力架构总控 |
-| `/model-selector` | 18 种问题类型→模型决策 |
-| `/model-library` | 15 个模块模型库速查 |
-| `/modeling-pipeline` | 11 步统一建模流程 |
-| `/judge-engine` | 六维度评审引擎 |
-| `/paper-generator` | 结构化论文生成 |
-| `/python-mapping` | MATLAB→Python 映射 |
-| `/evaluation` | 综合评价方法指南 |
-| `/monte-carlo` | 蒙特卡罗决策与模板 |
-| `/image-processing` | 图像处理流水线 |
-| `/sci-figures` | 11 种科研图表规范 |
-| `/math-competition-guide` | 竞赛实战全流程 |
-| `/modeling-norms` | 建模规范与最佳实践 |
-| `/paper-check` | 论文质量检查清单 |
-| `/diagram-tools` | TikZ/图表工具指南 |
-| `/model-library-extended` | 扩展模型库 |
-| `/algorithm-api` | 算法库 API 速查 |
-
-**39 个专业 Skills:**
-
-| 分类 | 数量 | 典型命令 |
-|------|------|---------|
-| LaTeX 编译 | 5 | `/compile-latex`, `/extract-tikz` |
-| 论文写作 | 6 | `/review-paper`, `/seven-pass-review` |
-| 研究构思 | 5 | `/lit-review`, `/ideation` |
-| 数据分析 | 4 | `/data-analysis`, `/audit-reproducibility` |
-| Quarto 部署 | 3 | `/deploy`, `/translate-to-quarto` |
-| 讲座课程 | 3 | `/create-lecture`, `/slide-excellence` |
-| 工作流 | 10 | `/commit`, `/checkpoint`, `/learn` |
-| 审计验证 | 3 | `/deep-audit`, `/verify-claims` |
+`legacy/skills/` 中的 56 个旧命令仅作兼容档案，不再是入口、不会被安装，也不应直接执行。迁移关系见 `legacy/command-map.yaml`；新任务唯一推荐入口是上述标准 Skills，完整项目优先从 `$run-modeling-project` 开始。
 
 ### 📐 国赛论文排版模板 / CUMCM Paper Template (`template/`)
 
@@ -222,7 +187,9 @@ math-model-agent/
 │   ├── visualize.py                 # 可视化示例脚本
 │   └── results.json                 # 求解结果存档
 │
-├── skill/                           # 🎯 56 个 skill 文件（Claude Code Skills）
+├── legacy/                          # 📦 兼容档案（不安装、不推荐）
+│   ├── command-map.yaml             # 56 个旧命令到标准 Skills 的迁移表
+│   └── skills/                      # 旧 Claude Code 命令文档
 │   ├── README.md                    # Skills 索引与使用说明
 │   │
 │   ├── core/                        # 📦 17 个核心建模 Skills
@@ -393,15 +360,9 @@ python scripts/install_skills.py --dry-run
 
 安装后可使用 `$select-model`、`$solve-model`、`$review-model-paper` 等名称调用。`pip install .` 仅安装可导入的 `algorithms` Python 包；Skill、论文模板和旧版命令文档是仓库配套资源，不混入 wheel。源码分发包仍保留这些资源，便于完整归档。
 
-### 5. 使用旧版命令文档 / Use Legacy Commands
+### 5. 兼容档案 / Compatibility Archive
 
-`skill/` 保留 Claude Code 风格的旧版命令文档：
-
-```
-> /model-selector "某城市交通流量预测问题"
-> /math-competition-guide
-> /monte-carlo "排队系统仿真"
-```
+`legacy/skills/` 保留旧版命令原文，仅供追溯，不是可安装或推荐的 Skill。请查阅 `legacy/command-map.yaml`，改用对应的标准 `$skill-name`；完整建模项目使用 `$run-modeling-project`。
 
 ---
 
