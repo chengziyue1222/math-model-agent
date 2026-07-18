@@ -9,7 +9,7 @@ Write a traceable paper in which every claim can be linked to a model, source, c
 
 ## Workflow
 
-1. Inventory verified inputs: problem statement, equations, code, results, figures, citations, and limitations.
+1. Validate `run-manifest.json` with file verification and inventory only its verified problem statement, equations, code, results, figures, citations, failed runs, and limitations.
 2. Read `references/paper-structure.md` and choose the required competition format.
 3. Create a claim-to-evidence outline before drafting prose.
 4. Define symbols and units once; keep names aligned with code and figures.
@@ -24,6 +24,7 @@ Write a traceable paper in which every claim can be linked to a model, source, c
 - Mark missing evidence with an explicit placeholder and action owner.
 - Do not disguise AI involvement or remove required competition disclosures.
 - Use `assets/cume-template.tex` only when its format matches the competition rules.
+- Never copy a number into the paper unless its metric or source artifact is traceable through the run manifest.
 
 ## Resources
 

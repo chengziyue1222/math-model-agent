@@ -168,6 +168,20 @@ python scripts/score_benchmark.py path/to/scorecard.json
 
 评分必须链接实际证据文件；高分不能绕过来源可追溯、结果可复现、完整回答子问题和禁止伪造证据四项硬门。
 
+### 🧾 统一运行清单 / Run Manifest (`schemas/run-manifest.schema.json`)
+
+每次正式运行都应在项目根目录保存 `run-manifest.json`。它统一记录输入文件 SHA-256、模型与参数版本、命令、随机种子、Git 状态、Python/依赖环境、指标、失败尝试、局限和产物哈希。仓库只保存项目相对路径，拒绝目录穿越和未记录种子的随机运行。
+
+```bash
+python scripts/run_manifest.py create \
+  --spec path/to/run-spec.json --project-root path/to/project \
+  --output path/to/project/run-manifest.json
+python scripts/run_manifest.py validate path/to/project/run-manifest.json \
+  --project-root path/to/project --verify-files
+```
+
+可从 `schemas/run-manifest.example.json` 复制精简运行规格；正式清单遵循 `schemas/run-manifest.schema.json`。
+
 ---
 
 ## 项目结构 / Project Structure

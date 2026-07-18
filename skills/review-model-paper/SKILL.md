@@ -9,10 +9,10 @@ Review in read-only mode by default and separate evidence from judgment.
 
 ## Workflow
 
-1. Identify the manuscript entry file, supporting code, results, figures, data, and competition rules.
+1. Identify the manuscript entry file, `run-manifest.json`, supporting code, results, figures, data, and competition rules.
 2. Run `scripts/run_paper_check.py` when the repository algorithm package is available.
 3. Read `references/review-rubric.md` and inspect model validity, data handling, solution correctness, validation, claims, citations, figures, writing, and formatting.
-4. Trace important numbers and conclusions back to code or result artifacts.
+4. Validate the run manifest with `--verify-files` and trace important numbers and conclusions back to registered code or result artifacts.
 5. Classify findings as blocker, major, moderate, or minor.
 6. Report each finding with location, evidence, impact, and a concrete correction.
 7. End with submission readiness and the smallest high-value revision sequence.

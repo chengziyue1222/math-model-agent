@@ -17,6 +17,7 @@ Turn an agreed modeling route into a reproducible solution.
 6. Validate with boundary checks, dimensional checks, baseline comparison, and an independent method where feasible.
 7. Run sensitivity or uncertainty analysis on influential parameters.
 8. Save machine-readable results separately from figures and narrative.
+9. Create or update the project `run-manifest.json` with the repository run-manifest CLI; validate it with `--verify-files` before handoff.
 
 ## Guardrails
 
@@ -24,6 +25,7 @@ Turn an agreed modeling route into a reproducible solution.
 - Do not treat optimizer convergence as proof of global optimality.
 - Do not report more precision than the data supports.
 - Preserve failed runs and limitations in the handoff.
+- Record every input, output, model version, parameter source, seed, metric, and failed attempt in the run manifest.
 
 ## Resources
 
