@@ -1,5 +1,60 @@
 # CHANGELOG - Math Model Skill
 
+## Unreleased
+
+### 数学建模图表交付
+
+- 将 Starry-cz/academic-data-visualization 的图表契约、出版尺寸、无障碍配色与多阶段 QA 思路融入 `make-model-figures`，保留 Apache-2.0 来源说明且不复制其素材库。
+- 新增面向模型版本、情景、参数来源和随机性的 `FigureContract`、89/183 mm 尺寸、出版样式和 `audit_publication_figure`，检查字号、文字越界、栏宽与高风险色图。
+- 新增 `export_publication_figure`，一次生成 PDF/SVG 矢量主稿、450 DPI PNG 校样和可追溯 `.figure.json` 审查记录。
+
+### Correctness, reproducibility, and release engineering
+
+- 修复遗传算法最大化符号、最小费用流供需方向与不可行解处理、边缘算子有符号卷积，并增加对应回归测试。
+- 修复通用蒙特卡罗 seed、精确图染色与 LaTeX 注释/内嵌参考文献检查。
+- 重构 `code/visualize.py`，统一复用求解公式，重新生成四张示例图并以端到端测试核对 7433.30 W 结果。
+- 将 SciPy 下限提高到 1.9；CI 增加安装、仓库外导入、Skill 校验、Ruff、覆盖率、端到端绘图与构建。
+- 明确 wheel 仅发布 `algorithms`，增加标准 Skill 安装脚本与源码分发资源清单，并清理 Ruff 问题和文档漂移。
+
+### Codex Skill 标准化
+
+- 新增 7 个标准 Codex Skills，包含 `SKILL.md`、UI 元数据、按需引用和确定性检查脚本。
+- 将旧的提交、部署、深度审计流程改为安全默认值，外部写操作需要明确授权。
+- 加强文献真实性、数据泄漏、论文披露和可复现性规则。
+- 修复算法包因 `Dict` 未导入而无法加载的问题，并校正蒙特卡罗、数学规划和图像处理能力映射。
+- 将实际 Python 支持范围统一为 3.10–3.13，并补充数学规划与时间序列测试。
+
+## v6.5 (2026-07-11)
+
+### 全链路审计与工程规范修复
+
+**数字一致性校正（P0）**
+- 算法库导出计数校正：此前分组注释误计为 106，实际 `__all__` 为 120 项；统一 README/使用说明/`__init__.py` docstring 全部为「120 个导出，17 个模块」
+- 补导出漏网函数：`artificial_fish_swarm`（鱼群算法）、`build_judgment_matrix`（交互式 AHP 构造）
+- skill 计数统一为 56（17 核心 + 39 扩展），更新 skill/README.md 索引
+
+**工程规范（P1）**
+- 新增 `requirements.txt`、`pyproject.toml`（含 pytest pythonpath 配置，消除 `sys.path.insert` hack）
+- 新增 `LICENSE` 文件（MIT）
+- 清理 `code/` 根目录临时调试文件（`_list_exports.py`/`_list_signatures.py`/`_test_import.py`）
+
+**solve.py 物理模型修复（P1）**
+- 辐射阻尼系数 `Cr` 从硬编码 `0.5` 改为 `kw*r` 的函数 `radiation_damping_coeff`（与 model.md 描述一致）
+- `odeint`（deprecated）→ `solve_ivp`（RK45）
+- `results.json` 改用基于 `__file__` 的绝对路径
+
+**算法代码修复（P0/P3）**
+- 移除 `dijkstra` 中的死代码（被立即覆盖的 `np.argmin` 行）
+- 修复 `queuing_mmsk` 仿真利用率计算：从「离开间隔 > 1/μ」改为「总服务时间 / (服务台数 × 仿真时长)」
+- 移除 `evaluation.rsr` 中未使用的 `rank_avg` 变量
+- 统一 `metaheuristic.example()` 的 Rastrigin 符号（标准正号 + minimize）
+- solve.py 改用项目自带 `nonlinear_programming` 求解（dogfooding），不再裸调 scipy
+- 向量化 `RBFNetwork._rbf`（双重 for → 广播）、`SOM.train`（r/c 双循环 → meshgrid）、`ant_colony_tsp`（内层 for → mask）
+
+**CI 与工程（P2）**
+- 新增 GitHub Actions CI（`.github/workflows/ci.yml`）：Python 3.9–3.12 矩阵跑 pytest + 导入冒烟测试
+- 清理 `__pycache__`/`.pytest_cache`，移除 conftest.py 冗余 `sys.path.insert`（由 pyproject.toml pythonpath 接管）
+
 ## v6.4 (2026-07-01)
 
 ### 新增算法（继续从 Algorithms_MathModels MATLAB 转 Python）

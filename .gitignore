@@ -51,3 +51,6 @@ desktop.ini
 *.tmp
 *.bak
 *.backup
+.pytest_tmp*/
+.coverage
+coverage.xml

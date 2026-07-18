@@ -1,8 +1,8 @@
 # Math Model Agent
 
-> **数学建模 AI 助手** — 55 个 Slash Commands + 15 个算法模块，覆盖从选题到答辩的完整竞赛工作流。
+> **数学建模 AI 助手** — 56 个 skill 文件 + 17 个算法模块，覆盖从选题到答辩的完整竞赛工作流。
 >
-> An AI-powered toolkit for mathematical modeling competitions: 55 slash commands + 15 algorithm modules, covering the full workflow from problem selection to final presentation.
+> An AI-powered toolkit for mathematical modeling competitions: 56 skill files + 17 algorithm modules, covering the full workflow from problem selection to final presentation.
 
 ---
 
@@ -10,9 +10,9 @@
 
 ### 🧮 算法库 / Algorithm Library (`code/algorithms/`)
 
-109 个导出，17 个模块，分 9 大类：
+129 个导出，17 个模块，分 9 大类：
 
-**决策与评价 (19)**
+**决策与评价 (23)**
 
 | 模块 | 核心方法 | 竞赛场景 |
 |------|---------|---------|
@@ -20,7 +20,7 @@
 | `fuzzy_math.py` | 模糊综合评价、模糊 C-means、多层次模糊 | 不确定性建模、风险评估 |
 | `evaluation.py` | TOPSIS、熵权法、DEA、PCA、RSR、FAHP | 综合评价、效率分析、排名 |
 
-**预测与回归 (20)**
+**预测与回归 (27)**
 
 | 模块 | 核心方法 | 竞赛场景 |
 |------|---------|---------|
@@ -29,14 +29,14 @@
 | `interpolation.py` | Lagrange、Newton、三次样条 | 曲面重建、缺失值填补 |
 | `time_series.py` | 移动平均、指数平滑、Gompertz/Logistic、自适应滤波 | 趋势预测、增长模型、信号去噪 |
 
-**优化与规划 (8)**
+**优化与规划 (9)**
 
 | 模块 | 核心方法 | 竞赛场景 |
 |------|---------|---------|
-| `metaheuristic.py` | GA、PSO、SA、蚁群 | 组合优化、参数搜索 |
+| `metaheuristic.py` | GA、PSO、SA、蚁群、鱼群 | 组合优化、参数搜索 |
 | `math_programming.py` | 线性规划、整数规划、目标规划、非线性规划 | 资源分配、背包、选址 |
 
-**图论与网络 (9)**
+**图论与网络 (11)**
 
 | 模块 | 核心方法 | 竞赛场景 |
 |------|---------|---------|
@@ -66,11 +66,11 @@
 |------|---------|---------|
 | `image_processing.py` | 边缘检测、分割、形态学、特征提取 | 遥感、医学影像、去噪 |
 
-**论文与图表 (25)**
+**论文与图表 (34)**
 
 | 模块 | 核心方法 | 竞赛场景 |
 |------|---------|---------|
-| `sci_figures.py` | 泰勒图、云雨图、ROC、SHAP 等 11 种 | 论文可视化 |
+| `sci_figures.py` | 11 种建模结果图、模型证据契约、审查与矢量/450 DPI 交付 | 验证、比较、灵敏度、优化与论文可视化 |
 | `diagram.py` | 流程图、ER 图、三线表、SQL 解析 | LaTeX 配图 |
 | `paper_check.py` | 论文质量检查（结构/图表/引用/数值） | 提交前终检 |
 
@@ -91,7 +91,13 @@ rank = topsis(decision_matrix, weights, benefit_indicators)
 
 ### 🎯 Skills 体系 / Slash Commands (`skill/`)
 
-**16 个核心建模 Skills (`skill/core/`):**
+**Codex 标准 Skills (`skills/`)：**
+
+`select-model`、`solve-model`、`analyze-model-data`、`research-model-literature`、`make-model-figures`、`write-model-paper`、`review-model-paper`。每个技能均包含可触发的 `SKILL.md` 和 `agents/openai.yaml`，详细知识按需放在 `references/`，确定性检查放在 `scripts/`。其中 `make-model-figures` 以建模证据链为中心，覆盖数据概览、假设、验证、比较、灵敏度、稳健性、优化和决策图，并支持 PDF/SVG/450 DPI PNG/JSON 可追溯交付。
+
+原 `skill/` 目录继续保留 56 个 Claude Code 风格命令文档，作为迁移期知识库。
+
+**17 个核心 skill 文件 (`skill/core/`):**
 
 | Skill | 用途 |
 |-------|------|
@@ -111,6 +117,7 @@ rank = topsis(decision_matrix, weights, benefit_indicators)
 | `/paper-check` | 论文质量检查清单 |
 | `/diagram-tools` | TikZ/图表工具指南 |
 | `/model-library-extended` | 扩展模型库 |
+| `/algorithm-api` | 算法库 API 速查 |
 
 **39 个专业 Skills:**
 
@@ -158,7 +165,7 @@ Day 5: 全文审校 → 格式排版 → 最终检查
 math-model-agent/
 │
 ├── code/                            # 🔧 代码模块
-│   ├── algorithms/                  # 15 个 Python 算法模块（可直接 import）
+│   ├── algorithms/                  # 17 个 Python 算法模块（可直接 import）
 │   │   ├── __init__.py              # 统一导出入口，from algorithms import * 即用
 │   │   ├── ahp.py                   # 层次分析法：AHP 构造、一致性检验 CR
 │   │   ├── grey_system.py           # 灰色系统：GM(1,1) 预测、灰色关联分析
@@ -181,10 +188,10 @@ math-model-agent/
 │   ├── visualize.py                 # 可视化示例脚本
 │   └── results.json                 # 求解结果存档
 │
-├── skill/                           # 🎯 55 个 Slash Commands（Claude Code Skills）
+├── skill/                           # 🎯 56 个 skill 文件（Claude Code Skills）
 │   ├── README.md                    # Skills 索引与使用说明
 │   │
-│   ├── core/                        # 📦 16 个核心建模 Skills
+│   ├── core/                        # 📦 17 个核心建模 Skills
 │   │   ├── math_model_skill.md      # 五层能力架构总控
 │   │   ├── model_selector.md        # 18 种问题类型 → 模型决策树
 │   │   ├── model_library.md         # 15 个模块模型库速查
@@ -257,6 +264,15 @@ math-model-agent/
 │       ├── verify-claims.md         # 声明验证
 │       └── permission-check.md      # 权限检查
 │
+├── skills/                          # 🤖 7 个标准 Codex Skills
+│   ├── select-model/                # 赛题分类与模型选型
+│   ├── solve-model/                 # 建模、求解与验证
+│   ├── analyze-model-data/          # 数据分析与可复现输出
+│   ├── research-model-literature/   # 文献检索与引用核验
+│   ├── make-model-figures/          # 科研绘图与视觉检查
+│   ├── write-model-paper/           # 建模论文写作
+│   └── review-model-paper/          # 提交前论文审查
+│
 ├── template/                        # 📐 国赛 LaTeX 论文排版模板
 │   └── cume-template.tex            # 完整模板（标题等级/角标引用/代码框/三线表）
 │
@@ -277,7 +293,7 @@ math-model-agent/
 ├── paper/                           # 📄 论文输出目录（空，编译产物存放处）
 │
 ├── 使用说明.md                      # 📖 完整使用指南（含工作流演示）
-├── CHANGELOG.md                     # 📋 版本历史（v1.0 ~ v6.1）
+├── CHANGELOG.md                     # 📋 版本历史
 └── README.md                        # 📖 本文件
 ```
 
@@ -288,36 +304,63 @@ math-model-agent/
 ### 1. 克隆仓库 / Clone
 
 ```bash
-git clone https://github.com/<your-username>/math-model-agent.git
+git clone https://github.com/chengziyue1222/math-model-agent.git
 cd math-model-agent
 ```
 
 ### 2. 安装依赖 / Install Dependencies
 
+需要 Python 3.10 或更高版本。
+
 ```bash
-pip install numpy scipy matplotlib pandas scikit-learn networkx
+python -m pip install .
+
+# 开发与测试环境
+python -m pip install ".[dev]"
 ```
 
 ### 3. 使用算法库 / Use Algorithm Library
 
 ```python
 import sys
+import numpy as np
 sys.path.insert(0, 'code')
 from algorithms import *
 
 # AHP 层次分析法
-weights, CR = ahp(comparison_matrix)
+weights, lambda_max, CR, passed = ahp_weight(comparison_matrix)
 
 # GM(1,1) 灰色预测
-predicted = gm11(data, predict_count=5)
+predicted = gm11_predict(data, predict_count=5)
 
 # 遗传算法优化
-best_x, best_f = genetic_algorithm(objective, bounds)
+lower = np.array([-5.0, -5.0])
+upper = np.array([5.0, 5.0])
+def sphere(X):
+    return np.sum(X**2, axis=1)
+result = genetic_algorithm(sphere, 2, (lower, upper), vectorized=True)
 ```
 
-### 4. 使用 Skills / Use Skills
+### 4. 使用 Codex Skills / Use Codex Skills
 
-在 Claude Code 中切换到项目目录，直接输入 slash command：
+标准技能包位于 `skills/`。安装全部技能：
+
+```bash
+python scripts/install_skills.py
+```
+
+也可只安装指定技能，或先预览目标路径：
+
+```bash
+python scripts/install_skills.py select-model solve-model
+python scripts/install_skills.py --dry-run
+```
+
+安装后可使用 `$select-model`、`$solve-model`、`$review-model-paper` 等名称调用。`pip install .` 仅安装可导入的 `algorithms` Python 包；Skill、论文模板和旧版命令文档是仓库配套资源，不混入 wheel。源码分发包仍保留这些资源，便于完整归档。
+
+### 5. 使用旧版命令文档 / Use Legacy Commands
+
+`skill/` 保留 Claude Code 风格的旧版命令文档：
 
 ```
 > /model-selector "某城市交通流量预测问题"
@@ -334,6 +377,7 @@ best_x, best_f = genetic_algorithm(objective, bounds)
 | 司守奎《数学建模算法与应用》第3版 | 534页，16章 | 模型决策引擎、统一建模流程、Python 映射 |
 | zhanwen/MathModel (10,588⭐) | 32 张思维导图、竞赛论文 | 10 大算法类别、竞赛工作流 |
 | MathModelAgent | 6 阶段工作流 | 科研图表模板、论文校验 |
+| Starry-cz/academic-data-visualization | Apache-2.0 出版级绘图 Skill | 图表契约、版面规格、无障碍配色与多阶段 QA 思路 |
 | Giyn/MathematicalModelingAlgorithm | TOPSIS/DEA/PCA/RSR | 综合评价方法实现 |
 | 国赛/美赛获奖论文 (12篇) | 实战模式提炼 | 摘要模板、验证体系、讨论结构 |
 
