@@ -41,10 +41,11 @@ jobs:
         run: python -m ruff check code skills scripts
 
       - name: Run tests with coverage
-        run: >-
-          python -m pytest code/tests -v --tb=short
-          --cov=algorithms --cov-report=term-missing --cov-report=xml
-          --cov-fail-under=40
+        run: |
+          python -m pytest code/tests -v --tb=short \
+            --cov=algorithms --cov-report=term-missing --cov-report=xml \
+            --cov-report=json:coverage.json
+          python scripts/check_coverage.py coverage.json
 
       - name: Run end-to-end figure generation
         run: python -m pytest code/tests/test_visualize.py -q

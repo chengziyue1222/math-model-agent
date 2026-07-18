@@ -182,6 +182,15 @@ python scripts/run_manifest.py validate path/to/project/run-manifest.json \
 
 可从 `schemas/run-manifest.example.json` 复制精简运行规格；正式清单遵循 `schemas/run-manifest.schema.json`。
 
+### ✅ 覆盖率质量门 / Coverage Gate
+
+CI 按 `coverage-policy.json` 强制执行：算法包总体语句覆盖率不低于 65%，`graph_theory.py`、`image_processing.py`、`math_programming.py`、`metaheuristic.py` 和 `monte_carlo.py` 五个关键模块分别不低于 80%。纯示范入口不计入生产覆盖率；模块本身不因覆盖率较低而被整体排除。
+
+```bash
+python -m pytest code/tests --cov=algorithms --cov-report=json:coverage.json
+python scripts/check_coverage.py coverage.json
+```
+
 ---
 
 ## 项目结构 / Project Structure
