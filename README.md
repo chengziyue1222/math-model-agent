@@ -157,6 +157,17 @@ Day 4: 论文撰写 → 图表制作 → 结果验证
 Day 5: 全文审校 → 格式排版 → 最终检查
 ```
 
+### 🧪 历年赛题基准 / Historical Benchmarks (`benchmarks/`)
+
+仓库包含 2020--2023 年 CUMCM A/B/C 共 12 道基准题的元数据，不复制完整题面，只链接官方赛题归档。每个案例定义模型族、最低基线、验证目标和常见失败模式，并使用统一的 100 分量表与四项硬门评分。
+
+```bash
+python scripts/validate_benchmarks.py
+python scripts/score_benchmark.py path/to/scorecard.json
+```
+
+评分必须链接实际证据文件；高分不能绕过来源可追溯、结果可复现、完整回答子问题和禁止伪造证据四项硬门。
+
 ---
 
 ## 项目结构 / Project Structure

@@ -2,6 +2,7 @@ include LICENSE
 include README.md
 include requirements.txt
 recursive-include skills *
+recursive-include benchmarks *.yaml *.json
 recursive-include skill *.md
 recursive-include patterns *.md
 recursive-include template *.tex

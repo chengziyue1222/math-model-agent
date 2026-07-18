@@ -34,6 +34,9 @@ jobs:
       - name: Validate Codex Skills
         run: python scripts/validate_skills.py
 
+      - name: Validate historical benchmark catalog
+        run: python scripts/validate_benchmarks.py
+
       - name: Run Ruff
         run: python -m ruff check code skills scripts
 
