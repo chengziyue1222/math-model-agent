@@ -1,32 +1,25 @@
 # /deploy
 
 ## 用途
-将Quarto渲染为HTML并同步到docs/用于GitHub Pages部署
+
+渲染并检查 Quarto 输出。同步 `docs/`、提交、推送和启用 GitHub Pages 均为需要单独授权的发布操作。
 
 ## 用法
+
 ```bash
 /deploy Lecture1
 /deploy all
 ```
 
-## 功能说明
-- 渲染Quarto文件为HTML
-- 同步到docs/目录
-- 配置GitHub Pages部署
-- 自动更新索引页面
+## 默认流程
 
-## 参数
-- `filename`: 文件名或"all"部署所有文件
+1. 检查 Quarto、依赖、入口文件和输出目录。
+2. 在本地渲染指定文件。
+3. 检查链接、资源、引用、控制台错误和关键页面视觉效果。
+4. 报告生成文件和部署前阻断项。
 
-## 示例
-```bash
-/deploy Lecture01
-/deploy all
-/deploy index.qmd
-```
+## 发布边界
 
-## 部署流程
-1. 渲染Quarto为HTML
-2. 复制到docs/目录
-3. 更新导航索引
-4. 提交到Git仓库
+- 未经明确要求，不覆盖 `docs/`、不修改 Pages 配置、不提交、不推送。
+- 发布前重述仓库、分支、输出目录和将被覆盖的文件。
+- 失败时保留日志，不把部分渲染结果描述为成功部署。

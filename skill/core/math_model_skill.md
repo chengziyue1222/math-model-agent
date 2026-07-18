@@ -48,7 +48,14 @@
 | 科研图表 | `sci_figures` | 泰勒图、云雨图、ROC、SHAP等11种 |
 | 论文检查 | `paper_check` | 结构检查、占位符检测、数值一致性 |
 
-详见 `skill/core/model_library.md` 和 `skill/core/model_selector.md`
+详见 `skill/core/model_library.md`、`skill/core/model_selector.md` 和 **`skill/core/algorithm_api.md`**（算法库 API 速查）
+
+### 快速导入
+
+```python
+import sys; sys.path.insert(0, 'code')
+from algorithms import gm11_predict, topsis, genetic_algorithm, dijkstra
+```
 
 ---
 
@@ -177,7 +184,21 @@
 
 ### 3.4 代码实现
 
-- 变量名与公式符号一致
+优先使用 `code/algorithms/` 算法库，避免重复实现：
+
+| 建模步骤 | 推荐函数 |
+|---------|---------|
+| 灰色预测 | `gm11_predict(data, predict_count=n)` |
+| 综合评价 | `topsis(matrix, weights, positive_indicators)` |
+| 权重确定 | `ahp_weight(matrix)` / `entropy_weight(data)` |
+| 优化求解 | `genetic_algorithm` / `linear_programming` |
+| 路径规划 | `dijkstra(graph, source)` |
+| 回归拟合 | `linear_regression(x, y)` |
+| 数值积分 | `monte_carlo_integration(f, a, b)` |
+
+完整 API 见 `skill/core/algorithm_api.md`
+
+实现规范：
 - 有注释说明对应公式编号
 - 有输入输出说明
 - 模块化设计

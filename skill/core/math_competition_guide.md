@@ -266,9 +266,9 @@ description: 数学建模竞赛完整指南 — 选题策略、时间规划、�
 | 元启发式 | `algorithms/metaheuristic.py` | ✅ 完整覆盖 |
 | 评价方法 | `algorithms/evaluation.py` | ✅ 完整覆盖 (TOPSIS/DEA/PCA/RSR/FAHP) |
 | 元胞自动机 | `algorithms/cellular_automata.py` | ✅ 完整覆盖 |
-| 蒙特卡罗 | `algorithms/evaluation.py` | 🔶 内置在评价方法中，可独立扩展 |
-| 线性/整数规划 | scipy + pulp | 🔶 需要时直接调用 |
-| 图像处理 | — | ❌ 未覆盖，可用 OpenCV |
+| 蒙特卡罗 | `code/algorithms/monte_carlo.py` | ✅ 完整覆盖（积分、优化、排队、随机游走） |
+| 线性/整数规划 | `code/algorithms/math_programming.py` | ✅ 完整覆盖（LP/MILP/目标/NLP） |
+| 图像处理 | `code/algorithms/image_processing.py` | ✅ 基础覆盖（滤波、边缘、分割、形态学、特征） |
 
 ---
 
