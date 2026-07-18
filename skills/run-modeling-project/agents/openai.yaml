@@ -1,0 +1,4 @@
+interface:
+  display_name: "Run Modeling Project"
+  short_description: "Gate, resume, and hand off modeling projects"
+  default_prompt: "Use $run-modeling-project to run this modeling project through reproducible stage gates."

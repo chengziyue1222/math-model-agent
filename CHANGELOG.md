@@ -2,6 +2,11 @@
 
 ## Unreleased
 
+### 总控建模 Skill
+
+- 新增 `$run-modeling-project`，按 intake、analysis、modeling、validation、writing、review、release 七阶段协调现有专项 Skills。
+- 新增带文件哈希的阶段门状态工具，支持阻塞记录、断点恢复、严格单步推进和标准化交接，禁止以叙述替代证据。
+
 ### 运行可追溯性
 
 - 新增统一 `run-manifest.json` 规范、示例、生成器和完整性校验器，记录数据哈希、模型版本、参数、种子、Git/运行环境、指标、失败尝试、局限与产物路径。

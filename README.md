@@ -93,7 +93,7 @@ rank = topsis(decision_matrix, weights, benefit_indicators)
 
 **Codex 标准 Skills (`skills/`)：**
 
-`select-model`、`solve-model`、`analyze-model-data`、`research-model-literature`、`make-model-figures`、`write-model-paper`、`review-model-paper`。每个技能均包含可触发的 `SKILL.md` 和 `agents/openai.yaml`，详细知识按需放在 `references/`，确定性检查放在 `scripts/`。其中 `make-model-figures` 以建模证据链为中心，覆盖数据概览、假设、验证、比较、灵敏度、稳健性、优化和决策图，并支持 PDF/SVG/450 DPI PNG/JSON 可追溯交付。
+`run-modeling-project`、`select-model`、`solve-model`、`analyze-model-data`、`research-model-literature`、`make-model-figures`、`write-model-paper`、`review-model-paper`。每个技能均包含可触发的 `SKILL.md` 和 `agents/openai.yaml`，详细知识按需放在 `references/`，确定性检查放在 `scripts/`。其中 `run-modeling-project` 负责严格阶段门、断点恢复、运行清单和交接，其余七个 Skill 承担具体建模任务。
 
 原 `skill/` 目录继续保留 56 个 Claude Code 风格命令文档，作为迁移期知识库。
 
@@ -298,7 +298,8 @@ math-model-agent/
 │       ├── verify-claims.md         # 声明验证
 │       └── permission-check.md      # 权限检查
 │
-├── skills/                          # 🤖 7 个标准 Codex Skills
+├── skills/                          # 🤖 8 个标准 Codex Skills
+│   ├── run-modeling-project/        # 阶段门、恢复与交接总控
 │   ├── select-model/                # 赛题分类与模型选型
 │   ├── solve-model/                 # 建模、求解与验证
 │   ├── analyze-model-data/          # 数据分析与可复现输出
