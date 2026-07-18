@@ -25,10 +25,33 @@ class GameOfLife:
     - 死细胞周围恰好 3 个邻居 → 复活
     """
 
-    def __init__(self, size: Tuple[int, int] = (50, 50)):
+    def __init__(self, size: Tuple[int, int] = (50, 50),
+                 rows: Optional[int] = None, cols: Optional[int] = None):
+        if rows is not None and cols is not None:
+            size = (rows, cols)
         self.h, self.w = size
         self.grid = np.zeros((self.h, self.w), dtype=int)
         self.history = []
+
+    def initialize(self, center: bool = False, random: bool = False, seed: Optional[int] = None):
+        """初始化网格。center=中心单细胞, random=随机密度。"""
+        if seed is not None:
+            np.random.seed(seed)
+        if random:
+            self.random_init()
+        elif center:
+            self.grid = np.zeros((self.h, self.w), dtype=int)
+            self.grid[self.h // 2, self.w // 2] = 1
+            self.history = [self.grid.copy()]
+        else:
+            self.grid = np.zeros((self.h, self.w), dtype=int)
+            self.history = [self.grid.copy()]
+
+    def evolve(self, steps: int = 1) -> np.ndarray:
+        """执行多步演化。"""
+        for _ in range(steps):
+            self.step()
+        return self.grid
 
     def random_init(self, density: float = 0.3):
         """随机初始化"""
@@ -137,8 +160,28 @@ class ElementaryCA:
         self.rule = rule
         self.size = size
         self.state = np.zeros(size, dtype=int)
-        self.state[size // 2] = 1  # 中间一个活细胞
-        self.history = [self.state.copy()]
+        self._history = []
+
+    @property
+    def history(self) -> np.ndarray:
+        return np.array(self._history)
+
+    def initialize(self, center: bool = False, random: bool = False, seed: Optional[int] = None):
+        """初始化状态。"""
+        if seed is not None:
+            np.random.seed(seed)
+        self.state = np.zeros(self.size, dtype=int)
+        if random:
+            self.state = (np.random.rand(self.size) < 0.5).astype(int)
+        elif center:
+            self.state[self.size // 2] = 1
+        self._history = [self.state.copy()]
+
+    def evolve(self, steps: int = 50) -> np.ndarray:
+        """执行多步演化并返回历史。"""
+        for _ in range(steps):
+            self.step()
+        return self.history
 
     def step(self) -> np.ndarray:
         new_state = np.zeros(self.size, dtype=int)
@@ -150,17 +193,17 @@ class ElementaryCA:
             idx = left * 4 + center * 2 + right
             new_state[i] = (self.rule >> idx) & 1
         self.state = new_state
-        self.history.append(self.state.copy())
+        self._history.append(self.state.copy())
         return self.state
 
     def run(self, n_steps: int = 50):
         for _ in range(n_steps):
             self.step()
-        return np.array(self.history)
+        return self.history
 
     def plot(self):
         plt.figure(figsize=(12, 6))
-        plt.imshow(np.array(self.history), cmap='binary', aspect='auto')
+        plt.imshow(self.history, cmap='binary', aspect='auto')
         plt.title(f'Elementary CA - Rule {self.rule}')
         plt.xlabel('Position')
         plt.ylabel('Time')

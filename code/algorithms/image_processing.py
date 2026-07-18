@@ -23,8 +23,6 @@
 from __future__ import annotations
 
 import numpy as np
-from typing import Optional
-from dataclasses import dataclass
 
 
 # ========== 基础操作 ==========
@@ -43,6 +41,15 @@ def _normalize(image: np.ndarray) -> np.ndarray:
     if img.max() > 0:
         img = img / img.max() * 255
     return img.astype(np.uint8)
+
+
+def _normalize_unit(values: np.ndarray) -> np.ndarray:
+    """Safely scale a response magnitude to [0, 1]."""
+    values = np.asarray(values, dtype=np.float64)
+    scale = np.max(np.abs(values))
+    if scale == 0 or not np.isfinite(scale):
+        return np.zeros_like(values)
+    return values / scale
 
 
 # ========== 噪声滤波 ==========
@@ -105,7 +112,9 @@ def noise_filter(
         raise ValueError(f"未知滤波方法: {method}")
 
 
-def _convolve2d(image: np.ndarray, kernel: np.ndarray) -> np.ndarray:
+def _convolve2d(
+    image: np.ndarray, kernel: np.ndarray, *, normalize_output: bool = True
+) -> np.ndarray:
     """2D卷积"""
     kh, kw = kernel.shape
     pad_h, pad_w = kh // 2, kw // 2
@@ -115,7 +124,7 @@ def _convolve2d(image: np.ndarray, kernel: np.ndarray) -> np.ndarray:
         for j in range(image.shape[1]):
             region = padded[i:i+kh, j:j+kw]
             result[i, j] = np.sum(region * kernel)
-    return _normalize(result)
+    return _normalize(result) if normalize_output else result
 
 
 # ========== 边缘检测 ==========
@@ -143,41 +152,41 @@ def edge_detection(
     if method == "sobel":
         gx = np.array([[-1, 0, 1], [-2, 0, 2], [-1, 0, 1]], dtype=float)
         gy = gx.T
-        ex = _convolve2d(gray, gx)
-        ey = _convolve2d(gray, gy)
+        ex = _convolve2d(gray, gx, normalize_output=False)
+        ey = _convolve2d(gray, gy, normalize_output=False)
         magnitude = np.sqrt(ex.astype(float)**2 + ey.astype(float)**2)
-        magnitude = magnitude / magnitude.max()
+        magnitude = _normalize_unit(magnitude)
 
     elif method == "roberts":
         gx = np.array([[1, 0], [0, -1]], dtype=float)
         gy = np.array([[0, 1], [-1, 0]], dtype=float)
-        ex = _convolve2d(gray, gx)
-        ey = _convolve2d(gray, gy)
+        ex = _convolve2d(gray, gx, normalize_output=False)
+        ey = _convolve2d(gray, gy, normalize_output=False)
         magnitude = np.sqrt(ex.astype(float)**2 + ey.astype(float)**2)
-        magnitude = magnitude / magnitude.max()
+        magnitude = _normalize_unit(magnitude)
 
     elif method == "prewitt":
         gx = np.array([[-1, 0, 1], [-1, 0, 1], [-1, 0, 1]], dtype=float)
         gy = gx.T
-        ex = _convolve2d(gray, gx)
-        ey = _convolve2d(gray, gy)
+        ex = _convolve2d(gray, gx, normalize_output=False)
+        ey = _convolve2d(gray, gy, normalize_output=False)
         magnitude = np.sqrt(ex.astype(float)**2 + ey.astype(float)**2)
-        magnitude = magnitude / magnitude.max()
+        magnitude = _normalize_unit(magnitude)
 
     elif method == "laplacian":
         kernel = np.array([[0, 1, 0], [1, -4, 1], [0, 1, 0]], dtype=float)
-        magnitude = _convolve2d(gray, kernel).astype(float)
-        magnitude = np.abs(magnitude) / np.abs(magnitude).max()
+        magnitude = _convolve2d(gray, kernel, normalize_output=False)
+        magnitude = _normalize_unit(np.abs(magnitude))
 
     elif method == "canny":
         # 简化版Canny：高斯平滑 + Sobel + 非极大值抑制 + 双阈值
         blurred = noise_filter(gray, method='gaussian', kernel_size=5, sigma=1.4)
         gx = np.array([[-1, 0, 1], [-2, 0, 2], [-1, 0, 1]], dtype=float)
         gy = gx.T
-        ex = _convolve2d(blurred, gx).astype(float)
-        ey = _convolve2d(blurred, gy).astype(float)
+        ex = _convolve2d(blurred, gx, normalize_output=False)
+        ey = _convolve2d(blurred, gy, normalize_output=False)
         magnitude = np.sqrt(ex**2 + ey**2)
-        magnitude = magnitude / magnitude.max()
+        magnitude = _normalize_unit(magnitude)
 
         # 非极大值抑制 (简化版)
         angle = np.arctan2(ey, ex) * 180 / np.pi
@@ -260,8 +269,6 @@ def image_segmentation(
     elif method == "kmeans":
         # K-means聚类分割
         pixels = gray.ravel().astype(np.float64)
-        rng = np.random.default_rng(42)
-
         # 初始化聚类中心
         centers = np.linspace(pixels.min(), pixels.max(), n_clusters)
 
@@ -432,11 +439,6 @@ def feature_extraction(image: np.ndarray) -> dict:
     mu20 = central_moment(2, 0)
     mu02 = central_moment(0, 2)
     mu11 = central_moment(1, 1)
-    mu30 = central_moment(3, 0)
-    mu03 = central_moment(0, 3)
-    mu21 = central_moment(2, 1)
-    mu12 = central_moment(1, 2)
-
     # 归一化中心矩
     def eta(p, q):
         return central_moment(p, q) / (m00 ** (1 + (p + q) / 2))
@@ -446,6 +448,17 @@ def feature_extraction(image: np.ndarray) -> dict:
     h2 = (eta(2, 0) - eta(0, 2))**2 + 4 * eta(1, 1)**2
     h3 = (eta(3, 0) - 3*eta(1, 2))**2 + (3*eta(2, 1) - eta(0, 3))**2
     h4 = (eta(3, 0) + eta(1, 2))**2 + (eta(2, 1) + eta(0, 3))**2
+    h5 = (eta(3, 0) - 3*eta(1, 2)) * (eta(3, 0) + eta(1, 2)) * \
+         ((eta(3, 0) + eta(1, 2))**2 - 3*(eta(2, 1) + eta(0, 3))**2) + \
+         (3*eta(2, 1) - eta(0, 3)) * (eta(2, 1) + eta(0, 3)) * \
+         (3*(eta(3, 0) + eta(1, 2))**2 - (eta(2, 1) + eta(0, 3))**2)
+    h6 = (eta(3, 0) + eta(1, 2)) * ((eta(3, 0) + eta(1, 2))**2 - 3*(eta(2, 1) + eta(0, 3))**2) + \
+         (eta(0, 3) - 3*eta(2, 1)) * (eta(2, 1) + eta(0, 3)) * \
+         (3*(eta(3, 0) + eta(1, 2))**2 - (eta(2, 1) + eta(0, 3))**2)
+    h7 = (3*eta(2, 1) - eta(0, 3)) * (eta(3, 0) + eta(1, 2)) * \
+         ((eta(3, 0) + eta(1, 2))**2 - (eta(2, 1) + eta(0, 3))**2) + \
+         (eta(3, 0) - 3*eta(1, 2)) * (eta(2, 1) + eta(0, 3)) * \
+         (3*(eta(3, 0) + eta(1, 2))**2 - (eta(2, 1) + eta(0, 3))**2)
 
     # 纹理特征 (灰度共生矩阵简化版)
     glcm = np.zeros((16, 16), dtype=np.int32)
@@ -469,7 +482,8 @@ def feature_extraction(image: np.ndarray) -> dict:
         "central_moments": {
             "mu20": float(mu20), "mu02": float(mu02), "mu11": float(mu11),
         },
-        "hu_moments": [float(h1), float(h2), float(h3), float(h4)],
+        "hu_moments": [float(h1), float(h2), float(h3), float(h4),
+                       float(h5), float(h6), float(h7)],
         "texture": {
             "contrast": float(contrast),
             "energy": float(energy),

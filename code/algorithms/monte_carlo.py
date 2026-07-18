@@ -256,31 +256,40 @@ def monte_carlo_simulation(
         ...     n_samples=10000
         ... )
     """
-    rng = np.random.default_rng(seed)
-    n_inputs = len(input_distributions)
+    def _simulate() -> np.ndarray:
+        selected_vectorized_model = vectorized_model
 
-    # 尝试向量化模式
-    if vectorized_model is not None:
-        try:
-            # 批量生成所有输入
-            all_inputs = np.column_stack([
-                np.array([dist() for _ in range(n_samples)])
-                for dist in input_distributions
-            ])  # shape: (n_samples, n_inputs)
-            outputs = np.asarray(vectorized_model(all_inputs))
-            if outputs.ndim == 1:
-                outputs = outputs.reshape(-1, 1)
-        except Exception:
-            vectorized_model = None  # fallback
+        # 尝试向量化模式
+        if selected_vectorized_model is not None:
+            try:
+                all_inputs = np.column_stack([
+                    np.array([dist() for _ in range(n_samples)])
+                    for dist in input_distributions
+                ])
+                batch_outputs = np.asarray(selected_vectorized_model(all_inputs))
+                if batch_outputs.shape[0] != n_samples:
+                    raise ValueError("vectorized_model 的输出行数必须等于 n_samples")
+                return batch_outputs
+            except Exception:
+                # 兼容不支持批量输入的模型，回退到逐点模式。
+                pass
 
-    # 逐点模式
-    if vectorized_model is None:
-        outputs = []
+        point_outputs = []
         for _ in range(n_samples):
             inputs = np.array([dist() for dist in input_distributions])
-            output = model(inputs)
-            outputs.append(output)
-        outputs = np.array(outputs)
+            point_outputs.append(model(inputs))
+        return np.asarray(point_outputs)
+
+    # input_distributions 的既有 API 是零参数 callable，许多调用方内部使用
+    # np.random。临时设置并恢复全局状态，既保证 seed 可复现，也不污染调用方。
+    legacy_state = np.random.get_state() if seed is not None else None
+    try:
+        if seed is not None:
+            np.random.seed(seed)
+        outputs = _simulate()
+    finally:
+        if legacy_state is not None:
+            np.random.set_state(legacy_state)
 
     if outputs.ndim == 1:
         outputs = outputs.reshape(-1, 1)
@@ -506,7 +515,10 @@ def queuing_mmsk(
     sim_wq = np.mean(wait_times) if wait_times else 0
     sim_w = sim_wq + 1 / mu
     sim_pk = rejected / n_customers if n_customers > 0 else 0
-    sim_util = 1 - (np.sum(np.diff(np.concatenate([[0], departure_times])) > 1.0 / mu) / n_customers) if departure_times else 0
+    # 利用率 = 总服务时间 / (服务台数 × 总仿真时长)
+    total_busy = float(np.sum(service_times[:len(departure_times)]))
+    total_time = float(max(departure_times)) if departure_times else 0.0
+    sim_util = total_busy / (S * total_time) if total_time > 0 else 0.0
 
     return {
         'rho': rho,
@@ -520,6 +532,7 @@ def queuing_mmsk(
         'sim_avg_wait_time': float(sim_wq),
         'sim_avg_sojourn_time': float(sim_w),
         'sim_pk': float(sim_pk),
+        'sim_utilization': float(sim_util),
         'n_customers': n_customers,
         'n_rejected': rejected,
     }

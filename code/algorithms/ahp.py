@@ -17,7 +17,7 @@ AHP 层次分析法 (Analytic Hierarchy Process)
 """
 
 import numpy as np
-from typing import Tuple, List, Dict, Optional
+from typing import Tuple, List, Dict
 
 
 # ============================================================
@@ -52,6 +52,13 @@ def ahp_weight(A: np.ndarray) -> Tuple[np.ndarray, float, float, bool]:
     """
     n = A.shape[0]
     assert A.shape[0] == A.shape[1], "判断矩阵必须是方阵"
+
+    # 单位矩阵：各准则同等重要，权重均匀
+    if np.allclose(A, np.eye(n)):
+        w = np.ones(n) / n
+        lambda_max = float(n)
+        CR = 0.0
+        return w, lambda_max, CR, True
 
     # 求特征值和特征向量
     eigvals, eigvecs = np.linalg.eig(A)

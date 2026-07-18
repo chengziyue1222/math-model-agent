@@ -33,6 +33,7 @@ def linear_regression(X: np.ndarray, y: np.ndarray,
     dict : 系数、R²、调整R²、F统计量、残差等
     """
     X, y = np.asarray(X, dtype=float), np.asarray(y, dtype=float)
+    univariate = X.ndim == 1
     if X.ndim == 1:
         X = X.reshape(-1, 1)
     n, p = X.shape
@@ -54,14 +55,19 @@ def linear_regression(X: np.ndarray, y: np.ndarray,
     R2_adj = 1 - (1 - R2) * (n - 1) / (n - p_eff - 1) if n > p_eff + 1 else R2
     F = (SSR / p_eff) / (SSE / (n - p_eff - 1)) if n > p_eff + 1 else np.inf
 
-    return {
+    result = {
         'coefficients': beta,
         'y_hat': y_hat,
         'residuals': residuals,
         'R2': R2, 'R2_adj': R2_adj,
         'F': F, 'SSE': SSE, 'SSR': SSR, 'SST': SST,
-        'n': n, 'p': p_eff
+        'n': n, 'p': p_eff,
     }
+    if univariate and p == 1:
+        result['slope'] = float(beta[-1]) if add_intercept else float(beta[0])
+        result['intercept'] = float(beta[0]) if add_intercept else 0.0
+        result['r2'] = R2
+    return result
 
 
 # ============================================================
@@ -92,6 +98,7 @@ def polynomial_regression(x: np.ndarray, y: np.ndarray, degree: int = 2) -> Dict
         'y_hat': y_hat,
         'residuals': residuals,
         'R2': R2,
+        'r2': R2,
         'degree': degree,
         'predict': lambda x_new: np.polyval(coeffs, x_new)
     }

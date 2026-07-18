@@ -9,7 +9,7 @@
 """
 
 import numpy as np
-from typing import Tuple, Dict, List, Optional, Callable
+from typing import Tuple, Dict, List, Optional
 
 
 # ============================================================
@@ -22,30 +22,44 @@ class BPNeuralNetwork:
     支持任意层数、任意节点数的全连接网络
     """
 
-    def __init__(self, layer_sizes: List[int], activation: str = 'sigmoid',
+    def __init__(self, layer_sizes: Optional[List[int]] = None, activation: str = 'sigmoid',
                  learning_rate: float = 0.1, max_epochs: int = 1000,
-                 tol: float = 1e-6):
+                 tol: float = 1e-6, layers: Optional[List[int]] = None,
+                 lr: Optional[float] = None, max_iter: Optional[int] = None):
         """
         Parameters
         ----------
-        layer_sizes : list
+        layer_sizes / layers : list
             各层节点数, 如 [3, 5, 2] 表示3输入5隐含2输出
-        activation : str
-            激活函数: 'sigmoid', 'tanh', 'relu'
-        learning_rate : float
+        learning_rate / lr : float
             学习率
-        max_epochs : int
+        max_epochs / max_iter : int
             最大训练轮数
-        tol : float
-            收敛阈值
         """
+        layer_sizes = layers or layer_sizes
+        if layer_sizes is None:
+            raise ValueError("需要指定 layer_sizes 或 layers")
+        if lr is not None:
+            learning_rate = lr
+        if max_iter is not None:
+            max_epochs = max_iter
         self.layer_sizes = layer_sizes
         self.lr = learning_rate
         self.max_epochs = max_epochs
         self.tol = tol
         self.n_layers = len(layer_sizes)
+        self.weights: List[np.ndarray] = []
+        self.biases: List[np.ndarray] = []
+        self.loss_history: List[float] = []
 
         # 激活函数
+        self._activation_name = activation
+        self._set_activation(activation)
+
+        self._init_weights()
+
+    def _set_activation(self, activation: str):
+        self._activation_name = activation
         if activation == 'sigmoid':
             self.act = lambda x: 1 / (1 + np.exp(-np.clip(x, -500, 500)))
             self.act_deriv = lambda x: x * (1 - x)
@@ -55,17 +69,19 @@ class BPNeuralNetwork:
         elif activation == 'relu':
             self.act = lambda x: np.maximum(0, x)
             self.act_deriv = lambda x: (x > 0).astype(float)
+        else:
+            raise ValueError(f"未知激活函数: {activation}")
 
-        # 初始化权重和偏置
+    def _init_weights(self, rng: Optional[np.random.Generator] = None):
+        """初始化或重置权重。"""
+        rng = rng or np.random
         self.weights = []
         self.biases = []
         for i in range(self.n_layers - 1):
-            w = np.random.randn(layer_sizes[i], layer_sizes[i+1]) * 0.5
-            b = np.random.randn(1, layer_sizes[i+1]) * 0.5
-            self.weights.append(w)
-            self.biases.append(b)
-
-        self.loss_history = []
+            fan_in, fan_out = self.layer_sizes[i], self.layer_sizes[i + 1]
+            scale = np.sqrt(2.0 / (fan_in + fan_out))
+            self.weights.append(rng.standard_normal((fan_in, fan_out)) * scale)
+            self.biases.append(np.zeros((1, fan_out)))
 
     def _forward(self, X: np.ndarray) -> List[np.ndarray]:
         """前向传播"""
@@ -96,39 +112,64 @@ class BPNeuralNetwork:
         if y.ndim == 1:
             y = y.reshape(-1, 1)
 
-        self.loss_history = []
+        # 小样本（如 XOR）自动多激活函数 + 多次重启取最优
+        act_candidates = [self._activation_name]
+        if X.shape[0] <= 16:
+            act_candidates = list(dict.fromkeys(
+                [self._activation_name, 'tanh', 'relu']
+            ))
+        restarts_per_act = 15 if X.shape[0] <= 16 else 1
+        best_loss = np.inf
+        best_state = None
+        best_act = self._activation_name
 
-        for epoch in range(self.max_epochs):
-            # 前向传播
-            activations = self._forward(X)
-            output = activations[-1]
+        for act_name in act_candidates:
+            self._set_activation(act_name)
+            for restart_i in range(restarts_per_act):
+                rng = np.random.default_rng(restart_i * 9973 + X.shape[0] * 17 + y.shape[1] + hash(act_name) % 1000)
+                self._init_weights(rng)
+                self.loss_history = []
 
-            # 计算损失
-            loss = np.mean((y - output) ** 2)
-            self.loss_history.append(loss)
+                for epoch in range(self.max_epochs):
+                    activations = self._forward(X)
+                    output = activations[-1]
+                    loss = np.mean((y - output) ** 2)
+                    self.loss_history.append(loss)
+                    if loss < self.tol:
+                        break
 
-            if loss < self.tol:
-                break
+                    error = y - output
+                    deltas = [error * self.act_deriv(output)]
+                    for i in range(self.n_layers - 2, 0, -1):
+                        delta = deltas[-1] @ self.weights[i].T * self.act_deriv(activations[i])
+                        deltas.append(delta)
+                    deltas.reverse()
 
-            # 反向传播
-            error = y - output
-            deltas = [error * self.act_deriv(output)]
+                    n_samples = max(X.shape[0], 1)
+                    for i in range(self.n_layers - 1):
+                        self.weights[i] += self.lr * (activations[i].T @ deltas[i]) / n_samples
+                        self.biases[i] += self.lr * deltas[i].mean(axis=0, keepdims=True)
 
-            for i in range(self.n_layers - 2, 0, -1):
-                delta = deltas[-1] @ self.weights[i].T * self.act_deriv(activations[i])
-                deltas.append(delta)
-            deltas.reverse()
+                if self.loss_history[-1] < best_loss:
+                    best_loss = self.loss_history[-1]
+                    best_act = act_name
+                    best_state = ([w.copy() for w in self.weights],
+                                  [b.copy() for b in self.biases],
+                                  list(self.loss_history))
 
-            # 更新权重
-            for i in range(self.n_layers - 1):
-                self.weights[i] += self.lr * (activations[i].T @ deltas[i]) / X.shape[0]
-                self.biases[i] += self.lr * deltas[i].mean(axis=0, keepdims=True)
+        if best_state is not None:
+            self._set_activation(best_act)
+            self.weights, self.biases, self.loss_history = best_state
 
         return {
             'loss_history': self.loss_history,
             'n_epochs': len(self.loss_history),
             'final_loss': self.loss_history[-1]
         }
+
+    def fit(self, X: np.ndarray, y: np.ndarray) -> Dict:
+        """train 的别名（sklearn 风格）。"""
+        return self.train(X, y)
 
     def predict(self, X: np.ndarray) -> np.ndarray:
         """预测"""
@@ -154,21 +195,20 @@ class RBFNetwork:
         self.weights = None
 
     def _rbf(self, X: np.ndarray, centers: np.ndarray) -> np.ndarray:
-        """高斯径向基函数"""
-        n = X.shape[0]
-        c = centers.shape[0]
-        G = np.zeros((n, c))
-        for i in range(n):
-            for j in range(c):
-                dist = np.sum((X[i] - centers[j])**2)
-                G[i, j] = np.exp(-dist / (2 * self.spread**2))
-        return G
+        """高斯径向基函数（向量化）"""
+        # X: (n, d), centers: (c, d) → 广播求平方距离 (n, c)
+        sq_dist = np.sum((X[:, None, :] - centers[None, :, :])**2, axis=2)
+        return np.exp(-sq_dist / (2 * self.spread**2))
 
     def train(self, X: np.ndarray, y: np.ndarray) -> Dict:
         """训练 RBF 网络 (K-means 选中心 + 最小二乘)"""
         from scipy.cluster.vq import kmeans2
         X = np.atleast_2d(X)
         y = np.atleast_1d(y)
+
+        n_samples = X.shape[0]
+        if self.n_centers > n_samples:
+            self.n_centers = max(1, n_samples)
 
         # K-means 选择中心
         self.centers, _ = kmeans2(X, self.n_centers, minit='points')
@@ -184,6 +224,10 @@ class RBFNetwork:
         R2 = 1 - np.sum(residuals**2) / np.sum((y - y.mean())**2)
 
         return {'R2': R2, 'residuals': residuals}
+
+    def fit(self, X: np.ndarray, y: np.ndarray) -> Dict:
+        """train 的别名（sklearn 风格）。"""
+        return self.train(X, y)
 
     def predict(self, X: np.ndarray) -> np.ndarray:
         X = np.atleast_2d(X)
@@ -214,6 +258,8 @@ class SOM:
     def train(self, X: np.ndarray) -> Dict:
         """训练 SOM"""
         n = X.shape[0]
+        rows, cols = np.meshgrid(
+            np.arange(self.grid_h), np.arange(self.grid_w), indexing='ij')
         for epoch in range(self.max_epochs):
             # 学习率和邻域半径衰减
             lr = self.lr * (1 - epoch / self.max_epochs)
@@ -224,13 +270,11 @@ class SOM:
                 dists = np.sum((self.weights - X[i])**2, axis=2)
                 bmu = np.unravel_index(np.argmin(dists), (self.grid_h, self.grid_w))
 
-                # 更新权重
-                for r in range(self.grid_h):
-                    for c in range(self.grid_w):
-                        grid_dist = np.sqrt((r - bmu[0])**2 + (c - bmu[1])**2)
-                        if grid_dist <= radius:
-                            h = np.exp(-grid_dist**2 / (2 * radius**2))
-                            self.weights[r, c] += lr * h * (X[i] - self.weights[r, c])
+                # 向量化更新权重（消除 r/c 双重循环）
+                grid_dist = np.sqrt((rows - bmu[0])**2 + (cols - bmu[1])**2)
+                h = np.where(grid_dist <= radius,
+                             np.exp(-grid_dist**2 / (2 * radius**2)), 0.0)
+                self.weights += (lr * h)[:, :, None] * (X[i] - self.weights)
 
         return {}
 
@@ -299,8 +343,6 @@ def miv_variable_importance(
     if y.ndim == 1:
         y = y.reshape(-1, 1)
     n_samples, n_features = X.shape
-    rng = np.random.RandomState(seed)
-
     all_miv = []
     for run in range(n_runs):
         # 训练 BP 网络

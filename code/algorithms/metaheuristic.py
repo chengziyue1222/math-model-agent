@@ -7,7 +7,7 @@
 """
 
 import numpy as np
-from typing import Tuple, Dict, List, Optional, Callable
+from typing import Tuple, Dict, Callable
 
 
 # ============================================================
@@ -57,7 +57,7 @@ def genetic_algorithm(fitness_func: Callable,
     # 初始化种群
     pop = np.random.uniform(lower, upper, (pop_size, n_vars))
     best_x = pop[0].copy()
-    best_f = float(fitness_func(pop[0:1])[0]) if vectorized else float(fitness_func(pop[0]))
+    best_f = -np.inf if maximize else np.inf
     convergence = []
 
     def _eval_fitness(pop_arr):
@@ -74,21 +74,21 @@ def genetic_algorithm(fitness_func: Callable,
 
     for gen in range(max_gen):
         # 计算适应度（向量化）
-        fitness = _eval_fitness(pop)
-        if maximize:
-            fitness = -fitness  # 转为最小化
+        raw_fitness = _eval_fitness(pop)
+        selection_fitness = -raw_fitness if maximize else raw_fitness
 
         # 记录最优
-        min_idx = np.argmin(fitness)
-        if fitness[min_idx] < best_f:
-            best_f = fitness[min_idx]
-            best_x = pop[min_idx].copy()
-        convergence.append(-best_f if maximize else best_f)
+        best_idx = int(np.argmax(raw_fitness) if maximize else np.argmin(raw_fitness))
+        candidate_f = float(raw_fitness[best_idx])
+        if (maximize and candidate_f > best_f) or (not maximize and candidate_f < best_f):
+            best_f = candidate_f
+            best_x = pop[best_idx].copy()
+        convergence.append(best_f)
 
         # 锦标赛选择（向量化）
         idx1 = np.random.randint(0, pop_size, pop_size)
         idx2 = np.random.randint(0, pop_size, pop_size)
-        mask = fitness[idx1] < fitness[idx2]
+        mask = selection_fitness[idx1] < selection_fitness[idx2]
         winners = np.where(mask[:, None], pop[idx1], pop[idx2])
         pop = winners.copy()
 
@@ -116,7 +116,7 @@ def genetic_algorithm(fitness_func: Callable,
 
     return {
         'x': best_x,
-        'f': -best_f if maximize else best_f,
+        'f': best_f,
         'convergence': convergence,
         'n_generations': max_gen
     }
@@ -356,10 +356,9 @@ def ant_colony_tsp(dist_matrix: np.ndarray,
             visited = [np.random.randint(n)]
             for _ in range(n - 1):
                 u = visited[-1]
-                prob = np.zeros(n)
-                for v in range(n):
-                    if v not in visited:
-                        prob[v] = (tau[u, v] ** alpha) * (eta[u, v] ** beta)
+                # 向量化：用 mask 屏蔽已访问城市，避免 O(n) 内层循环
+                prob = (tau[u] ** alpha) * (eta[u] ** beta)
+                prob[visited] = 0.0
                 prob = prob / prob.sum()
                 next_city = np.random.choice(n, p=prob)
                 visited.append(next_city)
@@ -488,34 +487,34 @@ def artificial_fish_swarm(fitness_func: Callable,
 # ============================================================
 def example():
     """智能优化算法示例"""
-    # Rastrigin 函数 (多峰, 全局最优在原点)
+    # Rastrigin 函数 (多峰, 全局最优在原点, 最小值为 0)
     def rastrigin(x):
         A = 10
-        return -(A * len(x) + sum(xi**2 - A * np.cos(2*np.pi*xi) for xi in x))
+        return A * len(x) + sum(xi**2 - A * np.cos(2*np.pi*xi) for xi in x)
 
     n_vars = 5
     bounds = (np.full(n_vars, -5.12), np.full(n_vars, 5.12))
 
-    # GA
+    # GA（默认 minimize）
     print("=" * 60)
     print("示例1: 遗传算法 — Rastrigin 函数")
     print("=" * 60)
-    r = genetic_algorithm(rastrigin, n_vars, bounds, maximize=True)
+    r = genetic_algorithm(rastrigin, n_vars, bounds)
     print(f"  最优值: {r['f']:.4f}, 最优解: {r['x'].round(4)}")
 
-    # PSO
+    # PSO（默认 minimize）
     print("\n" + "=" * 60)
     print("示例2: 粒子群算法 — Rastrigin 函数")
     print("=" * 60)
-    r = particle_swarm(rastrigin, n_vars, bounds, maximize=True)
+    r = particle_swarm(rastrigin, n_vars, bounds)
     print(f"  最优值: {r['f']:.4f}, 最优解: {r['x'].round(4)}")
 
-    # SA
+    # SA（默认 minimize）
     print("\n" + "=" * 60)
     print("示例3: 模拟退火 — Rastrigin 函数")
     print("=" * 60)
-    r = simulated_annealing(lambda x: -rastrigin(x), np.zeros(n_vars), bounds)
-    print(f"  最优值: {-r['f']:.4f}, 最优解: {r['x'].round(4)}")
+    r = simulated_annealing(rastrigin, np.zeros(n_vars), bounds)
+    print(f"  最优值: {r['f']:.4f}, 最优解: {r['x'].round(4)}")
 
 
 if __name__ == "__main__":

@@ -194,7 +194,9 @@ def topsis(
     neg_dist = np.sqrt(((weighted - ideal_neg) ** 2).sum(axis=1))
 
     # 综合得分
-    scores = neg_dist / (pos_dist + neg_dist)
+    with np.errstate(invalid='ignore', divide='ignore'):
+        scores = neg_dist / (pos_dist + neg_dist)
+    scores = np.where((pos_dist + neg_dist) == 0, 1.0, scores)
 
     # 排序（得分越高越好）
     ranks = n - scores.argsort().argsort()
@@ -316,22 +318,21 @@ def dea(inputs: np.ndarray, outputs: np.ndarray, model: str = "CCR") -> DEAResul
 # 4. PCA (主成分分析)
 # ---------------------------------------------------------------------------
 
-def pca(data: np.ndarray, k: Optional[int] = None, variance_threshold: float = 0.85) -> PCAResult:
+def pca(data: np.ndarray, k: Optional[int] = None, n_components: Optional[int] = None,
+        variance_threshold: float = 0.85) -> PCAResult:
     """PCA 主成分分析。
 
     Args:
         data: (n_samples, n_features) 原始数据。
         k: 保留的主成分数。None 则按 variance_threshold 自动选择。
+        n_components: k 的别名。
         variance_threshold: 累积方差贡献率阈值（自动选择 k 时使用）。
 
     Returns:
         PCAResult 包含主成分载荷、降维数据、特征值等。
-
-    Example:
-        >>> data = np.random.randn(100, 10)
-        >>> result = pca(data, k=3)
-        >>> print(result.transformed.shape)  # (100, 3)
     """
+    if n_components is not None:
+        k = n_components
     data = np.asarray(data, dtype=float)
     n_samples, n_features = data.shape
 
@@ -419,8 +420,6 @@ def rsr(data: np.ndarray, weights: Optional[np.ndarray] = None, n_levels: int = 
     unique_rsr = np.sort(np.unique(rsr_values))
     f_counts = np.array([np.sum(rsr_values == v) for v in unique_rsr])
     cum_f = np.cumsum(f_counts)
-    rank_avg = np.array([np.mean(ranks_col[rsr_values == v]) for v, ranks_col in
-                         zip(unique_rsr, [rsr_values] * len(unique_rsr))])
 
     # 用累积频率计算概率单位 (Probit)
     probit_vals = np.zeros(len(unique_rsr))
@@ -456,7 +455,7 @@ def rsr(data: np.ndarray, weights: Optional[np.ndarray] = None, n_levels: int = 
         ranks=rsr_ranks,
         regression=regression_all,
         levels=levels,
-        probit=probit_for_rsr(rsr_values, unique_rsr, probit_vals),
+        probit=_probit_for_rsr(rsr_values, unique_rsr, probit_vals),
         distribution=distribution,
     )
 
@@ -469,8 +468,8 @@ def _dense_rank(values: np.ndarray) -> np.ndarray:
     return ranks
 
 
-def probit_for_rsr(rsr_values, unique_rsr, probit_vals):
-    """为每个 RSR 值查找对应的 Probit 值"""
+def _probit_for_rsr(rsr_values, unique_rsr, probit_vals):
+    """为每个 RSR 值查找对应的 Probit 值（内部辅助函数）"""
     mapping = dict(zip(unique_rsr, probit_vals))
     return np.array([mapping[v] for v in rsr_values])
 
@@ -568,34 +567,35 @@ def grey_relational(
     """灰色关联分析（简化接口）。
 
     Args:
-        data: (n_samples, n_features) 比较序列矩阵。
-        reference: (n_features,) 或 (1, n_features) 参考序列。
+        data: 参考序列 (n_features,) 或比较矩阵 (n_samples, n_features)
+        reference: 比较矩阵或参考序列（自动识别顺序）
         rho: 分辨系数，通常取 0.5。
 
     Returns:
         关联度向量 (n_samples,)。
-
-    Example:
-        >>> data = np.array([[1.1, 1.2], [1.3, 1.1], [1.5, 1.4]])
-        >>> ref = np.array([1.2, 1.3])
-        >>> grey_relational(data, ref)
     """
-    data = np.asarray(data, dtype=float)
-    reference = np.asarray(reference, dtype=float).flatten()
+    a = np.asarray(data, dtype=float)
+    b = np.asarray(reference, dtype=float)
+    # 兼容 grey_relational(ref, compare_matrix) 调用顺序
+    if a.ndim == 1 and b.ndim == 2:
+        ref, compare = a, b
+    elif a.ndim == 2 and b.ndim == 1:
+        ref, compare = b, a
+    else:
+        ref, compare = a.flatten(), b if b.ndim == 2 else b.reshape(1, -1)
 
-    # 标准化
-    data_norm = data / data.max(axis=0)
-    ref_norm = reference / reference.max()
+    ref_norm = ref / ref[0] if ref[0] != 0 else ref
+    compare_norm = compare / compare[:, :1]
 
-    # 差序列
-    delta = np.abs(data_norm - ref_norm)
+    delta = np.abs(compare_norm - ref_norm)
     delta_min = delta.min()
     delta_max = delta.max()
 
-    # 关联系数
-    coeff = (delta_min + rho * delta_max) / (delta + rho * delta_max)
+    if delta_max == 0:
+        coeff = np.ones_like(delta)
+    else:
+        coeff = (delta_min + rho * delta_max) / (delta + rho * delta_max)
 
-    # 关联度
     return coeff.mean(axis=1)
 
 

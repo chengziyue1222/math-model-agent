@@ -19,7 +19,6 @@
 """
 
 import math
-import json
 from typing import List, Dict, Tuple, Optional, Any
 from dataclasses import dataclass, field
 from collections import defaultdict, deque
@@ -41,12 +40,13 @@ class FlowNode:
     h: float = 44
 
 
-@dataclass
 class FlowEdge:
     """流程图连线"""
-    from_id: str
-    to_id: str
-    label: str = ''
+    def __init__(self, from_id: str = '', to_id: str = '', label: str = '',
+                 source: str = '', target: str = ''):
+        self.from_id = from_id or source
+        self.to_id = to_id or target
+        self.label = label
 
 
 class FlowchartLayout:
@@ -71,9 +71,10 @@ class FlowchartLayout:
     DIAMOND_SIZE = 36
     IO_SKEW = 14
 
-    def __init__(self):
-        self.nodes: List[FlowNode] = []
-        self.edges: List[FlowEdge] = []
+    def __init__(self, nodes: Optional[List[FlowNode]] = None,
+                 edges: Optional[List[FlowEdge]] = None):
+        self.nodes: List[FlowNode] = list(nodes) if nodes else []
+        self.edges: List[FlowEdge] = list(edges) if edges else []
         self.positions: Dict[str, Dict] = {}
 
     def add_node(self, node_id: str, label: str, node_type: str = 'process'):
@@ -156,6 +157,15 @@ class FlowchartLayout:
 
             max_h = max(self.get_node_height(n) for n in layer_nodes)
             current_y += max_h + self.V_GAP
+
+    def layout(self):
+        """执行布局并将坐标写回节点对象。"""
+        self.auto_layout()
+        node_map = {n.id: n for n in self.nodes}
+        for nid, pos in self.positions.items():
+            if nid in node_map:
+                node_map[nid].x = pos['x']
+                node_map[nid].y = pos['y']
 
     def to_svg(self) -> str:
         """生成SVG字符串"""
@@ -298,9 +308,23 @@ class ERDiagramLayout:
     ELLIPSE_W = 140
     ELLIPSE_H = 60
 
-    def __init__(self, table_name: str, fields: List[str]):
-        self.table_name = table_name
-        self.fields = fields
+    def __init__(self, table_name: Optional[str] = None, fields: Optional[List[str]] = None,
+                 tables: Optional[Dict[str, List[str]]] = None):
+        if isinstance(table_name, dict):
+            tables = table_name
+            table_name = None
+        if tables:
+            self.tables = tables
+            self.table_name = next(iter(tables))
+            self.fields = list(tables[self.table_name])
+        else:
+            self.table_name = table_name or ''
+            self.fields = fields or []
+            self.tables = {self.table_name: self.fields}
+
+    def layout(self):
+        """计算布局（兼容测试接口）。"""
+        self.calculate_positions()
 
     def calculate_positions(self) -> Dict[str, Any]:
         """计算圆形布局位置"""
@@ -336,9 +360,6 @@ class ERDiagramLayout:
         layout = self.calculate_positions()
         if not layout['fields']:
             return ''
-
-        n = len(self.fields)
-        radius = layout['radius']
 
         # 计算边界
         min_x = min(f['x'] for f in layout['fields'])
@@ -392,8 +413,6 @@ class ERDiagramLayout:
         """生成 draw.io XML"""
         layout = self.calculate_positions()
         n = len(self.fields)
-        radius = layout['radius']
-
         def esc(s):
             return s.replace('&', '&amp;').replace('<', '&lt;').replace('>', '&gt;').replace('"', '&quot;')
 
@@ -655,10 +674,11 @@ class AcademicTable:
     - 无竖线
     """
 
-    def __init__(self, title: str, headers: List[str], data: List[List[str]]):
-        self.title = title
-        self.headers = headers
-        self.data = data
+    def __init__(self, title: str = '', headers: Optional[List[str]] = None,
+                 data: Optional[List[List[str]]] = None, caption: str = ''):
+        self.title = caption or title
+        self.headers = headers or []
+        self.data = data or []
 
     def to_latex(self) -> str:
         """生成LaTeX三线表代码"""
@@ -717,7 +737,7 @@ class AcademicTable:
         lines.append('.three-line-table tbody tr:last-child td { border-bottom: 2px solid #000; }')
         lines.append('.three-line-table caption { font-size: 14px; font-weight: bold; margin-bottom: 8px; }')
         lines.append('</style>')
-        lines.append(f'<table class="three-line-table">')
+        lines.append('<table class="three-line-table">')
         lines.append(f'  <caption>{esc(self.title)}</caption>')
         lines.append('  <thead><tr>')
         for h in self.headers:
@@ -859,11 +879,14 @@ class SQLParser:
 # 6. 绘图辅助函数
 # ============================================================
 
-def save_svg(svg_content: str, filepath: str):
-    """保存SVG到文件"""
+def save_svg(svg_content: str, filepath: Optional[str] = None) -> str:
+    """保存 SVG 到文件；未指定路径时返回内容。"""
+    if filepath is None:
+        return svg_content
     with open(filepath, 'w', encoding='utf-8') as f:
         f.write(svg_content)
     print(f"SVG已保存到: {filepath}")
+    return svg_content
 
 
 def save_drawio(xml_content: str, filepath: str):
@@ -873,11 +896,14 @@ def save_drawio(xml_content: str, filepath: str):
     print(f"Draw.io文件已保存到: {filepath}")
 
 
-def save_html(html_content: str, filepath: str):
-    """保存HTML到文件"""
+def save_html(html_content: str, filepath: Optional[str] = None) -> str:
+    """保存 HTML 到文件；未指定路径时返回内容。"""
+    if filepath is None:
+        return html_content
     with open(filepath, 'w', encoding='utf-8') as f:
         f.write(html_content)
     print(f"HTML已保存到: {filepath}")
+    return html_content
 
 
 # ============================================================

@@ -7,7 +7,7 @@
 """
 
 import numpy as np
-from typing import Tuple, Dict, List, Optional, Callable
+from typing import Tuple, Dict, List, Optional
 
 
 # ============================================================
@@ -25,9 +25,14 @@ def trapmf(x: np.ndarray, params: Tuple[float, float, float, float]) -> np.ndarr
     return np.maximum(0, np.minimum(np.minimum((x - a) / (b - a + 1e-10), 1), (d - x) / (d - c + 1e-10)))
 
 
-def gaussmf(x: np.ndarray, params: Tuple[float, float]) -> np.ndarray:
-    """高斯隶属函数"""
-    mu, sigma = params
+def gaussmf(x: np.ndarray, *args) -> np.ndarray:
+    """高斯隶属函数。支持 gaussmf(x, mu, sigma) 或 gaussmf(x, (mu, sigma))。"""
+    if len(args) == 1:
+        mu, sigma = args[0]
+    elif len(args) == 2:
+        mu, sigma = args
+    else:
+        raise TypeError("gaussmf 需要 (mu, sigma) 或 ((mu, sigma),) 参数")
     return np.exp(-0.5 * ((x - mu) / sigma) ** 2)
 
 
@@ -35,26 +40,38 @@ def gaussmf(x: np.ndarray, params: Tuple[float, float]) -> np.ndarray:
 # 2. 模糊综合评价 (一级)
 # ============================================================
 def fuzzy_comprehensive_evaluation(weights: np.ndarray,
-                                   R: np.ndarray,
-                                   comment_set: Optional[List[str]] = None) -> Dict:
+                                   R: np.ndarray = None,
+                                   comment_set: Optional[List[str]] = None,
+                                   return_dict: bool = False,
+                                   verbose: bool = False) -> Dict:
     """
     一级模糊综合评价
 
     Parameters
     ----------
     weights : np.ndarray
-        因素权重向量 (m,), 和为1
-    R : np.ndarray
+        因素权重向量 (m,), 和为1；若 R 为 None 则 weights 实为评价矩阵
+    R : np.ndarray, optional
         评价矩阵 (m, n), m个因素, n个评语等级
     comment_set : list, optional
         评语集, 如 ["优秀", "良好", "中等", "较差"]
+    return_dict : bool
+        返回完整 dict；False 时返回归一化评价向量
+    verbose : bool
+        是否打印结果
 
     Returns
     -------
-    dict : 综合评价结果、最大隶属度、等级
+    dict or np.ndarray : 综合评价结果
     """
-    weights = np.asarray(weights, dtype=float)
-    R = np.asarray(R, dtype=float)
+    # 兼容 fuzzy_comprehensive_evaluation(R, weights) 调用顺序
+    if R is None:
+        raise ValueError("需要提供评价矩阵 R")
+    a, b = np.asarray(weights, dtype=float), np.asarray(R, dtype=float)
+    if a.ndim == 2 and b.ndim == 1:
+        R, weights = a, b
+    else:
+        weights, R = a, b
 
     # 归一化权重
     weights = weights / weights.sum()
@@ -79,15 +96,18 @@ def fuzzy_comprehensive_evaluation(weights: np.ndarray,
         'comment_set': comment_set
     }
 
-    print("=" * 50)
-    print("模糊综合评价结果")
-    print("=" * 50)
-    for i, (comment, val) in enumerate(zip(comment_set, B_norm)):
-        bar = "█" * int(val * 40)
-        print(f"  {comment}: {val:.4f} {bar}")
-    print(f"  → 评价等级: {result['max_grade']}")
+    if verbose:
+        print("=" * 50)
+        print("模糊综合评价结果")
+        print("=" * 50)
+        for i, (comment, val) in enumerate(zip(comment_set, B_norm)):
+            bar = "█" * int(val * 40)
+            print(f"  {comment}: {val:.4f} {bar}")
+        print(f"  → 评价等级: {result['max_grade']}")
 
-    return result
+    if return_dict:
+        return result
+    return B_norm
 
 
 # ============================================================
@@ -266,7 +286,7 @@ def example():
         [0.3, 0.3, 0.3, 0.1],  # 教学效果
     ])
     comment_set = ["优秀", "良好", "中等", "较差"]
-    fuzzy_comprehensive_evaluation(weights, R, comment_set)
+    fuzzy_comprehensive_evaluation(weights, R, comment_set, return_dict=True, verbose=True)
 
     # 示例2: 模糊 C 均值聚类
     print("\n" + "=" * 60)

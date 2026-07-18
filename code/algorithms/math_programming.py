@@ -12,7 +12,7 @@
 """
 
 import numpy as np
-from typing import Dict, List, Optional, Callable
+from typing import Dict, Callable
 from scipy.optimize import linprog, milp, LinearConstraint, Bounds, minimize
 
 
@@ -123,7 +123,6 @@ def integer_programming(
     -------
     dict: x, fun, success, message
     """
-    from scipy.optimize import milp, LinearConstraint, Bounds
 
     c = np.asarray(c, dtype=float)
     if maximize:

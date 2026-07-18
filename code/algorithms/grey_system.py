@@ -7,13 +7,13 @@
 """
 
 import numpy as np
-from typing import Tuple, List, Dict, Optional
+from typing import List, Dict, Optional
 
 
 # ============================================================
 # 1. GM(1,1) 灰色预测
 # ============================================================
-def gm11_predict(x0: np.ndarray, predict_n: int = 5) -> Dict:
+def gm11_predict(x0: np.ndarray, predict_n: int = 5, predict_count: Optional[int] = None) -> Dict:
     """
     GM(1,1) 灰色预测模型
 
@@ -23,11 +23,15 @@ def gm11_predict(x0: np.ndarray, predict_n: int = 5) -> Dict:
         原始序列 (非负, 长度 >= 4)
     predict_n : int
         预测步数
+    predict_count : int, optional
+        predict_n 的别名（兼容旧接口）
 
     Returns
     -------
     dict : 包含预测值、参数、精度检验
     """
+    if predict_count is not None:
+        predict_n = predict_count
     x0 = np.array(x0, dtype=float)
     n = len(x0)
 
@@ -93,7 +97,9 @@ def gm11_predict(x0: np.ndarray, predict_n: int = 5) -> Dict:
         'ratio_check': ratio_ok,
         'lambda_range': (lambda_min, lambda_max),
         'exp_range': exp_range,
-        'predictions': x0_hat[n:]
+        'predictions': x0_hat[n:],
+        'predicted': x0_hat[n:],
+        'fitted': x0_hat[:n],
     }
 
 
@@ -120,8 +126,12 @@ def grey_correlation(reference: np.ndarray,
     r : np.ndarray
         关联度向量 (n,), 值越大关联越强
     """
-    reference = np.atleast_2d(reference)
-    compare = np.atleast_2d(reference) if compare is None else np.atleast_2d(compare)
+    reference = np.atleast_1d(reference).astype(float)
+    compare = np.atleast_1d(compare).astype(float)
+    if reference.ndim == 1:
+        reference = reference.reshape(1, -1)
+    if compare.ndim == 1:
+        compare = compare.reshape(1, -1)
 
     # 无量纲化 (初值化)
     ref_norm = reference / reference[:, 0:1]
@@ -138,7 +148,10 @@ def grey_correlation(reference: np.ndarray,
         delta_max = delta.max()
 
         # 关联系数
-        xi = (delta_min + rho * delta_max) / (delta + rho * delta_max)
+        if delta_max == 0:
+            xi = np.ones_like(delta)
+        else:
+            xi = (delta_min + rho * delta_max) / (delta + rho * delta_max)
         r += xi.mean(axis=1)
 
     r = r / m1  # 平均关联度
@@ -148,27 +161,27 @@ def grey_correlation(reference: np.ndarray,
 def grey_correlation_rank(reference: np.ndarray,
                           compare: np.ndarray,
                           names: Optional[List[str]] = None,
-                          rho: float = 0.5) -> Dict:
+                          rho: float = 0.5,
+                          verbose: bool = False) -> np.ndarray:
     """
     灰色关联分析 + 排序
 
     Returns
     -------
-    dict : 关联度、排序结果
+    ranking : np.ndarray
+        按关联度降序排列的对象索引
     """
     r = grey_correlation(reference, compare, rho)
     ranking = np.argsort(-r)
 
-    if names is None:
-        names = [f"对象{i+1}" for i in range(len(r))]
+    if verbose and names is not None:
+        print("=" * 50)
+        print("灰色关联分析结果")
+        print("=" * 50)
+        for rank, idx in enumerate(ranking):
+            print(f"  第{rank+1}名: {names[idx]} (关联度: {r[idx]:.4f})")
 
-    print("=" * 50)
-    print("灰色关联分析结果")
-    print("=" * 50)
-    for rank, idx in enumerate(ranking):
-        print(f"  第{rank+1}名: {names[idx]} (关联度: {r[idx]:.4f})")
-
-    return {'correlation': r, 'ranking': ranking, 'names': names}
+    return ranking
 
 
 # ============================================================

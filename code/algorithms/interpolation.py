@@ -7,7 +7,7 @@
 """
 
 import numpy as np
-from typing import Tuple, Optional, Callable
+from typing import Optional, Callable, Dict
 
 
 # ============================================================
@@ -80,6 +80,7 @@ def newton_interp(x: np.ndarray, y: np.ndarray, x_new: np.ndarray) -> np.ndarray
     x, y = np.asarray(x, dtype=float), np.asarray(y, dtype=float)
     dd = newton_divided_diff(x, y)
     n = len(x)
+    scalar = np.isscalar(x_new)
     x_new = np.atleast_1d(x_new)
 
     y_new = np.full_like(x_new, dd[0, 0], dtype=float)
@@ -89,7 +90,7 @@ def newton_interp(x: np.ndarray, y: np.ndarray, x_new: np.ndarray) -> np.ndarray
             term *= (x_new - x[j])
         y_new += term
 
-    return y_new
+    return float(y_new[0]) if scalar else y_new
 
 
 # ============================================================

@@ -43,6 +43,8 @@ class Severity(Enum):
     FAIL = "FAIL"
     WARN = "WARN"
     INFO = "INFO"
+    ERROR = "FAIL"
+    WARNING = "WARN"
 
 
 @dataclass
@@ -83,6 +85,11 @@ class CheckReport:
 
     def info(self, msg: str, file: Optional[str] = None):
         self.add(Severity.INFO, msg, file)
+
+    @property
+    def issues(self) -> list[CheckResult]:
+        """所有检查结果（兼容测试接口）。"""
+        return self.results
 
     def summary(self) -> str:
         lines = [
@@ -164,6 +171,16 @@ class PaperChecker:
         else:
             self.references_file = None
 
+    def check_file(self, filepath: str) -> CheckReport:
+        """检查单个论文文件（兼容测试接口）。"""
+        path = Path(filepath)
+        if not path.exists():
+            report = CheckReport()
+            report.fail(f"论文入口文件不存在: {path}")
+            return report
+        checker = PaperChecker(paper_dir=str(path.parent), main_file=str(path))
+        return checker.run()
+
     @staticmethod
     def _read(path: Path) -> str:
         try:
@@ -197,13 +214,20 @@ class PaperChecker:
     def _extract_typst_includes(self, text: str) -> list[str]:
         return re.findall(r'#include\(\s*"([^"]+\.typ)"\s*\)', text)
 
+    @staticmethod
+    def _strip_latex_comments(text: str) -> str:
+        """Remove unescaped LaTeX comments while preserving escaped percent signs."""
+        return re.sub(r"(?<!\\)%.*$", "", text, flags=re.MULTILINE)
+
     def _extract_latex_includes(self, text: str) -> list[str]:
+        text = self._strip_latex_comments(text)
         raw = re.findall(r'\\(?:input|include)\s*\{([^}]+)\}', text)
         return [inc if inc.endswith(".tex") else inc + ".tex" for inc in raw]
 
     def _extract_image_refs(self, text: str) -> list[str]:
         if self.is_typst:
             return re.findall(r'image\(\s*"([^"]+)"', text)
+        text = self._strip_latex_comments(text)
         return re.findall(r'\\includegraphics\s*(?:\[[^\]]*\])?\s*\{([^}]+)\}', text)
 
     def run(self) -> CheckReport:
@@ -272,10 +296,10 @@ class PaperChecker:
                         rpt.fail(f"Typst 标题缺少空格: {line[:80]}", rel_name)
                         break
                 if not re.search(r"(?m)^=\s+.+", text) and not is_aux:
-                    rpt.fail(f"章节缺少一级标题 (= Title)", rel_name)
+                    rpt.fail("章节缺少一级标题 (= Title)", rel_name)
             else:
                 if not re.search(r"\\section\{", text) and not re.search(r"\\subsection\{", text) and not is_aux:
-                    rpt.fail(f"章节缺少 \\section{{}} 标题", rel_name)
+                    rpt.fail("章节缺少 \\section{} 标题", rel_name)
 
             # List density check
             if self.is_typst:
@@ -295,8 +319,10 @@ class PaperChecker:
             if not path.exists():
                 continue
             text = self._read(path)
+            if self.is_latex:
+                text = self._strip_latex_comments(text)
             if placeholder_re.search(text):
-                rpt.fail(f"存在占位符文本", path.name)
+                rpt.fail("存在占位符文本", path.name)
 
         # --- Internal term leak check ---
         default_terms = [
@@ -315,18 +341,23 @@ class PaperChecker:
                 if not path.exists():
                     continue
                 text = self._read(path)
+                if self.is_latex:
+                    text = self._strip_latex_comments(text)
                 is_appendix = path.name.startswith("A_") or "appendix" in path.name.lower()
                 if internal_re.search(text):
                     if is_appendix:
-                        rpt.warn(f"附录中出现内部工作流术语", path.name)
+                        rpt.warn("附录中出现内部工作流术语", path.name)
                     else:
-                        rpt.fail(f"论文正文泄露内部工作流文件名", path.name)
+                        rpt.fail("论文正文泄露内部工作流文件名", path.name)
 
         # --- Image reference check ---
         all_texts = []
         for path in all_files:
             if path.exists():
-                all_texts.append((path, self._read(path)))
+                text = self._read(path)
+                if self.is_latex:
+                    text = self._strip_latex_comments(text)
+                all_texts.append((path, text))
 
         for path, text in all_texts:
             for ref in self._extract_image_refs(text):
@@ -372,8 +403,13 @@ class PaperChecker:
                         rpt.warn("caption 过短")
 
         # --- Reference check ---
+        has_inline_bibliography = self.is_latex and bool(
+            re.search(r"\\begin\{thebibliography\}", paper_combined)
+        )
         if self.references_file and self.references_file.exists():
             refs_text = self._read(self.references_file)
+            if self.is_latex:
+                refs_text = self._strip_latex_comments(refs_text)
             if len(refs_text.strip()) < 80:
                 rpt.warn("参考文献文件内容过少")
             if self.is_typst:
@@ -382,7 +418,7 @@ class PaperChecker:
                 citation_re = r"\\cite\w*\{[^}]+\}"
             if not re.search(citation_re, paper_combined):
                 rpt.warn("参考文献文件存在但论文中未发现引用标记")
-        else:
+        elif not has_inline_bibliography:
             rpt.warn("未找到参考文献文件")
 
         # --- Results consistency check ---
@@ -435,16 +471,25 @@ def check_paper(
 ) -> CheckReport:
     """Convenience function to run paper checks.
 
-    Returns:
-        CheckReport with .passed (bool) and .summary() (str).
+    支持传入目录或单个 .tex/.typ 文件路径。
     """
-    checker = PaperChecker(
-        paper_dir=paper_dir,
-        main_file=main_file,
-        figures_dir=figures_dir,
-        results_file=results_file,
-        **kwargs,
-    )
+    path = Path(paper_dir)
+    if path.is_file() or path.suffix.lower() in {".tex", ".typ"}:
+        checker = PaperChecker(
+            paper_dir=str(path.parent),
+            main_file=str(path),
+            figures_dir=figures_dir,
+            results_file=results_file,
+            **kwargs,
+        )
+    else:
+        checker = PaperChecker(
+            paper_dir=paper_dir,
+            main_file=main_file,
+            figures_dir=figures_dir,
+            results_file=results_file,
+            **kwargs,
+        )
     return checker.run()
 
 

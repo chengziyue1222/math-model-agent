@@ -32,8 +32,8 @@
 from __future__ import annotations
 
 import math
-import os
-from dataclasses import dataclass, field
+import json
+from dataclasses import asdict, dataclass
 from pathlib import Path
 from typing import Optional
 
@@ -46,14 +46,310 @@ import numpy as np
 from matplotlib.colors import LinearSegmentedColormap, Normalize
 from matplotlib.gridspec import GridSpecFromSubplotSpec
 from matplotlib.lines import Line2D
-from matplotlib.patches import Patch, Rectangle, Wedge
+from matplotlib.patches import Patch, Wedge
 from matplotlib.path import Path as MplPath
 from matplotlib.patches import PathPatch
+from matplotlib.text import Text
 
 
 # ---------------------------------------------------------------------------
 # Common utilities
 # ---------------------------------------------------------------------------
+
+PUBLICATION_WIDTH_MM = {"single": 89.0, "double": 183.0}
+MODELING_PALETTE = {
+    "categorical": ("#0072B2", "#009E73", "#E69F00", "#CC79A7", "#D55E00", "#56B4E9"),
+    "diverging": ("#2166AC", "#F7F7F7", "#B2182B"),
+    "sequential": ("#F7FBFF", "#C6DBEF", "#6BAED6", "#2171B5", "#084594"),
+}
+_MODELING_FIGURE_ROLES = {
+    "data-overview",
+    "assumption-check",
+    "model-result",
+    "model-diagnostic",
+    "model-comparison",
+    "sensitivity",
+    "robustness",
+    "optimization",
+    "decision",
+}
+
+
+@dataclass(frozen=True)
+class FigureContract:
+    """Scientific claim and delivery constraints attached to a figure.
+
+    ``evidence`` names plotted variables, panels, or statistics, while
+    ``source_paths`` records the machine-readable inputs used to build the figure.
+    """
+
+    claim: str
+    evidence: tuple[str, ...]
+    source_paths: tuple[str, ...] = ()
+    target_venue: str = "mathematical-modeling paper"
+    column: str = "double"
+    figure_role: str = "model-result"
+    model_name: str | None = None
+    scenario: str | None = None
+    parameter_source: str | None = None
+    randomness: str | None = None
+    n_definition: str | None = None
+    statistic: str | None = None
+    uncertainty: str | None = None
+    review_risks: tuple[str, ...] = ()
+
+    def __post_init__(self) -> None:
+        if not isinstance(self.claim, str) or not self.claim.strip():
+            raise ValueError("FigureContract.claim must be non-empty")
+        if not self.evidence or any(
+            not isinstance(item, str) or not item.strip() for item in self.evidence
+        ):
+            raise ValueError("FigureContract.evidence must contain non-empty items")
+        if not isinstance(self.target_venue, str) or not self.target_venue.strip():
+            raise ValueError("FigureContract.target_venue must be non-empty")
+        if any(
+            not isinstance(path, str) or not path.strip() for path in self.source_paths
+        ):
+            raise ValueError("FigureContract.source_paths must contain non-empty strings")
+        if self.column not in PUBLICATION_WIDTH_MM:
+            choices = ", ".join(PUBLICATION_WIDTH_MM)
+            raise ValueError(f"FigureContract.column must be one of: {choices}")
+        if self.figure_role not in _MODELING_FIGURE_ROLES:
+            choices = ", ".join(sorted(_MODELING_FIGURE_ROLES))
+            raise ValueError(f"FigureContract.figure_role must be one of: {choices}")
+
+    @property
+    def width_mm(self) -> float:
+        """Return the target printed width in millimetres."""
+        return PUBLICATION_WIDTH_MM[self.column]
+
+
+@dataclass(frozen=True)
+class FigureAuditReport:
+    """Machine-readable result of pre-export figure quality assurance."""
+
+    passed: bool
+    errors: tuple[str, ...]
+    warnings: tuple[str, ...]
+    metrics: dict[str, object]
+
+    def to_dict(self) -> dict[str, object]:
+        return asdict(self)
+
+
+def mm_to_inches(value_mm: float) -> float:
+    """Convert millimetres to inches, the unit expected by Matplotlib."""
+    if value_mm <= 0:
+        raise ValueError("value_mm must be positive")
+    return value_mm / 25.4
+
+
+def publication_size(column: str = "single", height_mm: float = 65.0) -> tuple[float, float]:
+    """Return an exact single- or double-column Matplotlib figure size."""
+    if column not in PUBLICATION_WIDTH_MM:
+        choices = ", ".join(PUBLICATION_WIDTH_MM)
+        raise ValueError(f"column must be one of: {choices}")
+    return mm_to_inches(PUBLICATION_WIDTH_MM[column]), mm_to_inches(height_mm)
+
+
+def publication_rc_params(font_family: str = "sans-serif") -> dict[str, object]:
+    """Return restrained, editable publication defaults for ``mpl.rc_context``."""
+    if font_family not in {"sans-serif", "serif"}:
+        raise ValueError("font_family must be 'sans-serif' or 'serif'")
+    return {
+        "font.family": font_family,
+        "font.sans-serif": ["Arial", "Helvetica", "Liberation Sans", "DejaVu Sans"],
+        "font.serif": ["Times New Roman", "Times", "Liberation Serif", "DejaVu Serif"],
+        "font.size": 7.0,
+        "axes.labelsize": 7.0,
+        "axes.titlesize": 8.0,
+        "axes.linewidth": 0.7,
+        "xtick.labelsize": 6.0,
+        "ytick.labelsize": 6.0,
+        "xtick.direction": "out",
+        "ytick.direction": "out",
+        "xtick.major.width": 0.6,
+        "ytick.major.width": 0.6,
+        "legend.fontsize": 6.0,
+        "pdf.fonttype": 42,
+        "svg.fonttype": "none",
+        "savefig.dpi": 450,
+        "savefig.facecolor": "white",
+    }
+
+
+def _intersection_fraction(first, second) -> float:
+    width = max(0.0, min(first.x1, second.x1) - max(first.x0, second.x0))
+    height = max(0.0, min(first.y1, second.y1) - max(first.y0, second.y0))
+    return width * height / max(first.width * first.height, 1.0)
+
+
+def audit_publication_figure(
+    fig: plt.Figure,
+    contract: FigureContract,
+    *,
+    minimum_font_size: float = 5.0,
+    width_tolerance_mm: float = 3.0,
+) -> FigureAuditReport:
+    """Run deterministic layout, typography, color, and traceability checks."""
+    if minimum_font_size <= 0 or width_tolerance_mm < 0:
+        raise ValueError("audit thresholds must be non-negative and font size positive")
+
+    fig.canvas.draw()
+    renderer = fig.canvas.get_renderer()
+    width_in, height_in = fig.get_size_inches()
+    width_mm, height_mm = width_in * 25.4, height_in * 25.4
+    errors: list[str] = []
+    warnings: list[str] = []
+
+    if abs(width_mm - contract.width_mm) > width_tolerance_mm:
+        errors.append(
+            f"figure width is {width_mm:.1f} mm; expected {contract.width_mm:.1f} mm "
+            f"for {contract.column}-column output"
+        )
+
+    visible_texts = [
+        item for item in fig.findobj(match=Text)
+        if item.get_visible() and item.get_text().strip()
+    ]
+    small_texts = sorted({
+        round(float(item.get_fontsize()), 2)
+        for item in visible_texts
+        if float(item.get_fontsize()) < minimum_font_size
+    })
+    if small_texts:
+        errors.append(
+            f"text below {minimum_font_size:g} pt detected: "
+            + ", ".join(f"{size:g}" for size in small_texts)
+        )
+
+    layout_texts = list(fig.texts)
+    for axis in fig.axes:
+        layout_texts.extend([axis.title, axis.xaxis.label, axis.yaxis.label])
+        layout_texts.extend(axis.texts)
+        legend = axis.get_legend()
+        if legend is not None:
+            layout_texts.extend(legend.get_texts())
+    layout_texts = [
+        item for item in layout_texts
+        if item.get_visible() and item.get_text().strip()
+    ]
+
+    figure_box = fig.bbox
+    for item in layout_texts:
+        box = item.get_window_extent(renderer)
+        if (
+            box.x0 < figure_box.x0 - 1.0
+            or box.y0 < figure_box.y0 - 1.0
+            or box.x1 > figure_box.x1 + 1.0
+            or box.y1 > figure_box.y1 + 1.0
+        ):
+            errors.append(f"text extends outside canvas: {item.get_text()!r}")
+
+    risky_colormaps: set[str] = set()
+    for axis in fig.axes:
+        if axis.get_label() != "<colorbar>" and axis.has_data():
+            if not axis.get_xlabel().strip() or not axis.get_ylabel().strip():
+                warnings.append(
+                    f"axis {axis.get_title() or '<untitled>'!r} is missing an x or y label"
+                )
+        legend = axis.get_legend()
+        if legend is not None and legend.get_visible():
+            if _intersection_fraction(
+                legend.get_window_extent(renderer), axis.get_window_extent(renderer)
+            ) >= 0.98:
+                warnings.append(
+                    f"legend is fully inside the data region: {axis.get_title() or '<untitled>'}"
+                )
+        for artist in [*axis.images, *axis.collections]:
+            cmap = artist.get_cmap() if hasattr(artist, "get_cmap") else None
+            if cmap is not None and cmap.name.lower() in {
+                "jet", "rainbow", "gist_rainbow", "hsv", "nipy_spectral"
+            }:
+                risky_colormaps.add(cmap.name)
+
+    if risky_colormaps:
+        errors.append(
+            "non-uniform or inaccessible colormap detected: "
+            + ", ".join(sorted(risky_colormaps))
+        )
+    if not contract.source_paths:
+        warnings.append("no machine-readable source path recorded in the figure contract")
+    if contract.figure_role != "data-overview" and contract.model_name is None:
+        warnings.append("model name or version is not documented in the figure contract")
+    if contract.figure_role in {"sensitivity", "robustness", "optimization"}:
+        if contract.parameter_source is None:
+            warnings.append("parameter source is not documented in the figure contract")
+    if contract.figure_role not in {"data-overview", "assumption-check"}:
+        if contract.randomness is None:
+            warnings.append("random seed or deterministic status is not documented")
+    if contract.n_definition is None:
+        warnings.append("sample-size definition is not documented in the figure contract")
+    if contract.statistic is None:
+        warnings.append("summary statistic is not documented in the figure contract")
+    if contract.uncertainty is None:
+        warnings.append("uncertainty representation is not documented in the figure contract")
+
+    errors = list(dict.fromkeys(errors))
+    warnings = list(dict.fromkeys(warnings))
+    return FigureAuditReport(
+        passed=not errors,
+        errors=tuple(errors),
+        warnings=tuple(warnings),
+        metrics={
+            "width_mm": round(width_mm, 3),
+            "height_mm": round(height_mm, 3),
+            "target_width_mm": contract.width_mm,
+            "figure_role": contract.figure_role,
+            "visible_text_count": len(visible_texts),
+            "axes_count": len(fig.axes),
+            "minimum_font_size_pt": minimum_font_size,
+        },
+    )
+
+
+def export_publication_figure(
+    fig: plt.Figure,
+    output_stem: str | Path,
+    contract: FigureContract,
+    *,
+    dpi: int = 450,
+    strict: bool = True,
+    close: bool = False,
+) -> dict[str, str]:
+    """Export PDF/SVG masters, a high-resolution PNG proof, and a JSON audit."""
+    if dpi < 450:
+        raise ValueError("dpi must be at least 450 for publication export")
+    stem = Path(output_stem)
+    if stem.suffix:
+        raise ValueError("output_stem must not include a file extension")
+    stem.parent.mkdir(parents=True, exist_ok=True)
+
+    report = audit_publication_figure(fig, contract)
+    if strict and not report.passed:
+        raise ValueError("publication figure audit failed: " + "; ".join(report.errors))
+
+    paths: dict[str, str] = {}
+    with mpl.rc_context({"pdf.fonttype": 42, "svg.fonttype": "none"}):
+        for extension in ("pdf", "svg", "png"):
+            path = stem.with_suffix(f".{extension}")
+            fig.savefig(path, dpi=dpi if extension == "png" else None, facecolor="white")
+            paths[extension] = str(path)
+
+    metadata_path = stem.with_suffix(".figure.json")
+    payload = {
+        "schema_version": 1,
+        "contract": asdict(contract),
+        "audit": report.to_dict(),
+        "export": {"dpi": dpi, "formats": ["pdf", "svg", "png"]},
+    }
+    metadata_path.write_text(
+        json.dumps(payload, ensure_ascii=False, indent=2), encoding="utf-8"
+    )
+    paths["metadata"] = str(metadata_path)
+    if close:
+        plt.close(fig)
+    return paths
 
 def _configure_mpl(style: str = "serif") -> None:
     """Apply publication-quality matplotlib settings."""
@@ -109,13 +405,22 @@ def _lighten(color: str, amount: float = 0.35) -> tuple:
     return tuple(rgb + (1.0 - rgb) * amount)
 
 
-def save_figure(fig: plt.Figure, stem: str, out_dir: str = "figures") -> dict[str, str]:
-    """Save figure as PNG (300 dpi), PDF, and SVG. Returns dict of paths."""
+def save_figure(fig: plt.Figure, path_or_stem: str, out_dir: str = "figures"):
+    """Save figure as PNG/PDF/SVG or to a specific file path."""
+    target = Path(path_or_stem)
+    if target.suffix.lower() in {".png", ".pdf", ".svg", ".jpg", ".jpeg"}:
+        target.parent.mkdir(parents=True, exist_ok=True)
+        ext = target.suffix.lower().lstrip(".")
+        fig.savefig(str(target), dpi=300 if ext == "png" else None,
+                    bbox_inches="tight", pad_inches=0.03)
+        plt.close(fig)
+        return str(target)
+
     out = Path(out_dir)
     out.mkdir(parents=True, exist_ok=True)
     paths = {}
     for ext in ("png", "pdf", "svg"):
-        path = out / f"{stem}.{ext}"
+        path = out / f"{path_or_stem}.{ext}"
         fig.savefig(str(path), dpi=300 if ext == "png" else None, bbox_inches="tight", pad_inches=0.03)
         paths[ext] = str(path)
     plt.close(fig)
@@ -136,27 +441,63 @@ class TaylorPoint:
 class TaylorDiagram:
     """Multi-panel Taylor diagram for model evaluation.
 
-    Args:
-        models: List of (name, color) tuples. Last entry should be ("Observed", "#000000").
-        panels: Dict of panel_name -> list[TaylorPoint].
-        labels: Panel labels, defaults to "a", "b", "c", ...
-        ref_std: Reference standard deviation, default 1.0.
-        rmax: Maximum radius, default 1.75.
+    支持两种模式:
+    1. 完整模式: TaylorDiagram(models=[...], panels={...})
+    2. 简易模式: TaylorDiagram(ref_std, fig=fig) + add_sample()
     """
 
     def __init__(
         self,
-        models: list[tuple[str, str]],
-        panels: dict[str, list[TaylorPoint]],
+        models: Optional[list[tuple[str, str]]] = None,
+        panels: Optional[dict[str, list[TaylorPoint]]] = None,
         labels: Optional[list[str]] = None,
         ref_std: float = 1.0,
         rmax: float = 1.75,
+        fig: Optional[plt.Figure] = None,
     ):
-        self.models = models
-        self.panels = panels
-        self.labels = labels or [chr(ord("a") + i) for i in range(len(panels))]
+        # 简易模式: TaylorDiagram(ref_std, fig=fig)
+        if models is None and panels is None and fig is not None:
+            self._simple_mode = True
+            self.ref_std = float(models) if isinstance(models, (int, float)) else ref_std
+            self.rmax = rmax
+            self.fig = fig
+            self.ax = fig.add_subplot(111)
+            self._draw_grid(self.ax)
+            self.samples: list[tuple[float, float, str]] = []
+            self.models = []
+            self.panels = {}
+            self.labels = []
+            return
+
+        if isinstance(models, (int, float)) and panels is None:
+            self._simple_mode = True
+            self.ref_std = float(models)
+            self.rmax = rmax
+            self.fig = fig or plt.figure()
+            self.ax = self.fig.add_subplot(111)
+            self._draw_grid(self.ax)
+            self.samples = []
+            self.models = []
+            self.panels = {}
+            self.labels = []
+            return
+
+        self._simple_mode = False
+        self.models = models or []
+        self.panels = panels or {}
+        self.labels = labels or [chr(ord("a") + i) for i in range(len(self.panels))]
         self.ref_std = ref_std
         self.rmax = rmax
+
+    def add_sample(self, std: float, corr: float, label: str = ''):
+        """简易模式：添加样本点。"""
+        if not getattr(self, '_simple_mode', False):
+            raise TypeError("add_sample 仅用于简易模式 TaylorDiagram(ref_std, fig=...)")
+        x, y = _polar_to_xy(std, corr)
+        self.ax.scatter(x, y, s=30, label=label or None)
+        self.samples.append((std, corr, label))
+        if label:
+            self.ax.legend(fontsize=8)
 
     def _draw_grid(self, ax: plt.Axes) -> None:
         theta = np.linspace(0, np.pi / 2, 300)
@@ -201,7 +542,6 @@ class TaylorDiagram:
 
     def make(self) -> plt.Figure:
         _configure_mpl()
-        color_map = dict(self.models)
         n = len(self.panels)
         fig = plt.figure(figsize=(3.6 * n + 0.6, 5.7))
         lefts = np.linspace(0.08, 0.98 - 0.28, n)
@@ -997,19 +1337,38 @@ class ChordNode:
 class ChordDiagram:
     """Nature-style chord diagram (Circos graph).
 
-    Args:
-        nodes: List of ChordNode.
-        flows: List of (source_label, target_label, weight) tuples.
-        gap: Gap between sectors in degrees.
-        start_angle: Starting angle.
+    支持两种构造方式:
+    1. ChordDiagram(nodes=[ChordNode...], flows=[(src, tgt, w), ...])
+    2. ChordDiagram(matrix, labels)  — 邻接矩阵 + 标签
     """
 
-    def __init__(self, nodes: list[ChordNode], flows: list[tuple[str, str, float]],
+    _COLORS = ["#4C72B0", "#DD8452", "#55A868", "#C44E52", "#8172B3", "#937860"]
+
+    def __init__(self, nodes_or_matrix, flows_or_labels=None,
                  gap: float = 0.92, start_angle: float = 124.0):
-        self.nodes = nodes
-        self.flows = flows
+        if isinstance(nodes_or_matrix, np.ndarray):
+            matrix = np.asarray(nodes_or_matrix, dtype=float)
+            labels = list(flows_or_labels or [f"N{i}" for i in range(matrix.shape[0])])
+            n = matrix.shape[0]
+            self.nodes = [
+                ChordNode(label=labels[i], color=self._COLORS[i % len(self._COLORS)],
+                          weight=float(matrix[i].sum()))
+                for i in range(n)
+            ]
+            self.flows = []
+            for i in range(n):
+                for j in range(n):
+                    if i != j and matrix[i, j] > 0:
+                        self.flows.append((labels[i], labels[j], float(matrix[i, j])))
+        else:
+            self.nodes = nodes_or_matrix
+            self.flows = flows_or_labels or []
         self.gap = gap
         self.start_angle = start_angle
+
+    def render(self) -> plt.Figure:
+        """渲染并返回 Figure（兼容测试接口）。"""
+        return self.make()
 
     def _compute_layout(self):
         total_gap = self.gap * len(self.nodes)

@@ -9,21 +9,41 @@
 """
 
 import numpy as np
-from typing import Tuple, Dict, List, Optional
-from heapq import heappush, heappop
+from typing import Tuple, Dict, List, Optional, Union
+
+
+def _to_adj_matrix(graph: Union[np.ndarray, List], n: Optional[int] = None) -> np.ndarray:
+    """将邻接矩阵或邻接表统一转换为邻接矩阵。"""
+    if isinstance(graph, np.ndarray):
+        return graph.astype(float)
+    if not graph:
+        raise ValueError("图不能为空")
+    # 邻接表: [[(j, w), ...], ...]
+    if graph and isinstance(graph[0], (list, tuple)) and graph[0] and isinstance(graph[0][0], tuple):
+        if n is None:
+            n = len(graph)
+        mat = np.full((n, n), np.inf)
+        for i in range(n):
+            mat[i, i] = 0
+            for edge in graph[i]:
+                j, w = edge
+                mat[i, j] = float(w)
+        return mat
+    # 邻接矩阵: [[0, 1, inf], ...]
+    return np.array(graph, dtype=float)
 
 
 # ============================================================
 # 1. Dijkstra 最短路径
 # ============================================================
-def dijkstra(adj_matrix: np.ndarray, source: int) -> Tuple[np.ndarray, np.ndarray]:
+def dijkstra(graph: Union[np.ndarray, List], source: int) -> Tuple[np.ndarray, np.ndarray]:
     """
     Dijkstra 最短路径算法
 
     Parameters
     ----------
-    adj_matrix : np.ndarray
-        邻接矩阵 (n, n), inf 表示无边
+    graph : np.ndarray or list
+        邻接矩阵 (n, n) 或邻接表 [[(j, w), ...], ...]
     source : int
         源节点 (0-indexed)
 
@@ -34,6 +54,7 @@ def dijkstra(adj_matrix: np.ndarray, source: int) -> Tuple[np.ndarray, np.ndarra
     prev : np.ndarray
         前驱节点 (用于重建路径)
     """
+    adj_matrix = _to_adj_matrix(graph)
     n = adj_matrix.shape[0]
     dist = np.full(n, np.inf)
     prev = np.full(n, -1, dtype=int)
@@ -41,7 +62,6 @@ def dijkstra(adj_matrix: np.ndarray, source: int) -> Tuple[np.ndarray, np.ndarra
     dist[source] = 0
 
     for _ in range(n):
-        u = np.argmin(dist[~visited]) if not visited.all() else -1
         # 找未访问的最小距离节点
         min_d = np.inf
         u = -1
@@ -74,22 +94,25 @@ def get_path(prev: np.ndarray, target: int) -> List[int]:
 # ============================================================
 # 2. Floyd 最短路径 (所有节点对)
 # ============================================================
-def floyd(adj_matrix: np.ndarray) -> Tuple[np.ndarray, np.ndarray]:
+def floyd(graph: Union[np.ndarray, List], return_next: bool = False):
     """
     Floyd-Warshall 全源最短路径
 
     Parameters
     ----------
-    adj_matrix : np.ndarray
-        邻接矩阵 (n, n)
+    graph : np.ndarray or list
+        邻接矩阵 (n, n) 或邻接表
+    return_next : bool
+        是否同时返回路径重建矩阵
 
     Returns
     -------
     dist : np.ndarray
         最短距离矩阵 (n, n)
-    next_node : np.ndarray
-        路径重建矩阵
+    next_node : np.ndarray, optional
+        路径重建矩阵 (仅 return_next=True)
     """
+    adj_matrix = _to_adj_matrix(graph)
     n = adj_matrix.shape[0]
     dist = adj_matrix.copy()
     next_node = np.full((n, n), -1, dtype=int)
@@ -106,7 +129,9 @@ def floyd(adj_matrix: np.ndarray) -> Tuple[np.ndarray, np.ndarray]:
                     dist[i, j] = dist[i, k] + dist[k, j]
                     next_node[i, j] = next_node[i, k]
 
-    return dist, next_node
+    if return_next:
+        return dist, next_node
+    return dist
 
 
 def floyd_get_path(next_node: np.ndarray, i: int, j: int) -> List[int]:
@@ -123,14 +148,14 @@ def floyd_get_path(next_node: np.ndarray, i: int, j: int) -> List[int]:
 # ============================================================
 # 3. 最小生成树 (Prim / Kruskal)
 # ============================================================
-def prim_mst(adj_matrix: np.ndarray) -> Tuple[List[Tuple], float]:
+def prim_mst(graph: Union[np.ndarray, List]) -> Tuple[List[Tuple], float]:
     """
     Prim 最小生成树
 
     Parameters
     ----------
-    adj_matrix : np.ndarray
-        邻接矩阵 (n, n), inf 表示无边
+    graph : np.ndarray or list
+        邻接矩阵 (n, n) 或邻接表, inf 表示无边
 
     Returns
     -------
@@ -139,6 +164,7 @@ def prim_mst(adj_matrix: np.ndarray) -> Tuple[List[Tuple], float]:
     total_weight : float
         总权重
     """
+    adj_matrix = _to_adj_matrix(graph)
     n = adj_matrix.shape[0]
     in_mst = np.zeros(n, bool)
     key = np.full(n, np.inf)
@@ -171,26 +197,30 @@ def prim_mst(adj_matrix: np.ndarray) -> Tuple[List[Tuple], float]:
 # ============================================================
 # 4. 最大流 (Ford-Fulkerson)
 # ============================================================
-def max_flow(capacity: np.ndarray, source: int, sink: int) -> Tuple[float, np.ndarray]:
+def max_flow(capacity: Union[np.ndarray, List], source: int, sink: int,
+             return_matrix: bool = False):
     """
     Ford-Fulkerson 最大流算法 (BFS 增广路径)
 
     Parameters
     ----------
-    capacity : np.ndarray
+    capacity : np.ndarray or list
         容量矩阵 (n, n)
     source : int
         源节点
     sink : int
         汇节点
+    return_matrix : bool
+        是否同时返回流量分配矩阵
 
     Returns
     -------
     max_flow_value : float
         最大流量
-    flow_matrix : np.ndarray
-        流量分配矩阵
+    flow_matrix : np.ndarray, optional
+        流量分配矩阵 (仅 return_matrix=True)
     """
+    capacity = _to_adj_matrix(capacity)
     n = capacity.shape[0]
     flow = np.zeros((n, n))
     residual = capacity.copy()
@@ -232,7 +262,9 @@ def max_flow(capacity: np.ndarray, source: int, sink: int) -> Tuple[float, np.nd
 
         max_flow_val += path_flow
 
-    return max_flow_val, flow
+    if return_matrix:
+        return max_flow_val, flow
+    return max_flow_val
 
 
 # ============================================================
@@ -343,14 +375,26 @@ def min_cost_flow(
         - total_cost: 总费用
         - max_flow: 总流量
     """
+    capacity = np.asarray(capacity, dtype=float)
+    cost = np.asarray(cost, dtype=float)
+    if capacity.ndim != 2 or capacity.shape[0] != capacity.shape[1]:
+        raise ValueError("capacity 必须是方阵")
+    if cost.shape != capacity.shape:
+        raise ValueError("cost 必须与 capacity 形状相同")
+    if np.any(capacity < 0):
+        raise ValueError("capacity 不能包含负值")
+    if (source is None) != (sink is None):
+        raise ValueError("source 和 sink 必须同时指定")
+    if source is None and supply is None:
+        raise ValueError("必须提供 supply，或同时提供 source 和 sink")
+
     n = capacity.shape[0]
-    cap = capacity.astype(float).copy()
-    cst = cost.astype(float).copy()
+    cap = capacity.copy()
+    cst = cost.copy()
     flow_mat = np.zeros((n, n))
 
     # 构造供给向量
     if source is not None and sink is not None:
-        sup = np.zeros(n)
         # 不指定具体供给量，最大化从 source 到 sink 的流量
         # 使用 SPFA 找增广路
         total_flow = 0
@@ -420,6 +464,8 @@ def min_cost_flow(
             'flow': flow_mat,
             'total_cost': total_cost_val,
             'max_flow': total_flow,
+            'success': True,
+            'message': '最小费用最大流求解成功',
         }
     else:
         # 使用 supply 向量的通用最小费用流
@@ -433,24 +479,40 @@ def min_cost_flow(
                     edges.append((i, j))
                     n_edges += 1
 
+        supply = np.asarray(supply, dtype=float)
+        if supply.shape != (n,):
+            raise ValueError(f"supply 必须是长度为 {n} 的一维数组")
+        if not np.isclose(supply.sum(), 0.0):
+            raise ValueError("supply 的总供给与总需求必须平衡（和为 0）")
+
         c = [cst[i][j] for i, j in edges]
         # 等式约束：每个节点的流入-流出 = supply
         A_eq = np.zeros((n, n_edges))
         for idx, (i, j) in enumerate(edges):
             A_eq[i][idx] = -1  # 流出
             A_eq[j][idx] = 1   # 流入
-        b_eq = supply
+        b_eq = -supply
         bounds = [(0, cap[i][j]) for i, j in edges]
 
         result = linprog(c, A_eq=A_eq, b_eq=b_eq, bounds=bounds)
         flow = np.zeros((n, n))
+        if not result.success:
+            return {
+                'flow': flow,
+                'total_cost': np.inf,
+                'max_flow': 0.0,
+                'success': False,
+                'message': result.message,
+            }
         for idx, (i, j) in enumerate(edges):
             flow[i][j] = result.x[idx]
 
         return {
             'flow': flow,
-            'total_cost': result.fun,
-            'max_flow': flow.sum(),
+            'total_cost': float(result.fun),
+            'max_flow': float(supply[supply > 0].sum()),
+            'success': True,
+            'message': result.message,
         }
 
 
@@ -478,8 +540,15 @@ def graph_coloring(adj_matrix: np.ndarray, method: str = 'greedy') -> Dict:
         - n_colors: 使用的颜色数（色数上界）
         - color_groups: 同色顶点分组
     """
+    adj_matrix = np.asarray(adj_matrix)
+    if adj_matrix.ndim != 2 or adj_matrix.shape[0] != adj_matrix.shape[1]:
+        raise ValueError("adj_matrix 必须是方阵")
+    if method not in {'greedy', 'exact'}:
+        raise ValueError("method 必须是 'greedy' 或 'exact'")
+
     n = adj_matrix.shape[0]
-    adj = (adj_matrix > 0).astype(int)
+    adj = np.maximum(adj_matrix, adj_matrix.T) > 0
+    np.fill_diagonal(adj, False)
 
     if method == 'greedy':
         # 贪心算法：按度数降序排列，依次选最小可用颜色
@@ -500,27 +569,30 @@ def graph_coloring(adj_matrix: np.ndarray, method: str = 'greedy') -> Dict:
             coloring[v] = c
 
     else:
-        # 精确算法（回溯，适用于 n <= 20）
-        coloring = np.full(n, -1)
+        # 逐步尝试 k 色可行性，第一个可行的 k 即为色数。
+        order = np.argsort(-adj.sum(axis=1))
+        coloring = np.full(n, -1, dtype=int)
 
-        def is_safe(v, c):
-            for u in range(n):
-                if adj[v][u] and coloring[u] == c:
-                    return False
-            return True
-
-        def backtrack(v):
-            if v == n:
+        def backtrack(position: int, n_allowed_colors: int) -> bool:
+            if position == n:
                 return True
-            for c in range(n):
-                if is_safe(v, c):
-                    coloring[v] = c
-                    if backtrack(v + 1):
-                        return True
-                    coloring[v] = -1
+            vertex = int(order[position])
+            neighbor_colors = {
+                int(coloring[u]) for u in range(n) if adj[vertex, u] and coloring[u] >= 0
+            }
+            for color in range(n_allowed_colors):
+                if color in neighbor_colors:
+                    continue
+                coloring[vertex] = color
+                if backtrack(position + 1, n_allowed_colors):
+                    return True
+                coloring[vertex] = -1
             return False
 
-        backtrack(0)
+        for n_allowed_colors in range(1, n + 1):
+            coloring.fill(-1)
+            if backtrack(0, n_allowed_colors):
+                break
 
     n_colors = int(coloring.max()) + 1
     color_groups = [[] for _ in range(n_colors)]
