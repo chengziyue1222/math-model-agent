@@ -2,6 +2,8 @@
 
 ## Unreleased
 
+## v6.6.0 (2026-07-18)
+
 ### 数学建模图表交付
 
 - 将 Starry-cz/academic-data-visualization 的图表契约、出版尺寸、无障碍配色与多阶段 QA 思路融入 `make-model-figures`，保留 Apache-2.0 来源说明且不复制其素材库。

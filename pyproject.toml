@@ -1,13 +1,14 @@
 [build-system]
-requires = ["setuptools>=64.0", "wheel"]
+requires = ["setuptools>=77.0", "wheel"]
 build-backend = "setuptools.build_meta"
 
 [project]
 name = "math-model-agent"
-version = "6.5.0"
+version = "6.6.0"
 description = "Mathematical-modeling algorithm library used by the Math Model Agent repository"
 readme = "README.md"
-license = {file = "LICENSE"}
+license = "MIT"
+license-files = ["LICENSE"]
 requires-python = ">=3.10"
 dependencies = [
     "numpy>=1.21",
