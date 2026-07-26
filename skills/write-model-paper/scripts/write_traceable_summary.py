@@ -30,6 +30,9 @@ def main(root: Path) -> None:
     q2, q3, q4 = (pd.read_csv(results / f"{name}_weekly_plan.csv") for name in ("q2", "q3", "q4"))
     q2mix, q3mix, q4mix = (pd.read_csv(results / f"{name}_material_mix.csv") for name in ("q2", "q3", "q4"))
     simulation = json.loads((results / "simulation_metrics.json").read_text(encoding="utf-8"))
+    quality = json.loads((results / "quality_validation.json").read_text(encoding="utf-8"))
+    decision_contract = json.loads((results / "decision_contract.json").read_text(encoding="utf-8"))
+    tradeoff = pd.read_csv(results / "q3_tradeoff.csv")
     q = result["questions"]
     metrics = result["metrics"]
     ids = top50.supplier_id.tolist()
@@ -39,12 +42,13 @@ def main(root: Path) -> None:
 
     top50_table = md_table(["排名", "供应商", "类别", "重要性得分", "规划产能(等价m³)"], [[str(int(r.rank)), r.supplier_id, r.material, f"{r.score:.4f}", f"{r.planning_product:.2f}"] for r in top50.itertuples()])
     carrier_table = md_table(["转运商", "平均损耗率(%)", "损耗标准差(%)"], [[r.carrier_id, f"{r.mean_loss_rate*100:.3f}", f"{r.loss_std*100:.3f}"] for r in carrier.itertuples()])
-    q2_table = md_table(["指标", "数值", "证据"], [["最少供应商数", str(q["q2"]["minimum_supplier_count"]), "[claim:CLAIM_Q2_COUNT]"], ["单周平均接收等价量", f"{q['q2']['mean_received_product']:.2f}", "[claim:CLAIM_Q2_RECEIVED]"], ["订购成本指数", f"{q['q2']['baseline_cost_index']:.2f}", "[claim:CLAIM_Q2_COST]"], ["平均转运损耗率", f"{q['q2']['mean_loss_rate']*100:.3f}%", "注册结果对象"]])
+    q2_table = md_table(["指标", "数值", "证据"], [["最少供应商数", str(q["q2"]["minimum_supplier_count"]), "[claim:CLAIM_Q2_COUNT]"], ["单周平均接收等价量", f"{q['q2']['mean_received_product']:.2f}", "[claim:CLAIM_Q2_RECEIVED]"], ["规划期最小库存", f"{quality['dynamic_state']['minimum_inventory_product']:.2f}", "[claim:CLAIM_Q2_INVENTORY]"], ["订购成本指数", f"{q['q2']['baseline_cost_index']:.2f}", "[claim:CLAIM_Q2_COST]"], ["平均转运损耗率", f"{q['q2']['mean_loss_rate']*100:.3f}%", "注册结果对象"]])
     q3_table = md_table(["指标", "数值", "证据"], [["A类占比", f"{q['q3']['a_share']*100:.2f}%", "[claim:CLAIM_Q3_A_SHARE]"], ["C类占比", f"{q['q3']['c_share']*100:.2f}%", "[claim:CLAIM_Q3_C_SHARE]"], ["平均损耗率", f"{q['q3']['mean_loss_rate']*100:.3f}%", "[claim:CLAIM_Q3_LOSS]"]])
     q4_table = md_table(["指标", "数值", "证据"], [["单周平均可接收等价量", f"{q['q4']['mean_capacity_product']:.2f}", "[claim:CLAIM_Q4_CAPACITY]"], ["相对2.82万m³基准提升", f"{q['q4']['increase_over_baseline']*100:.2f}%", "[claim:CLAIM_Q4_INCREASE]"], ["规划总产能", f"{metrics['planning_capacity_product']:.2f}", "登记结果对象"]])
     sim = simulation["aggregate"]["q2"]
     sim_table = md_table(["压力检验指标", "数值", "说明"], [["重复次数", str(sim["runs"]), "独立历史正供货抽样"], ["平均服务比", f"{sim['mean_service_ratio']:.4f}", "[claim:CLAIM_Q2_SIM]"], ["95%分位区间", f"[{sim['ci95'][0]:.4f}, {sim['ci95'][1]:.4f}]", "未建模时间相关性"], ["达到周需求比例", f"{sim['probability_meet_weekly_demand']:.4f}", "压力指标，非概率预测"]])
-    q2_weeks = md_table(["周", "接收等价量", "损耗率(%)", "供应商数", "转运商数"], [[str(int(r.week)), f"{r.product_equiv_received:.2f}", f"{r.weighted_loss_rate*100:.3f}", str(int(r.supplier_count)), str(int(r.carrier_count))] for r in q2.head(8).itertuples()])
+    q2_weeks = md_table(["周", "接收等价量", "期末库存", "损耗率(%)", "供应商数", "转运商数"], [[str(int(r.week)), f"{r.product_equiv_received:.2f}", f"{r.inventory_end_product:.2f}", f"{r.weighted_loss_rate*100:.3f}", str(int(r.supplier_count)), str(int(r.carrier_count))] for r in q2.head(8).itertuples()])
+    contract_table = md_table(["问题", "决策输出", "验证证据"], [[entry["id"].upper(), entry["result_artifact"], entry["validation_artifact"]] for entry in decision_contract["questions"]])
 
     formulas = "\n\n".join([
         "(1) $$C_i=0.45\\tilde q_i+0.20a_i+0.20s_i+0.15f_i$$",
@@ -55,17 +59,20 @@ def main(root: Path) -> None:
         "(6) $$\\sum_jy_{ij}=o_i$$",
         "(7) $$\\sum_i y_{ij}\\le 6000$$",
         "(8) $$R=\\sum_{ij}(1-\\ell_j)y_{ij}/\\gamma_i$$",
-        "(9) $$P_{max}=\\max\\sum_i(1-\\bar\\ell)p_i$$",
-        "(10) $$\\hat\\rho=\\frac{1}{60}\\sum_{b=1}^{60}\\rho_b$$",
+        "(9) $$I_{t+1}=I_t+R_t-D,\\quad I_t\\ge 2D$$",
+        "(10) $$P_{max}=\\max\\sum_i(1-\\bar\\ell)p_i$$",
+        "(11) $$\\hat\\rho=\\frac{1}{60}\\sum_{b=1}^{60}\\rho_b$$",
     ])
     figures = "\n\n".join([
         "![供应商重要性曲线](../figures/fig_q1_score_curve.pdf)",
         "![Top50供货特征](../figures/fig_q1_top50_scatter.pdf)",
         "![问题二周接收量](../figures/fig_q2_weekly_received.pdf)",
+        "![问题二库存平衡](../figures/fig_q2_inventory_balance.pdf)",
         "![问题二原料配比](../figures/fig_q2_material_mix.pdf)",
         "![转运商损耗](../figures/fig_carrier_loss.pdf)",
         "![问题三原料配比](../figures/fig_q3_material_mix.pdf)",
         "![问题三转运分配](../figures/fig_q3_carrier_allocation.pdf)",
+        "![问题三取舍证据](../figures/fig_q3_tradeoff.pdf)",
         "![问题四产能方案](../figures/fig_q4_capacity.pdf)",
     ])
     references = "\n".join([
@@ -99,9 +106,15 @@ def main(root: Path) -> None:
 
 模型以历史正供货分布的75%分位数作为可执行但非最坏情形的规划容量。先计算供应商得分和Top-50，再以容量覆盖MILP选取问题二的最少供应商集合；随后按目标函数优先级生成订单，最后按历史平均损耗率由低到高分配转运商。模型是顺序分解，并不声称将不确定性、切换成本和所有周之间的库存动态放进同一个鲁棒整数规划。
 
+为避免“有模型但没有可执行交付物”，每一问先登记决策产物，再登记独立验证文件。下表仅列出文件级闭环；其数值结论仍必须回到表格、图形和 claim 证据指针复核。
+
+## 表0：问题—决策—验证闭环
+
+{contract_table}
+
 {formulas}
 
-上述式中，$\\gamma_i$为材料折算系数，$a_i,s_i,f_i$依次表示活跃、稳定和履约指标，$y_{{ij}}$为供应商到转运商的原料流，$\\ell_j$为损耗率。式(5)的1%预留损耗为规划安全系数；式(10)采用正供货历史的独立抽样，明确忽略供应商之间及时间上的相关性。
+上述式中，$\\gamma_i$为材料折算系数，$a_i,s_i,f_i$依次表示活跃、稳定和履约指标，$y_{{ij}}$为供应商到转运商的原料流，$\\ell_j$为损耗率。式(5)的1%预留损耗为规划安全系数；式(11)采用正供货历史的独立抽样，明确忽略供应商之间及时间上的相关性。
 
 # 模型假设
 
@@ -151,6 +164,8 @@ def main(root: Path) -> None:
 
 {figures.split(chr(10)+chr(10))[4]}
 
+{figures.split(chr(10)+chr(10))[5]}
+
 ## 表T2：问题二前8周实施摘要
 
 {q2_weeks}
@@ -161,15 +176,23 @@ def main(root: Path) -> None:
 
 问题二的订购成本指数为{q['q2']['baseline_cost_index']:.2f}[claim:CLAIM_Q2_COST]；该指数只比较题面给出的相对采购价格，未含未提供的合同、切换、库存资金与线路固定成本。因此不能把它解读为企业真实货币成本。
 
+规划期库存以两周需求为期初安全库存，逐周按式(9)结转。在登记的规划情景下，最小期末库存为{quality['dynamic_state']['minimum_inventory_product']:.2f}[claim:CLAIM_Q2_INVENTORY]，库存下界满足且最大平衡残差为{quality['dynamic_state']['max_abs_balance_residual']:.6g}；这只验证该容量口径下的账面平衡，并不等价于真实历史周均能满足。
+
+为避免把正供货分位数误说成风险保证，另以保留的最后24周原始供货（零供货保留）作非参数压力检查：平均服务比为{quality['uncertainty']['holdout_last_24_weeks']['mean_service_ratio']:.4f}[claim:CLAIM_Q2_HOLDOUT_MEAN]，最小周服务比为{quality['uncertainty']['holdout_last_24_weeks']['minimum_service_ratio']:.4f}[claim:CLAIM_Q2_HOLDOUT_MIN]。因此，该固定基准计划在此压力窗口下不能维持安全库存；建议将其用作谈判和滚动重优化的起点，并预设短缺响应与外部备用资源，而不是作为保证供给的承诺。
+
 # 问题三：A类优先、C类最少的方案
 
 问题三保留物流能力和需求覆盖约束，但把订单候选的排序改为A、B、C，再在同类材料内按重要性排序。该处理直接落实“尽量多A、尽量少C”，并将低损耗转运分配与材料优先决策分开，避免用损耗率掩盖材料目标。结果中A类占比为{q['q3']['a_share']*100:.2f}%[claim:CLAIM_Q3_A_SHARE]，C类占比为{q['q3']['c_share']*100:.2f}%[claim:CLAIM_Q3_C_SHARE]，平均损耗率为{q['q3']['mean_loss_rate']*100:.3f}%[claim:CLAIM_Q3_LOSS]。
 
 {q3_table}
 
-{figures.split(chr(10)+chr(10))[5]}
+与同一供应商池、同一转运约束下的经济优先基线相比，词典序方案先最大化A类占比、再最小化C类占比，最后才比较相对采购成本和损耗。完整的双方案指标登记在 `results/q3_tradeoff.csv`；图中只呈现可复核的目标取舍，不把材料偏好解释为成本最优。
 
 {figures.split(chr(10)+chr(10))[6]}
+
+{figures.split(chr(10)+chr(10))[7]}
+
+{figures.split(chr(10)+chr(10))[8]}
 
 ## 表T4：问题三材料构成
 
@@ -185,7 +208,7 @@ def main(root: Path) -> None:
 
 {q4_table}
 
-{figures.split(chr(10)+chr(10))[7]}
+{figures.split(chr(10)+chr(10))[9]}
 
 ## 表T5：问题四前后产能比较
 
@@ -301,8 +324,8 @@ run_standard_skill("solve-model")
 \end{{document}}
 """
     (paper / "main.tex").write_text(tex, encoding="utf-8")
-    (paper / "paper_generation_report.json").write_text(json.dumps({"status": "FULL_DRAFT_GENERATED", "mode": "competition_paper", "layout_profile": "strict_cumcm_a4_v1", "claim_bindings": 10, "evidence_bound": True}, ensure_ascii=False, indent=2)+"\n", encoding="utf-8")
-    (paper / "claim_usage_report.json").write_text(json.dumps({"used_claim_ids": ["CLAIM_TOP50", "CLAIM_Q2_COUNT", "CLAIM_Q2_COST", "CLAIM_Q2_RECEIVED", "CLAIM_Q3_A_SHARE", "CLAIM_Q3_C_SHARE", "CLAIM_Q3_LOSS", "CLAIM_Q4_CAPACITY", "CLAIM_Q4_INCREASE", "CLAIM_Q2_SIM"]}, ensure_ascii=False, indent=2)+"\n", encoding="utf-8")
+    (paper / "paper_generation_report.json").write_text(json.dumps({"status": "FULL_DRAFT_GENERATED", "mode": "competition_paper", "layout_profile": "strict_cumcm_a4_v1", "claim_bindings": 13, "evidence_bound": True}, ensure_ascii=False, indent=2)+"\n", encoding="utf-8")
+    (paper / "claim_usage_report.json").write_text(json.dumps({"used_claim_ids": ["CLAIM_TOP50", "CLAIM_Q2_COUNT", "CLAIM_Q2_COST", "CLAIM_Q2_RECEIVED", "CLAIM_Q2_INVENTORY", "CLAIM_Q2_HOLDOUT_MEAN", "CLAIM_Q2_HOLDOUT_MIN", "CLAIM_Q3_A_SHARE", "CLAIM_Q3_C_SHARE", "CLAIM_Q3_LOSS", "CLAIM_Q4_CAPACITY", "CLAIM_Q4_INCREASE", "CLAIM_Q2_SIM"]}, ensure_ascii=False, indent=2)+"\n", encoding="utf-8")
 
 
 if __name__ == "__main__":

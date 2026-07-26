@@ -1,4 +1,5 @@
 import json
+import hashlib
 
 from algorithms.adversarial_review import semantic_issues
 
@@ -86,3 +87,22 @@ def test_declared_decision_quality_requirements_accept_complete_evidence(tmp_pat
     codes = {issue["code"] for issue in semantic_issues(tmp_path, paper_dir / "main.md")}
 
     assert not {"multi_period_state_missing", "uncertainty_evidence_missing", "tradeoff_evidence_missing", "baseline_comparison_missing"} & codes
+
+
+def test_hash_bound_second_pass_review_clears_only_the_anti_shallow_gate(tmp_path):
+    paper_dir = tmp_path / "paper"
+    reports = tmp_path / "reports"
+    paper_dir.mkdir()
+    reports.mkdir()
+    manuscript = paper_dir / "main.md"
+    manuscript.write_text("问题一\n问题二\n问题三\n问题四\n", encoding="utf-8")
+    reports.joinpath("independent_review.json").write_text(json.dumps({
+        "status": "PASS",
+        "reviewed_path": "paper/main.md",
+        "manuscript_sha256": hashlib.sha256(manuscript.read_bytes()).hexdigest(),
+        "checks": [{"id": "a", "passed": True}, {"id": "b", "passed": True}, {"id": "c", "passed": True}],
+    }), encoding="utf-8")
+
+    codes = {issue["code"] for issue in semantic_issues(tmp_path, manuscript)}
+
+    assert "REVIEW_SUSPICIOUSLY_SHALLOW" not in codes

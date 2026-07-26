@@ -2,6 +2,7 @@
 from __future__ import annotations
 
 import json
+import hashlib
 import re
 from pathlib import Path
 from typing import Any
@@ -36,6 +37,23 @@ def _question_rows(contract: Any) -> list[dict[str, Any]]:
 
 def _present(value: Any) -> bool:
     return value not in (None, "", [], {})
+
+
+def _independent_review_passed(root: Path, paper: Path) -> bool:
+    """Accept a separately-produced, hash-bound second-pass review only."""
+    candidate = root / "reports" / "independent_review.json"
+    review = _load_json(candidate)
+    if not isinstance(review, dict) or review.get("status") != "PASS":
+        return False
+    if review.get("reviewed_path") != str(paper.relative_to(root)).replace("\\", "/"):
+        return False
+    if review.get("manuscript_sha256") != hashlib.sha256(paper.read_bytes()).hexdigest():
+        return False
+    checks = review.get("checks")
+    return isinstance(checks, list) and len(checks) >= 3 and all(
+        isinstance(check, dict) and check.get("passed") is True and _present(check.get("id"))
+        for check in checks
+    )
 
 
 def _contains_any(value: Any, tokens: tuple[str, ...]) -> bool:
@@ -126,6 +144,6 @@ def semantic_issues(project_root: str | Path, paper_path: str | Path) -> list[di
         if missing:
             issues.append({"gate": "figures_tables", "code": "table_registry_incomplete", "severity": "blocking", "message": f"table registry item {index} is missing {', '.join(missing)}"})
     questions = len(re.findall(r"(?:问题|question)\s*[一二三四1234]", text, re.I))
-    if questions >= 4 and not issues:
+    if questions >= 4 and not issues and not _independent_review_passed(root, paper):
         issues.append({"gate": "validation", "code": "REVIEW_SUSPICIOUSLY_SHALLOW", "severity": "blocking", "message": "complex paper produced no semantic findings; run an independent second review"})
     return issues

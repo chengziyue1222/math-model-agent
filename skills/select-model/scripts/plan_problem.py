@@ -17,6 +17,12 @@ def main(root: Path) -> None:
     dump(root,"results/problem_decomposition.json",decomposition); dump(root,"results/candidate_models.json",candidates)
     dump(root,"results/baseline_plan.json",{"name":"equal-share feasible allocation","validation":"compare cost and supplier count"})
     dump(root,"results/selected_model_plan.json",{"primary":"rank consensus + robust MILP + rolling LP","disclosure":"Q2 is decomposed, not an integrated robust optimization model"})
+    dump(root,"results/decision_contract.json",{"version":"1.1","questions":[
+        {"id":"Q1","result_artifact":"results/top50_suppliers.csv","validation_artifact":"results/supplier_ranking.csv","requires_baseline":False},
+        {"id":"Q2","result_artifact":"results/q2_weekly_plan.csv","validation_artifact":"results/quality_validation.json","requires_dynamic_state":True,"requires_uncertainty":True,"requires_baseline":True},
+        {"id":"Q3","result_artifact":"results/q3_weekly_plan.csv","validation_artifact":"results/q3_tradeoff.csv","requires_tradeoff":True,"requires_baseline":True},
+        {"id":"Q4","result_artifact":"results/q4_weekly_plan.csv","validation_artifact":"results/quality_validation.json","requires_baseline":True}
+    ]})
     dump(root,"results/risk_register.json",[{"risk":"supplier-count explosion","mitigation":"report implementation complexity"},{"risk":"static schedule","mitigation":"rolling weekly capacities"}])
     (root/"reports").mkdir(exist_ok=True); (root/"reports/model_selection_report.md").write_text("# Model selection\n\nFour questions are solved by a disclosed decomposition: ranking, set selection, rolling allocation, and capacity maximization. A simple feasible allocation is retained as a baseline.\n",encoding="utf-8")
 
