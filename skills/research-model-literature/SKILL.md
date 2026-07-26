@@ -20,3 +20,7 @@ Build a traceable evidence base for modeling choices and parameters.
 ## Integrity Rules
 
 Read `references/integrity-rules.md` before producing citations. Never invent a source, DOI, quotation, result, or BibTeX field. Mark inaccessible or uncertain records as unverified instead of completing them from memory.
+
+## Executable Contract
+
+Run `scripts/execute_skill.py` with `model_problem`, `selected_model`, and `citation_requirements`. Emit and register `search_queries`, `search_results`, `selected_sources`, `rejected_sources`, `literature_evidence`, `references_bib`, and `bib_validation`. A bibliography without this trace is unverified.

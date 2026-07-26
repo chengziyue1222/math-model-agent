@@ -8,9 +8,9 @@ Stages are strictly ordered. Evidence means an existing project-relative file wi
 | `analysis` | `problem_source`, `task_decomposition` | Is every subproblem, objective, constraint, datum, unit, and ambiguity explicit? |
 | `modeling` | `data_audit`, `model_selection` | Is there a leakage-safe data contract, a baseline, and a justified model route? |
 | `validation` | `implementation`, `machine_results`, `run_manifest` | Can the solver be rerun with recorded parameters and seeds? |
-| `writing` | `validation_report`, `sensitivity_report` | Do baselines, boundary checks, robustness, and independent checks support the claims? |
-| `review` | `manuscript`, `figure_inventory`, `run_manifest` | Are all important numbers and figures traceable to verified artifacts? |
-| `release` | `review_report`, `submission_checklist`, `run_manifest` | Are blockers resolved and competition-specific submission rules checked? |
+| `writing` | `validation_report`, `sensitivity_report`, `paper_spec`, `evidence_index`, `claim_registry`, `figure_registry`, `table_registry`, `formula_registry` | Is the project `READY_FOR_DRAFT` and are all proposed claims resolvable? |
+| `review` | `manuscript`, `figure_inventory`, `paper_review_report`, `run_manifest` | Is the project `DRAFT_GENERATED`; do all hard paper gates pass and are hashes current? |
+| `release` | `review_report`, `submission_checklist`, `run_manifest` | Is the project `FORMAL_PAPER_APPROVED`, with no review failure or stale evidence? |
 
 ## Transition Rules
 
@@ -19,6 +19,7 @@ Stages are strictly ordered. Evidence means an existing project-relative file wi
 - Never reuse a stale `run_manifest` record after changing an input or artifact.
 - A failed or partial run remains in the manifest and is not silently replaced by a later success.
 - A blocker freezes transitions but does not erase completed-stage history.
+- Paper status is one of `NOT_READY`, `READY_FOR_DRAFT`, `DRAFT_GENERATED`, `REVIEW_FAILED`, `RETURNED_TO_MODELING`, or `FORMAL_PAPER_APPROVED`. A failed review must return to modeling/validation or writing; it cannot advance to release.
 - Gate completion means evidence exists and is internally consistent; it does not guarantee a prize or publication outcome.
 
 ## Recommended Artifact Paths

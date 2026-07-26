@@ -48,3 +48,7 @@ The project is complete only at `release`, after the review report, submission c
 - Read `references/stage-gates.md` for required evidence and transition rules.
 - Read `references/handoff-schema.md` for status and artifact handoffs.
 - Run `scripts/project_state.py` to initialize, inspect, block, resume, advance, and export state.
+
+## Executable Contract
+
+Use `scripts/execute_skill.py` to record the orchestration invocation with `project_config` and `skill_trace`, then register `project_state`, `stage_gate`, and `handoff`. Before release, run `scripts/validate_skill_workflow.py`; it fails if a required standard Skill has no successful trace, an artifact producer is invalid, or a project script bypasses the workflow.

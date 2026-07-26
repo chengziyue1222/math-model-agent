@@ -33,3 +33,7 @@ Do not claim novelty, data availability, or model performance without evidence. 
 ## Resources
 
 Read `references/model-catalog.md` for the selection matrix and disqualifying conditions.
+
+## Executable Contract
+
+Use `scripts/execute_skill.py` before implementation. Record `official_problem`, `data_dictionary`, `constraint_summary`, and `project_goal`; register `problem_decomposition`, `candidate_models`, `baseline_plan`, `selected_model_plan`, `risk_register`, and `model_selection_report`. A prose-only selection is not a completed run.

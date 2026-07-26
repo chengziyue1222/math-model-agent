@@ -27,3 +27,7 @@ Produce a reproducible evidence trail from raw data to model-ready outputs.
 ## Resources
 
 Read `references/analysis-standards.md` before modeling. Use `scripts/profile_csv.py` for deterministic first-pass profiling.
+
+## Executable Contract
+
+Use `scripts/execute_skill.py` with the shared runtime. Supply the `raw_data`, `data_dictionary`, and `official_problem` inputs, and produce every contracted output role: `data_profile`, `data_quality_report`, `cleaning_actions`, `eda_findings`, `leakage_report`, `processed_data_manifest`, and `data_analysis`. Do not advance a project or register a data-audit artifact without its successful signed Skill run.

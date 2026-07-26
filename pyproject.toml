@@ -34,7 +34,7 @@ include = ["algorithms*"]
 
 [tool.pytest.ini_options]
 testpaths = ["code/tests"]
-pythonpath = ["code"]
+pythonpath = ["code", "."]
 
 [tool.coverage.report]
 exclude_also = [

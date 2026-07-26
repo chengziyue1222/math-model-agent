@@ -25,3 +25,7 @@ Do not use decorative 3-D effects, rainbow color maps, truncated axes without di
 ## Resources
 
 Read `references/figure-standards.md` for chart selection and formatting. Read `references/publication-workflow.md` for figure contracts, export code, and the audit checklist.
+
+## Executable Contract
+
+Run `scripts/execute_skill.py` under the shared runtime with `result_object`, `claim_registry`, and `figure_plan`. Register the `figure_registry` and `figure_audit_report` outputs; only this successful Skill run may register formal figures for a paper.

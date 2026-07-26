@@ -79,6 +79,7 @@ from .image_processing import (
 
 # ── 9. 论文与图表 (34) ────────────────────────────────────────
 from .paper_check import PaperChecker, check_paper
+from .paper_readiness import ReadinessReview, review_paper, write_review_report
 from .sci_figures import (
     TaylorDiagram, PairedRaincloud, CvRocCurve, CorrelationPairgrid,
     PredictionMarginal, HyperparamSurface, CorrSplitViolin,
@@ -138,7 +139,7 @@ __all__ = [
     'histogram_analysis', 'histogram_equalization', 'feature_extraction',
 
     # ── 论文与图表 (34) ──
-    'PaperChecker', 'check_paper',
+    'PaperChecker', 'check_paper', 'ReadinessReview', 'review_paper', 'write_review_report',
     'TaylorDiagram', 'PairedRaincloud', 'CvRocCurve', 'CorrelationPairgrid',
     'PredictionMarginal', 'HyperparamSurface', 'CorrSplitViolin',
     'CircularHeatmap', 'ComboComparison', 'ChordDiagram', 'ShapBeeswarm',

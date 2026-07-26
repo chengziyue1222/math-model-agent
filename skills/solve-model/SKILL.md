@@ -32,3 +32,7 @@ Turn an agreed modeling route into a reproducible solution.
 - Read `references/algorithm-api.md` for supported repository APIs.
 - Read `references/validation-checklist.md` before accepting final results.
 - Run `scripts/check_environment.py` for a deterministic import and dependency check.
+
+## Executable Contract
+
+Invoke `scripts/execute_skill.py` with `selected_model_plan`, `data_analysis`, `model_config`, and `baseline_plan`. Its outputs must include a `model_specification`, a single status-bearing `result_object`, and `solver_validation`. Do not accept an infeasible or failed result as optimal, and do not let an orchestration script create these formal outputs.
