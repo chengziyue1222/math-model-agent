@@ -13,9 +13,9 @@ Build a traceable evidence base for modeling choices and parameters.
 2. Search current authoritative sources; prioritize original papers, official datasets, standards, and competition rules.
 3. Record query terms, search date, title, authors, year, DOI or stable URL, and relevance.
 4. Verify each citation against the source page or paper metadata.
-5. Cluster findings by method and compare assumptions, datasets, metrics, and limitations.
+5. Cluster findings by method and compare assumptions, datasets, metrics, limitations, decision coupling, uncertainty semantics, and validation design. Treat competition exemplars as style/method evidence only: never recover their hidden numerical solution, named entities, or tuned parameters.
 6. Separate established findings, source-supported inference, and open questions.
-7. Generate BibTeX only from verified metadata.
+7. Generate BibTeX only from verified metadata. Record transferable design patterns separately from problem-specific outputs so that a later project cannot inherit an exemplar's answer.
 
 ## Integrity Rules
 

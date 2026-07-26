@@ -11,11 +11,11 @@ Produce a reproducible evidence trail from raw data to model-ready outputs.
 
 1. Preserve the raw files and identify schema, units, missingness, duplicates, and target leakage risks.
 2. Run `scripts/profile_csv.py` for CSV inputs, then inspect domain-specific anomalies manually.
-3. Define the analysis question and evaluation metric before choosing transformations or models.
+3. Define the analysis question and evaluation metric before choosing transformations or models. For planning data, profile temporal dependence, cross-entity correlation, support/zero inflation, and unit-conversion risk before choosing an uncertainty model.
 4. Split train/test data before fitting imputers, scalers, encoders, or feature selectors.
 5. Compare against a simple baseline and report uncertainty, not only point metrics.
 6. Save cleaned data, analysis code, configuration, figures, and a machine-readable result summary.
-7. Document every exclusion, imputation, transformation, and random seed.
+7. Document every exclusion, imputation, transformation, random seed, and the evidence for or against independent sampling. Preserve a time-aware holdout or stress slice when the task contains future planning.
 
 ## Guardrails
 

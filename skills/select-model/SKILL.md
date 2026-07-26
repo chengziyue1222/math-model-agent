@@ -13,9 +13,11 @@ Select a defensible modeling route before writing equations or code.
 2. Extract objectives, decision variables, constraints, data availability, uncertainty, and required outputs.
 3. Classify each subproblem with `references/model-catalog.md`.
 4. Shortlist two to four candidate models. Compare assumptions, sample requirements, interpretability, computational cost, and validation options.
-5. Choose a primary model, a simpler baseline, and an independent validation method.
-6. State why rejected candidates are weaker for this problem.
-7. Return the result using the output contract below.
+5. Choose a primary model, a simpler baseline run on the same inputs, and an independent validation method.
+6. Create a machine-readable decision contract for every subproblem: objective, decisions, constraints, required state transitions, uncertainty mode, multi-objective strategy, executable output, and validation evidence.
+7. For a multi-period decision, declare whether a state balance is required; for uncertainty, declare scenario/robust/stochastic semantics and calibration evidence; for competing objectives, declare a Pareto, epsilon-constraint, lexicographic, or weight-sensitivity route.
+8. State why rejected candidates are weaker for this problem.
+9. Return the result using the output contract below.
 
 ## Output Contract
 
@@ -26,6 +28,7 @@ Provide:
 - variables, objective, constraints, and assumptions;
 - required data and preprocessing;
 - expected outputs and validation plan;
+- a per-question decision contract, not only a narrative model list;
 - failure risks and fallback route.
 
 Do not claim novelty, data availability, or model performance without evidence. Do not start implementation unless the user asks for it.
@@ -36,4 +39,4 @@ Read `references/model-catalog.md` for the selection matrix and disqualifying co
 
 ## Executable Contract
 
-Use `scripts/execute_skill.py` before implementation. Record `official_problem`, `data_dictionary`, `constraint_summary`, and `project_goal`; register `problem_decomposition`, `candidate_models`, `baseline_plan`, `selected_model_plan`, `risk_register`, and `model_selection_report`. A prose-only selection is not a completed run.
+Use `scripts/execute_skill.py` before implementation. Record `official_problem`, `data_dictionary`, `constraint_summary`, and `project_goal`; register `problem_decomposition`, `candidate_models`, `baseline_plan`, `selected_model_plan`, `decision_contract`, `risk_register`, and `model_selection_report`. A prose-only selection is not a completed run.

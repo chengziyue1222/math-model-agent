@@ -26,9 +26,10 @@ Coordinate the existing specialist Skills without letting artifacts, decisions, 
    - figures: `$make-model-figures`
    - manuscript: `$write-model-paper`
    - audit: `$review-model-paper`
-3. Save machine-readable evidence under stable project-relative paths.
-4. Update and verify `run-manifest.json`; preserve failed runs, diagnostics, seeds, metrics, and limitations.
-5. Advance with `scripts/project_state.py advance` only when every required evidence role exists and hashes successfully.
+3. Carry the `decision_contract` from model selection through solving, figure design, writing, and review; carry `quality_validation` from solving through figure design, writing, and review.
+4. Save machine-readable evidence under stable project-relative paths.
+5. Update and verify `run-manifest.json`; preserve failed runs, diagnostics, seeds, metrics, and limitations.
+6. Advance with `scripts/project_state.py advance` only when every required evidence role exists and hashes successfully.
 6. Emit the handoff described in `references/handoff-schema.md` before changing stages or ending the task.
 
 ## Failure and Recovery
@@ -41,7 +42,7 @@ Coordinate the existing specialist Skills without letting artifacts, decisions, 
 
 ## Completion
 
-The project is complete only at `release`, after the review report, submission checklist, and verified run manifest pass the final gate. Report unresolved limitations even when every gate passes.
+The project is complete only at `release`, after the review report, submission checklist, decision contract, quality validation, and verified run manifest pass the final gate. Report unresolved limitations even when every gate passes.
 
 ## Resources
 
@@ -51,4 +52,4 @@ The project is complete only at `release`, after the review report, submission c
 
 ## Executable Contract
 
-Use `scripts/execute_skill.py` to record the orchestration invocation with `project_config` and `skill_trace`, then register `project_state`, `stage_gate`, and `handoff`. Before release, run `scripts/validate_skill_workflow.py`; it fails if a required standard Skill has no successful trace, an artifact producer is invalid, or a project script bypasses the workflow.
+Use `scripts/execute_skill.py` to record the orchestration invocation with `project_config` and `skill_trace`, then register `project_state`, `stage_gate`, and `handoff`. Before release, run the repository workflow validator; it fails if a required standard Skill has no successful trace, an artifact producer is invalid, or a project script bypasses the workflow.

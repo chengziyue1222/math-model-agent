@@ -10,7 +10,7 @@ from pathlib import Path
 from typing import Any
 
 
-CONTRACT_VERSION = "1.0"
+CONTRACT_VERSION = "1.1"
 CONTRACTS: dict[str, dict[str, tuple[str, ...]]] = {
     "run-modeling-project": {
         "inputs": ("project_config", "skill_trace"),
@@ -18,7 +18,7 @@ CONTRACTS: dict[str, dict[str, tuple[str, ...]]] = {
     },
     "select-model": {
         "inputs": ("official_problem", "data_dictionary", "constraint_summary", "project_goal"),
-        "outputs": ("problem_decomposition", "candidate_models", "baseline_plan", "selected_model_plan", "risk_register", "model_selection_report"),
+        "outputs": ("problem_decomposition", "candidate_models", "baseline_plan", "selected_model_plan", "decision_contract", "risk_register", "model_selection_report"),
     },
     "analyze-model-data": {
         "inputs": ("raw_data", "data_dictionary", "official_problem"),
@@ -29,19 +29,19 @@ CONTRACTS: dict[str, dict[str, tuple[str, ...]]] = {
         "outputs": ("search_queries", "search_results", "selected_sources", "rejected_sources", "literature_evidence", "references_bib", "bib_validation"),
     },
     "solve-model": {
-        "inputs": ("selected_model_plan", "data_analysis", "model_config", "baseline_plan"),
-        "outputs": ("model_specification", "result_object", "solver_validation"),
+        "inputs": ("selected_model_plan", "decision_contract", "data_analysis", "model_config", "baseline_plan"),
+        "outputs": ("model_specification", "result_object", "solver_validation", "quality_validation"),
     },
     "make-model-figures": {
-        "inputs": ("result_object", "claim_registry", "figure_plan"),
+        "inputs": ("result_object", "quality_validation", "claim_registry", "figure_plan"),
         "outputs": ("figure_registry", "figure_audit_report"),
     },
     "write-model-paper": {
-        "inputs": ("paper_spec", "evidence_index", "claim_registry", "formula_registry", "figure_registry", "table_registry", "references_bib", "result_object"),
+        "inputs": ("paper_spec", "evidence_index", "decision_contract", "quality_validation", "claim_registry", "formula_registry", "figure_registry", "table_registry", "references_bib", "result_object"),
         "outputs": ("main_markdown", "main_tex", "paper_generation_report", "claim_usage_report"),
     },
     "review-model-paper": {
-        "inputs": ("manuscript", "official_problem", "result_object", "claim_registry", "figure_registry", "table_registry", "references_bib", "project_manifest"),
+        "inputs": ("manuscript", "official_problem", "decision_contract", "quality_validation", "result_object", "claim_registry", "figure_registry", "table_registry", "references_bib", "project_manifest"),
         "outputs": ("paper_review_report",),
     },
 }

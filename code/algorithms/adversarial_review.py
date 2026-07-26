@@ -19,11 +19,76 @@ def _registrations(value: Any, key: str) -> list[dict[str, Any]]:
     return [row for row in rows if isinstance(row, dict)]
 
 
+def _first_named_json(root: Path, filename: str) -> Any:
+    candidates = sorted(root.rglob(filename))
+    return _load_json(candidates[0]) if candidates else None
+
+
+def _question_rows(contract: Any) -> list[dict[str, Any]]:
+    if not isinstance(contract, dict):
+        return []
+    for key in ("questions", "subproblems", "decisions"):
+        rows = contract.get(key)
+        if isinstance(rows, list):
+            return [row for row in rows if isinstance(row, dict)]
+    return []
+
+
+def _present(value: Any) -> bool:
+    return value not in (None, "", [], {})
+
+
+def _contains_any(value: Any, tokens: tuple[str, ...]) -> bool:
+    serialized = json.dumps(value, ensure_ascii=False).lower() if value is not None else ""
+    return any(token in serialized for token in tokens)
+
+
+def _decision_contract_issues(root: Path) -> list[dict[str, str]]:
+    """Check only declared requirements; avoid guessing a problem's intended model."""
+    contract = _first_named_json(root, "decision_contract.json")
+    if contract is None:
+        return []
+    quality = _first_named_json(root, "quality_validation.json")
+    specification = _first_named_json(root, "model_specification.json")
+    issues: list[dict[str, str]] = []
+    for index, question in enumerate(_question_rows(contract), start=1):
+        label = str(question.get("id") or question.get("question_id") or f"question-{index}")
+        requirements = question.get("quality_requirements", question)
+        if not isinstance(requirements, dict):
+            requirements = question
+        if not _present(question.get("result_artifact")):
+            issues.append({"gate": "evidence", "code": "question_output_evidence_missing", "severity": "blocking", "message": f"{label} has no registered executable result artifact in the decision contract"})
+        if not _present(question.get("validation_artifact")):
+            issues.append({"gate": "validation", "code": "question_validation_evidence_missing", "severity": "blocking", "message": f"{label} has no registered validation artifact in the decision contract"})
+        if requirements.get("requires_dynamic_state") and not _contains_any(specification, ("state_variable", "state transition", "state_transition", "inventory_balance", "balance_constraint")):
+            issues.append({"gate": "mathematics", "code": "multi_period_state_missing", "severity": "blocking", "message": f"{label} declares a multi-period state requirement but the model specification lacks a registered state/balance formulation"})
+        if requirements.get("requires_uncertainty"):
+            uncertainty = quality.get("uncertainty") if isinstance(quality, dict) else None
+            valid_mode = isinstance(uncertainty, dict) and str(uncertainty.get("mode", "")).lower() not in {"", "deterministic", "none"}
+            has_provenance = isinstance(uncertainty, dict) and _present(uncertainty.get("scenario_source"))
+            has_validation = isinstance(uncertainty, dict) and _present(uncertainty.get("holdout_or_stress_evidence"))
+            if not (valid_mode and has_provenance and has_validation):
+                issues.append({"gate": "validation", "code": "uncertainty_evidence_missing", "severity": "blocking", "message": f"{label} declares uncertainty but quality validation lacks mode, scenario provenance, or holdout/stress evidence"})
+        if requirements.get("requires_tradeoff"):
+            tradeoff = quality.get("multiobjective") if isinstance(quality, dict) else None
+            strategy = str(tradeoff.get("strategy", "")).lower() if isinstance(tradeoff, dict) else ""
+            evidence = tradeoff.get("tradeoff_evidence") if isinstance(tradeoff, dict) else None
+            if strategy not in {"pareto", "epsilon_constraint", "lexicographic", "weighted_sum_with_sensitivity"} or not _present(evidence):
+                issues.append({"gate": "validation", "code": "tradeoff_evidence_missing", "severity": "blocking", "message": f"{label} declares competing objectives but lacks an explicit trade-off strategy and evidence"})
+        if requirements.get("requires_baseline"):
+            baseline = quality.get("baseline_comparison") if isinstance(quality, dict) else None
+            valid = isinstance(baseline, dict) and baseline.get("shared_inputs") is True and _present(baseline.get("metrics"))
+            if not valid:
+                issues.append({"gate": "validation", "code": "baseline_comparison_missing", "severity": "blocking", "message": f"{label} declares a baseline requirement but quality validation lacks same-input comparison metrics"})
+    return issues
+
+
 def semantic_issues(project_root: str | Path, paper_path: str | Path) -> list[dict[str, str]]:
     """Return blocking and warning semantic findings without relying on a problem ID."""
     root, paper = Path(project_root), Path(paper_path)
     text = paper.read_text(encoding="utf-8") if paper.is_file() else ""
     issues: list[dict[str, str]] = []
+    issues.extend(_decision_contract_issues(root))
     spec = (paper.parent / "paper-spec.yaml").read_text(encoding="utf-8") if (paper.parent / "paper-spec.yaml").is_file() else ""
     required_count = re.search(r"required_supplier_count\s*:\s*(\d+)", spec)
     if required_count:

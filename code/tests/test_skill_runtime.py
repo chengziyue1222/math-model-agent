@@ -8,6 +8,7 @@ from scripts.skill_runtime import (
     validate_skill_run,
 )
 from scripts.validate_skill_workflow import scan_project_scripts, validate_producers
+from scripts.skill_contracts import contract_for
 
 
 def _write(root: Path, relative: str, text: str = "{}") -> None:
@@ -54,3 +55,12 @@ def test_bypass_scanner_flags_direct_paper_writes(tmp_path):
     _write(tmp_path, "run_project.py", "Path('main.tex').write_text('paper')\n")
     findings = scan_project_scripts(tmp_path)
     assert findings and findings[0]["code"] == "BYPASS_DETECTED"
+
+
+def test_quality_evidence_roles_are_required_across_the_competition_pipeline():
+    assert "decision_contract" in contract_for("select-model")["outputs"]
+    assert "decision_contract" in contract_for("solve-model")["inputs"]
+    assert "quality_validation" in contract_for("solve-model")["outputs"]
+    assert "quality_validation" in contract_for("make-model-figures")["inputs"]
+    assert {"decision_contract", "quality_validation"} <= set(contract_for("write-model-paper")["inputs"])
+    assert {"decision_contract", "quality_validation"} <= set(contract_for("review-model-paper")["inputs"])

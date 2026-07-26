@@ -16,6 +16,8 @@ decision_summary:
   model: selected model and version
   baseline: comparison method
   metric: primary metric and split
+decision_contract: reports/decision-contract.json
+quality_validation: reports/quality-validation.json
 failed_runs:
   - run_id: stable-run-id
     reason: concise factual cause
