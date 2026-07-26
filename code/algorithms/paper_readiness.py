@@ -12,6 +12,8 @@ from dataclasses import dataclass, field
 from pathlib import Path
 from typing import Any
 
+from .modeling_contracts import validate_contract_artifacts
+
 
 GATES = ("structure", "mathematics", "figures_tables", "evidence", "validation", "citations")
 COMPETITION_SECTIONS = (
@@ -23,6 +25,13 @@ FORMULA_RE = re.compile(r"(?:^|\n)\s*\(?\d+\)?\s*\$\$|\$\$.*?\$\$|\\tag\{\d+\}",
 CLAIM_RE = re.compile(r"\[claim:([A-Za-z0-9_-]+)\]")
 IMAGE_RE = re.compile(r"!\[[^\]]*\]\(([^)]+)\)")
 TABLE_RE = re.compile(r"(?m)^\|.+\|\s*$\n^\|\s*:?-{3,}")
+DEFAULT_MINIMUMS = {
+    "minimum_body_characters": 9_000,
+    "minimum_equations": 10,
+    "minimum_figures": 8,
+    "minimum_tables": 6,
+    "minimum_references": 8,
+}
 
 
 @dataclass
@@ -100,6 +109,19 @@ def _index_by_id(value: Any, key: str) -> dict[str, dict[str, Any]]:
     return {str(row.get(key)): row for row in rows if isinstance(row, dict) and row.get(key)}
 
 
+def _paper_minimums(spec_path: Path) -> dict[str, int]:
+    """Read optional integer readiness thresholds while preserving safe defaults."""
+    minimums = dict(DEFAULT_MINIMUMS)
+    if not spec_path.is_file():
+        return minimums
+    text = spec_path.read_text(encoding="utf-8")
+    for key in minimums:
+        match = re.search(rf"(?m)^\s*{re.escape(key)}\s*:\s*(\d+)\s*$", text)
+        if match:
+            minimums[key] = int(match.group(1))
+    return minimums
+
+
 def review_paper(project_root: str | Path, paper_path: str | Path, *, mode: str = "competition_paper",
                  paper_spec: str | Path | None = None) -> ReadinessReview:
     """Review a paper against registries rooted at *project_root*.
@@ -114,15 +136,17 @@ def review_paper(project_root: str | Path, paper_path: str | Path, *, mode: str 
         return review
     text = paper.read_text(encoding="utf-8")
     headings = re.findall(r"(?m)^#{1,3}\s+(.+)$", text)
+    spec_path = Path(paper_spec) if paper_spec else paper.parent / "paper-spec.yaml"
+    minimums = _paper_minimums(spec_path)
     if mode == "competition_paper":
-        if len(text) < 9_000:
-            review.fail("structure", "paper_too_short", f"competition_paper 正文仅 {len(text)} 字符", "writing")
+        if len(text) < minimums["minimum_body_characters"]:
+            review.fail("structure", "paper_too_short", f"competition_paper 正文仅 {len(text)} 字符，需要至少 {minimums['minimum_body_characters']}", "writing")
         for section in COMPETITION_SECTIONS:
             if not any(section in heading for heading in headings):
                 review.fail("structure", "missing_section", f"缺少必要章节：{section}", "writing")
         formulas = len(FORMULA_RE.findall(text))
-        if formulas < 10:
-            review.fail("mathematics", "insufficient_equations", f"编号/展示公式仅 {formulas} 个，需要至少 10 个", "modeling")
+        if formulas < minimums["minimum_equations"]:
+            review.fail("mathematics", "insufficient_equations", f"编号/展示公式仅 {formulas} 个，需要至少 {minimums['minimum_equations']} 个", "modeling")
         if "目标函数" not in text or "约束" not in text:
             review.fail("mathematics", "optimization_incomplete", "未同时展示目标函数和约束", "modeling")
     elif mode == "teaching_example":
@@ -131,7 +155,6 @@ def review_paper(project_root: str | Path, paper_path: str | Path, *, mode: str 
         if not IMAGE_RE.findall(text) or not TABLE_RE.findall(text):
             review.fail("figures_tables", "teaching_visual_incomplete", "教学示例必须包含图和表", "writing")
 
-    spec_path = Path(paper_spec) if paper_spec else paper.parent / "paper-spec.yaml"
     registry_dir = spec_path.parent
     if mode == "competition_paper" and not spec_path.is_file():
         review.fail("evidence", "paper_spec_missing", f"缺少结构化契约：{spec_path.name}", "writing")
@@ -147,6 +170,12 @@ def review_paper(project_root: str | Path, paper_path: str | Path, *, mode: str 
     formulas_registry = _load_json(registries["formula-registry.json"], review, "mathematics") if registries["formula-registry.json"].is_file() else []
     evidence_by_id = _index_by_id(evidence, "evidence_id")
     claim_by_id = _index_by_id(claims, "claim_id")
+    decision_path = root / "results" / "decision_contract.json"
+    if decision_path.is_file():
+        decision_contract = _load_json(decision_path, review, "evidence")
+        if isinstance(decision_contract, dict):
+            for issue in validate_contract_artifacts(decision_contract, root):
+                review.fail("evidence", issue["id"], issue["message"], "modeling")
     for evidence_id, item in evidence_by_id.items():
         path = root / str(item.get("path", ""))
         if not path.is_file() or item.get("sha256") != _sha256(path):
@@ -191,16 +220,16 @@ def review_paper(project_root: str | Path, paper_path: str | Path, *, mode: str 
             review.missing_tables.append(label)
             review.fail("figures_tables", "table_not_inserted", f"表 {label} 未实际插入正文", "writing")
     if mode == "competition_paper":
-        if len(_index_by_id(figures, "figure_id")) < 8:
-            review.fail("figures_tables", "insufficient_figure_registry", "图注册表少于 8 条", "writing")
-        if len(_index_by_id(tables, "table_id")) < 6:
-            review.fail("figures_tables", "insufficient_table_registry", "表注册表少于 6 条", "writing")
-        if len(IMAGE_RE.findall(text)) < 8:
-            review.fail("figures_tables", "insufficient_figures", "正文图片少于 8 张", "writing")
-        if len(TABLE_RE.findall(text)) < 6:
-            review.fail("figures_tables", "insufficient_tables", "正文 Markdown 表少于 6 张", "writing")
-        if not isinstance(formulas_registry, list) or sum(bool(x.get("inserted_in_body")) for x in formulas_registry if isinstance(x, dict)) < 10:
-            review.fail("mathematics", "formula_registry_incomplete", "公式注册表未登记至少 10 个已插入公式", "writing")
+        if len(_index_by_id(figures, "figure_id")) < minimums["minimum_figures"]:
+            review.fail("figures_tables", "insufficient_figure_registry", f"图注册表少于 {minimums['minimum_figures']} 条", "writing")
+        if len(_index_by_id(tables, "table_id")) < minimums["minimum_tables"]:
+            review.fail("figures_tables", "insufficient_table_registry", f"表注册表少于 {minimums['minimum_tables']} 条", "writing")
+        if len(IMAGE_RE.findall(text)) < minimums["minimum_figures"]:
+            review.fail("figures_tables", "insufficient_figures", f"正文图片少于 {minimums['minimum_figures']} 张", "writing")
+        if len(TABLE_RE.findall(text)) < minimums["minimum_tables"]:
+            review.fail("figures_tables", "insufficient_tables", f"正文 Markdown 表少于 {minimums['minimum_tables']} 张", "writing")
+        if not isinstance(formulas_registry, list) or sum(bool(x.get("inserted_in_body")) for x in formulas_registry if isinstance(x, dict)) < minimums["minimum_equations"]:
+            review.fail("mathematics", "formula_registry_incomplete", f"公式注册表未登记至少 {minimums['minimum_equations']} 个已插入公式", "writing")
     if "infeasible" in text.lower() and re.search(r"最优|optimal", text, re.I):
         review.fail("validation", "invalid_solver_claim", "论文同时声称 infeasible 和最优", "modeling")
     validation_text = (root / "results" / "simulation_metrics.json")
@@ -210,8 +239,8 @@ def review_paper(project_root: str | Path, paper_path: str | Path, *, mode: str 
             review.fail("validation", "simulation_validation_missing", "仿真缺少 seed 列表或置信区间聚合结果", "validation")
     references = text.split("参考文献", 1)[-1] if "参考文献" in text else ""
     ref_lines = [line for line in references.splitlines() if re.match(r"\s*\[\d+\]", line)]
-    if mode == "competition_paper" and len(ref_lines) < 8:
-        review.fail("citations", "insufficient_citations", "可核验参考文献少于 8 条", "writing")
+    if mode == "competition_paper" and len(ref_lines) < minimums["minimum_references"]:
+        review.fail("citations", "insufficient_citations", f"可核验参考文献少于 {minimums['minimum_references']} 条", "writing")
     if any("doi" in line.lower() and not re.search(r"10\.\d{4,9}/[-._;()/:A-Z0-9]+", line, re.I) for line in ref_lines):
         review.fail("citations", "invalid_doi", "发现格式无效的 DOI", "writing")
     return review

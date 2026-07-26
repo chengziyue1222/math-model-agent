@@ -21,8 +21,13 @@ from datetime import datetime, timezone
 from pathlib import Path, PurePath
 from typing import Any
 
+if __package__ in (None, ""):
+    sys.path.insert(0, str(Path(__file__).resolve().parents[1]))
 
-RUNTIME_VERSION = "1.0"
+from scripts.skill_contracts import CONTRACT_VERSION
+
+
+RUNTIME_VERSION = "1.1"
 STANDARD_SKILLS = (
     "run-modeling-project",
     "select-model",
@@ -137,8 +142,23 @@ def _implementation_hashes(skill_path: str | Path | None) -> dict[str, str]:
     if skill_path is None:
         return {}
     path = Path(skill_path)
-    files = [path] if path.is_file() else sorted(path.rglob("*")) if path.is_dir() else []
-    return {str(item): _sha256(item) for item in files if item.is_file()}
+    if path.is_file():
+        return {path.name: _sha256(path)}
+    if path.is_dir():
+        return {
+            str(item.relative_to(path)).replace("\\", "/"): _sha256(item)
+            for item in sorted(path.rglob("*"))
+            if item.is_file()
+        }
+    return {}
+
+
+def _implementation_digest(hashes: dict[str, str]) -> str | None:
+    """Hash the complete implementation map so directory-backed Skills have an identity."""
+    if not hashes:
+        return None
+    payload = json.dumps(hashes, ensure_ascii=False, sort_keys=True, separators=(",", ":"))
+    return hashlib.sha256(payload.encode("utf-8")).hexdigest()
 
 
 def start_skill_run(
@@ -157,15 +177,17 @@ def start_skill_run(
     if not project_id.strip():
         raise ValueError("project_id must be non-empty")
     input_records = _input_records(root, inputs or [])
+    implementation_hashes = _implementation_hashes(skill_path)
     record = {
         "event": "start",
         "runtime_version": RUNTIME_VERSION,
+        "contract_version": CONTRACT_VERSION,
         "run_id": uuid.uuid4().hex,
         "project_id": project_id,
         "skill": skill,
         "skill_path": str(skill_path or ""),
-        "skill_sha256": _sha256(Path(skill_path)) if skill_path and Path(skill_path).is_file() else None,
-        "implementation_hashes": _implementation_hashes(skill_path),
+        "skill_sha256": _implementation_digest(implementation_hashes),
+        "implementation_hashes": implementation_hashes,
         "started_at": _now(),
         "inputs": input_records,
         "command_or_invocation": command_or_invocation,
@@ -224,6 +246,7 @@ def finish_skill_run(
     record = {
         "event": "finish",
         "runtime_version": RUNTIME_VERSION,
+        "contract_version": start.get("contract_version", CONTRACT_VERSION),
         "run_id": run_id,
         "project_id": start["project_id"],
         "skill": start["skill"],
@@ -247,7 +270,7 @@ def finish_skill_run(
                 **item,
                 "producer_type": "skill",
                 "producer_name": start["skill"],
-                "producer_version": RUNTIME_VERSION,
+                "producer_version": f"{RUNTIME_VERSION}/contract-{start.get('contract_version', CONTRACT_VERSION)}",
                 "producer_sha256": start.get("skill_sha256"),
                 "run_id": run_id,
                 "input_hashes": {item["path"]: item["sha256"] for item in start["inputs"]},

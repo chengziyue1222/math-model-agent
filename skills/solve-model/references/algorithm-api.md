@@ -38,4 +38,13 @@ from algorithms import ahp_weight, topsis, gm11_predict
 - `edge_detection(...)`、`image_segmentation(...)`、`feature_extraction(...)`
 - `check_paper(path, figures_dir="figures", results_file=None)`
 
+## 建模质量与证据契约
+
+- `validate_state_balance(initial_state, inflows, outflows, observed_end_states=None, lower_bound=None)` → 逐期状态、残差、最低状态与是否通过。
+- `service_level_metrics(achieved, target)` → 均值、最小值、5% 分位、达标率和逐期服务水平。
+- `compare_policy_metrics(baseline, candidate, shared_inputs=True, lower_is_better=...)` → 同口径增量；未声明共享输入时拒绝比较。
+- `lexicographic_order(records, objectives)` → 按显式 `min`/`max` 优先级给出稳定排序。
+- `validate_decision_contract(...)`、`validate_contract_artifacts(...)`、`validate_quality_validation(...)` → 供建模、写作和审查共同使用的机器契约。
+- `panel_diagnostics(values, holdout_periods=...)` → 面板稀疏性、时序相关、实体间相关和末段留出诊断。
+
 在使用前以 Python `inspect.signature` 或源代码核对参数；不要从旧 README 猜测函数名或返回值。

@@ -70,3 +70,33 @@ def test_teaching_example_uses_lower_presentation_thresholds(tmp_path):
     (tmp_path / "figure.svg").write_text("<svg/>", encoding="utf-8")
     paper = tmp_path / "short.md"; paper.write_text("## 教学\n$$ x=y $$\n![图](figure.svg)\n|a|b|\n|---|---|\n|1|2|", encoding="utf-8")
     assert review_paper(tmp_path, paper, mode="teaching_example").overall_status == "PASS"
+
+
+def test_competition_thresholds_can_be_declared_in_paper_spec(tmp_path):
+    paper = _setup(tmp_path)
+    (tmp_path / "paper-spec.yaml").write_text(
+        "\n".join(
+            (
+                "title: test",
+                "minimum_body_characters: 100",
+                "minimum_equations: 1",
+                "minimum_figures: 1",
+                "minimum_tables: 1",
+                "minimum_references: 1",
+            )
+        ),
+        encoding="utf-8",
+    )
+    (tmp_path / "figure-registry.json").write_text(
+        json.dumps([{"figure_id": "F1", "path": "figures/f1.svg", "inserted_in_body": True}]),
+        encoding="utf-8",
+    )
+    (tmp_path / "table-registry.json").write_text(
+        json.dumps([{"table_id": "T1", "inserted_in_body": True}]),
+        encoding="utf-8",
+    )
+    (tmp_path / "formula-registry.json").write_text(
+        json.dumps([{"formula_id": "1", "inserted_in_body": True}]),
+        encoding="utf-8",
+    )
+    assert review_paper(tmp_path, paper).overall_status == "PASS"

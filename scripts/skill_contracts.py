@@ -10,7 +10,7 @@ from pathlib import Path
 from typing import Any
 
 
-CONTRACT_VERSION = "1.1"
+CONTRACT_VERSION = "1.2"
 CONTRACTS: dict[str, dict[str, tuple[str, ...]]] = {
     "run-modeling-project": {
         "inputs": ("project_config", "skill_trace"),
@@ -25,7 +25,7 @@ CONTRACTS: dict[str, dict[str, tuple[str, ...]]] = {
         "outputs": ("data_profile", "data_quality_report", "cleaning_actions", "eda_findings", "leakage_report", "processed_data_manifest", "data_analysis"),
     },
     "research-model-literature": {
-        "inputs": ("model_problem", "selected_model", "citation_requirements"),
+        "inputs": ("model_problem", "selected_model", "citation_requirements", "source_candidates"),
         "outputs": ("search_queries", "search_results", "selected_sources", "rejected_sources", "literature_evidence", "references_bib", "bib_validation"),
     },
     "solve-model": {
@@ -45,11 +45,19 @@ CONTRACTS: dict[str, dict[str, tuple[str, ...]]] = {
         "outputs": ("paper_review_report",),
     },
 }
+LEGACY_CONTRACTS_1_1 = {
+    **CONTRACTS,
+    "research-model-literature": {
+        "inputs": ("model_problem", "selected_model", "citation_requirements"),
+        "outputs": CONTRACTS["research-model-literature"]["outputs"],
+    },
+}
 
 
-def contract_for(skill: str) -> dict[str, tuple[str, ...]]:
+def contract_for(skill: str, *, version: str = CONTRACT_VERSION) -> dict[str, tuple[str, ...]]:
+    contracts = LEGACY_CONTRACTS_1_1 if version == "1.1" else CONTRACTS
     try:
-        return CONTRACTS[skill]
+        return contracts[skill]
     except KeyError as exc:
         raise ValueError(f"unknown standard skill: {skill}") from exc
 
@@ -58,8 +66,14 @@ def _roles(records: Any) -> set[str]:
     return {str(item.get("role")) for item in records if isinstance(item, dict) and item.get("role")}
 
 
-def validate_records(skill: str, inputs: Any, outputs: Any) -> list[str]:
-    contract = contract_for(skill)
+def validate_records(
+    skill: str,
+    inputs: Any,
+    outputs: Any,
+    *,
+    contract_version: str = CONTRACT_VERSION,
+) -> list[str]:
+    contract = contract_for(skill, version=contract_version)
     supplied_inputs, supplied_outputs = _roles(inputs), _roles(outputs)
     errors = []
     for direction, required, supplied in (
@@ -75,7 +89,12 @@ def validate_records(skill: str, inputs: Any, outputs: Any) -> list[str]:
 def validate_terminal_run(run: dict[str, Any]) -> list[str]:
     if run.get("status") != "PASS":
         return [f"run {run.get('run_id')} is not a successful terminal run"]
-    return validate_records(str(run.get("skill", "")), run.get("inputs", []), run.get("outputs", []))
+    return validate_records(
+        str(run.get("skill", "")),
+        run.get("inputs", []),
+        run.get("outputs", []),
+        contract_version=str(run.get("contract_version", "1.1")),
+    )
 
 
 def export_contracts() -> dict[str, Any]:

@@ -94,6 +94,15 @@ from .diagram import (
     FlowchartLayout, ERDiagramLayout, SystemModuleLayout,
     AcademicTable, SQLParser, save_svg, save_drawio, save_html,
 )
+from .data_diagnostics import panel_diagnostics
+from .modeling_contracts import (
+    validate_decision_contract, validate_contract_artifacts,
+    validate_quality_validation, validate_source_records, records_to_bibtex,
+)
+from .modeling_quality import (
+    validate_state_balance, service_level_metrics,
+    compare_policy_metrics, lexicographic_order,
+)
 
 # ── 公开接口 ──────────────────────────────────────────────────
 __all__ = [
@@ -149,4 +158,10 @@ __all__ = [
     'publication_rc_params', 'audit_publication_figure', 'export_publication_figure',
     'FlowchartLayout', 'ERDiagramLayout', 'SystemModuleLayout',
     'AcademicTable', 'SQLParser', 'save_svg', 'save_drawio', 'save_html',
+    # Reusable evidence and quality contracts
+    'panel_diagnostics',
+    'validate_decision_contract', 'validate_contract_artifacts',
+    'validate_quality_validation', 'validate_source_records', 'records_to_bibtex',
+    'validate_state_balance', 'service_level_metrics',
+    'compare_policy_metrics', 'lexicographic_order',
 ]

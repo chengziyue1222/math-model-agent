@@ -10,13 +10,14 @@ Generate only the highest paper mode supported by verified evidence. A polished 
 ## Workflow
 
 1. Require a declared mode: `brief_report`, `teaching_example`, or `competition_paper`. Never call a brief report a competition paper.
-2. For competition mode, require `paper-spec.yaml`, `evidence-index.json`, `claim-registry.json`, `figure-registry.json`, `table-registry.json`, and `formula-registry.json` beside the manuscript target. Teaching examples still require a real formula, figure, table, and disclosed source data.
+2. For competition mode, require `paper-spec.yaml`, `evidence-index.json`, `claim-registry.json`, `figure-registry.json`, `table-registry.json`, and `formula-registry.json` beside the manuscript target. Declare evidence-appropriate minimum body/equation/figure/table/reference thresholds in `paper-spec.yaml`; fixed counts are fallback gates, not substitutes for question coverage. Teaching examples still require a real formula, figure, table, and disclosed source data.
 3. Verify every evidence file SHA-256 before drafting. Resolve each claim JSON Pointer; preserve failed models and invalid solver states.
 4. Invoke the `review-model-paper` Skill before formal generation. On failure, write `reports/paper_readiness_gap_report.md`, return `BLOCKED_NOT_PAPER_READY`, and identify the modeling/validation stage to rerun.
 5. Draft from the registries and the decision/quality contracts only. Bind every reported key number with `[claim:CLAIM_ID]`; describe the supporting figure/table and uncertainty.
 6. For competition mode, follow the full structure in `references/paper-structure.md`, including a question-to-model-to-output map, model framework, assumptions, notation, result/validation sections, evaluation, citations, appendix, and reproduction note. Keep paths and commands out of the main body.
 7. For every question, show the decision variables and executable output; show the relevant balance/feasibility, baseline/trade-off, or uncertainty validation instead of claiming quality from a final table alone.
-8. Re-run the independent review after rendering. A formal paper is approved only when every hard gate returns `PASS`.
+8. Render PDF/DOCX with their formal artifact tools and inspect page output. Re-run the independent review against the exact rendered-source manuscript, decision contract, and quality validation hashes.
+9. If review fails, revise only from registered evidence, regenerate affected artifacts, invalidate old reviews, and rerun the full gate. A formal paper is approved only when every hard gate returns `PASS`.
 
 ## Strict CUMCM Layout Profile
 

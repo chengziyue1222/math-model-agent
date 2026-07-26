@@ -15,4 +15,4 @@ For `competition_paper`, use the following mandatory order: 摘要、关键词�
 
 建立“结论—表格/图—结果文件—代码入口”映射。任何无法追溯的数字都不得进入终稿。
 
-Competition mode has a minimum of 10 numbered explained formulas, 8 body figures, 6 body tables, one framework diagram, one notation table, a sensitivity table, a robustness table, and 8 verifiable references. Each key number appears with `[claim:CLAIM_ID]`.
+Competition mode uses the explicit readiness thresholds in `paper-spec.yaml`: `minimum_body_characters`, `minimum_equations`, `minimum_figures`, `minimum_tables`, and `minimum_references`. If omitted, the conservative fallback is 9000 characters, 10 explained formulas, 8 body figures, 6 body tables, and 8 verifiable references. These counts are lower-bound delivery checks, not quality targets: every declared question must still have an executable result, a validation artifact, and decision-grade discussion. Include a framework diagram and notation table when they materially clarify the model; include sensitivity/robustness evidence whenever the decision contract requires it. Each key number appears with `[claim:CLAIM_ID]`.

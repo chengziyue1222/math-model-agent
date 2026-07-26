@@ -4,10 +4,31 @@ from __future__ import annotations
 import argparse
 import hashlib
 import json
+import sys
 from pathlib import Path
 
 import matplotlib.pyplot as plt
 import pandas as pd
+
+REPOSITORY_ROOT = Path(__file__).resolve().parents[3]
+if str(REPOSITORY_ROOT / "code") not in sys.path:
+    sys.path.insert(0, str(REPOSITORY_ROOT / "code"))
+
+from algorithms.sci_figures import FigureContract, export_publication_figure, publication_size
+
+
+FIGURE_SOURCES = {
+    "fig_q1_score_curve": "results/supplier_ranking.csv",
+    "fig_q1_top50_scatter": "results/top50_suppliers.csv",
+    "fig_q2_weekly_received": "results/q2_weekly_plan.csv",
+    "fig_q2_inventory_balance": "results/q2_weekly_plan.csv",
+    "fig_q2_material_mix": "results/q2_material_mix.csv",
+    "fig_carrier_loss": "results/carrier_loss_summary.csv",
+    "fig_q3_material_mix": "results/q3_material_mix.csv",
+    "fig_q3_carrier_allocation": "results/transport_plan_24weeks.csv",
+    "fig_q3_tradeoff": "results/q3_tradeoff.csv",
+    "fig_q4_capacity": "results/q4_weekly_plan.csv",
+}
 
 
 def sha(path: Path) -> str:
@@ -15,11 +36,25 @@ def sha(path: Path) -> str:
 
 
 def save(fig, path: Path) -> None:
+    source = FIGURE_SOURCES[path.name]
+    role = "model-comparison" if "tradeoff" in path.name else "model-result"
+    fig.set_size_inches(*publication_size("double", height_mm=82), forward=True)
     fig.tight_layout()
-    fig.savefig(path.with_suffix(".svg"))
-    fig.savefig(path.with_suffix(".pdf"))
-    fig.savefig(path.with_suffix(".png"), dpi=240)
-    plt.close(fig)
+    export_publication_figure(
+        fig,
+        path,
+        FigureContract(
+            claim=f"{path.name} visualizes a registered result without introducing new values",
+            evidence=(path.name,),
+            source_paths=(source,),
+            column="double",
+            figure_role=role,
+            n_definition="rows in the registered source table",
+        ),
+        dpi=450,
+        strict=True,
+        close=True,
+    )
 
 
 def main(root: Path) -> None:
@@ -47,13 +82,20 @@ def main(root: Path) -> None:
     fig, ax = plt.subplots(figsize=(6.2, 3.9)); scatter=ax.scatter(tradeoff.cost_index, tradeoff.a_share, c=tradeoff.c_share, cmap="viridis", s=90); [ax.annotate(str(r.policy), (r.cost_index, r.a_share), xytext=(5, 5), textcoords="offset points") for r in tradeoff.itertuples()]; ax.set(xlabel="relative procurement cost index", ylabel="A-material share", title="Q3 lexicographic trade-off evidence"); fig.colorbar(scatter, ax=ax, label="C-material share"); path=figures/"fig_q3_tradeoff"; save(fig,path); specs.append(("FIG_Q3_TRADEOFF",path.name,"results/q3_tradeoff.csv",len(tradeoff)))
     fig, ax = plt.subplots(figsize=(7.2, 3.8)); ax.plot(q4.week, q4.product_equiv_received, marker="o", ms=2); ax.axhline(28200, color="tab:red", ls="--", label="baseline capacity"); ax.set(xlabel="week", ylabel="received product-equivalent", title="Q4 technical-upgrade capacity plan"); ax.legend(); path=figures/"fig_q4_capacity"; save(fig,path); specs.append(("FIG_Q4_CAPACITY",path.name,"results/q4_weekly_plan.csv",len(q4)))
     entries=[]
+    audit_records=[]
     for fid, name, data_file, sample_size in specs:
         pdf_path = figures / name
         pdf_path = pdf_path.with_suffix(".pdf")
-        entries.append({"figure_id": fid, "path": str(pdf_path.relative_to(root)).replace("\\", "/"), "data_file": data_file, "claim_ids": [], "unit": "m3 or proportion", "title": fid, "sample_size": sample_size, "inserted_in_body": True, "sha256": sha(pdf_path)})
+        metadata_path = (figures / name).with_suffix(".figure.json")
+        metadata = json.loads(metadata_path.read_text(encoding="utf-8"))
+        audit_records.append({"figure_id": fid, "metadata": str(metadata_path.relative_to(root)).replace("\\", "/"), **metadata["audit"]})
+        entries.append({"figure_id": fid, "path": str(pdf_path.relative_to(root)).replace("\\", "/"), "metadata": str(metadata_path.relative_to(root)).replace("\\", "/"), "data_file": data_file, "claim_ids": [], "unit": "m3 or proportion", "title": fid, "sample_size": sample_size, "inserted_in_body": True, "sha256": sha(pdf_path)})
     (paper / "figure-registry.json").write_text(json.dumps(entries, ensure_ascii=False, indent=2) + "\n", encoding="utf-8")
     (root / "reports" / "figure_audit_report.json").parent.mkdir(exist_ok=True)
-    (root / "reports" / "figure_audit_report.json").write_text(json.dumps({"status": "PASS", "figure_count": len(entries), "format": "pdf/svg/png"}, ensure_ascii=False, indent=2)+"\n", encoding="utf-8")
+    passed = all(record["passed"] for record in audit_records)
+    (root / "reports" / "figure_audit_report.json").write_text(json.dumps({"status": "PASS" if passed else "FAIL", "figure_count": len(entries), "format": "pdf/svg/png at 450 dpi", "audits": audit_records}, ensure_ascii=False, indent=2)+"\n", encoding="utf-8")
+    if not passed:
+        raise RuntimeError("one or more publication figure audits failed")
 
 
 if __name__ == "__main__":

@@ -16,10 +16,11 @@ Turn an agreed modeling route into a reproducible solution.
 5. Implement with explicit seeds, input validation, stable paths, and saved configuration.
 6. Validate with boundary checks, dimensional checks, baseline comparison, and an independent method where feasible.
 7. Run sensitivity or uncertainty analysis on influential parameters. Stochastic, scenario, and robust claims require an explicit scenario source, dependence assumption, and holdout or stress validation; a bootstrap alone is not calibrated probability evidence.
-8. For multi-period decisions, test each declared state/balance constraint period by period. For multi-objective decisions, report the trade-off method and a Pareto/epsilon/lexicographic result or weight-sensitivity evidence. Do not hide a weighted score as an objective-independent optimum.
-9. Compare the complex method with the declared baseline on identical inputs, feasibility rules, and reported metrics.
-10. Save machine-readable results separately from figures and narrative, including `quality_validation` for baseline, feasibility, uncertainty, and trade-off checks.
-11. Create or update the project `run-manifest.json` with the repository run-manifest CLI; validate it with `--verify-files` before handoff.
+8. For multi-period decisions, test each declared state/balance constraint period by period with `validate_state_balance` or an equivalent registered implementation. Report residuals, minimum state, and floor feasibility.
+9. For multi-objective decisions, report the trade-off method and a Pareto/epsilon/lexicographic result or weight-sensitivity evidence. Use `lexicographic_order` when that is the declared semantics; do not hide a weighted score as an objective-independent optimum.
+10. Compare the complex method with the declared baseline on identical inputs, feasibility rules, and reported metrics. `compare_policy_metrics` must reject comparisons that do not declare shared evaluation inputs; use `service_level_metrics` to expose mean, lower-tail, worst-period, and target-attainment behavior.
+11. Save machine-readable results separately from figures and narrative, including `quality_validation` for baseline, feasibility, uncertainty, and trade-off checks.
+12. Create or update the project `run-manifest.json` with the repository run-manifest CLI; validate it with `--verify-files` before handoff.
 
 ## Guardrails
 

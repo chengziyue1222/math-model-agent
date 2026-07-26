@@ -16,6 +16,8 @@ Stages are strictly ordered. Evidence means an existing project-relative file wi
 
 - Advance exactly one stage at a time.
 - Hash every evidence file when entering a stage.
+- Before every transition, re-hash all evidence accepted by previous gates with `project_state.py verify`; a missing or changed file blocks advancement.
+- Validate the standard Skill input/output role contract before executing its underlying command. A preflight failure is recorded as `BLOCKED`.
 - Never reuse a stale `run_manifest` record after changing an input or artifact.
 - A failed or partial run remains in the manifest and is not silently replaced by a later success.
 - A blocker freezes transitions but does not erase completed-stage history.

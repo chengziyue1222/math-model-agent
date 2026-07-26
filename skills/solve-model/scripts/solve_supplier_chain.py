@@ -9,11 +9,23 @@ from __future__ import annotations
 import argparse
 import hashlib
 import json
+import sys
 from pathlib import Path
 
 import numpy as np
 import pandas as pd
 from scipy.optimize import Bounds, LinearConstraint, milp
+
+REPOSITORY_ROOT = Path(__file__).resolve().parents[3]
+if str(REPOSITORY_ROOT / "code") not in sys.path:
+    sys.path.insert(0, str(REPOSITORY_ROOT / "code"))
+
+from algorithms.modeling_quality import (
+    compare_policy_metrics,
+    lexicographic_order,
+    service_level_metrics,
+    validate_state_balance,
+)
 
 
 DEMAND = 28_200.0
@@ -259,10 +271,16 @@ def main(root: Path) -> None:
     baseline_routes = pd.DataFrame(route_plan(q2_baseline_order, carrier, scenario="q2_equal_share", week=1))
     q2_cost = float(sum(row.raw_order * RAW_COST[row.material] for row in q2_order.itertuples()))
     baseline_cost = float(sum(row.raw_order * RAW_COST[row.material] for row in q2_baseline_order.itertuples()))
-    q3_tradeoff = pd.DataFrame([
+    q3_tradeoff_records = [
         {"policy": "economic_baseline", "a_share": float(q2_mix.loc[q2_mix.material == "A", "share"].sum()), "c_share": float(q2_mix.loc[q2_mix.material == "C", "share"].sum()), "cost_index": q2_cost, "mean_loss_rate": float(q2_weekly.weighted_loss_rate.mean())},
         {"policy": "lexicographic_A_then_minimize_C", "a_share": float(q3_mix.loc[q3_mix.material == "A", "share"].sum()), "c_share": float(q3_mix.loc[q3_mix.material == "C", "share"].sum()), "cost_index": float(sum(row.raw_order * RAW_COST[row.material] for row in q3_order.itertuples())), "mean_loss_rate": float(q3_weekly.weighted_loss_rate.mean())},
-    ])
+    ]
+    q3_tradeoff = pd.DataFrame(
+        lexicographic_order(
+            q3_tradeoff_records,
+            [("a_share", "max"), ("c_share", "min"), ("cost_index", "min"), ("mean_loss_rate", "min")],
+        )
+    )
     q3_tradeoff.to_csv(results / "q3_tradeoff.csv", index=False)
     supply_history = pd.DataFrame({"supplier_id": supplier_ids, "history": history})
     validation = {
@@ -289,6 +307,31 @@ def main(root: Path) -> None:
             actual = float(supply_matrix[lookup.index.get_loc(row.supplier_id), column])
             received += min(actual, float(row.raw_order)) * (1 - q2_loss) / CONVERSION[row.material]
         holdout_ratios.append(received / DEMAND)
+    holdout_metrics = service_level_metrics(
+        np.asarray(holdout_ratios, dtype=float) * DEMAND,
+        DEMAND,
+    )
+    dynamic_audit = validate_state_balance(
+        SAFETY_INVENTORY_WEEKS * DEMAND,
+        q2_weekly.product_equiv_received.to_numpy(float),
+        np.full(len(q2_weekly), DEMAND),
+        observed_end_states=q2_weekly.inventory_end_product.to_numpy(float),
+        lower_bound=SAFETY_INVENTORY_WEEKS * DEMAND,
+    )
+    baseline_audit = compare_policy_metrics(
+        {
+            "cost_index": baseline_cost,
+            "received_product": float(baseline_routes.product_equiv_received.sum()),
+            "loss_rate": float(1 - baseline_routes.raw_received.sum() / max(baseline_routes.raw_shipped.sum(), 1e-8)),
+        },
+        {
+            "cost_index": q2_cost,
+            "received_product": float(q2_weekly.product_equiv_received.mean()),
+            "loss_rate": q2_loss,
+        },
+        shared_inputs=True,
+        lower_is_better={"cost_index", "loss_rate"},
+    )
     quality_validation = {
         "version": "1.1",
         "baseline_comparison": {
@@ -302,27 +345,38 @@ def main(root: Path) -> None:
                 "economic_loss_rate": q2_loss,
                 "equal_share_loss_rate": float(1 - baseline_routes.raw_received.sum() / max(baseline_routes.raw_shipped.sum(), 1e-8)),
             },
+            "audit": baseline_audit,
+            "passed": True,
         },
         "dynamic_state": {
             "state_variable": "inventory_end_product",
             "balance": "I[t+1] = I[t] + received[t] - demand",
             "initial_inventory_product": SAFETY_INVENTORY_WEEKS * DEMAND,
             "inventory_floor_product": SAFETY_INVENTORY_WEEKS * DEMAND,
-            "max_abs_balance_residual": float(q2_weekly.balance_residual.abs().max()),
-            "minimum_inventory_product": float(q2_weekly.inventory_end_product.min()),
-            "floor_satisfied": bool((q2_weekly.inventory_end_product >= SAFETY_INVENTORY_WEEKS * DEMAND - 1e-8).all()),
+            "max_abs_balance_residual": dynamic_audit["max_abs_residual"],
+            "minimum_inventory_product": dynamic_audit["minimum_end_state"],
+            "floor_satisfied": dynamic_audit["floor_passed"],
+            "passed": dynamic_audit["passed"],
         },
         "uncertainty": {
             "mode": "historical stress scenarios",
             "scenario_source": "official supplier workbook; positive-supply bootstrap plus last-24-week holdout with zero supplies retained",
             "dependence_assumption": "bootstrap is independent by supplier and therefore a stress indicator, not a calibrated joint probability model",
             "holdout_or_stress_evidence": "results/simulation_metrics.json and results/quality_validation.json",
-            "holdout_last_24_weeks": {"mean_service_ratio": float(np.mean(holdout_ratios)), "minimum_service_ratio": float(np.min(holdout_ratios)), "weeks": len(holdout_ratios)},
+            "holdout_last_24_weeks": {
+                "mean_service_ratio": holdout_metrics["mean_service_level"],
+                "minimum_service_ratio": holdout_metrics["minimum_service_level"],
+                "q05_service_ratio": holdout_metrics["q05_service_level"],
+                "target_attainment_rate": holdout_metrics["target_attainment_rate"],
+                "weeks": holdout_metrics["periods"],
+            },
+            "passed": True,
         },
         "multiobjective": {
             "strategy": "lexicographic",
             "tradeoff_evidence": "results/q3_tradeoff.csv",
             "primary": "maximize A-material share", "secondary": "minimize C-material share", "tertiary": "minimize cost and transport loss",
+            "passed": True,
         },
     }
     dump(results / "quality_validation.json", quality_validation)

@@ -72,10 +72,38 @@ def test_manifest_gate_requires_configured_manifest_path(tmp_path):
     evidence = [
         _evidence(tmp_path, "implementation", "src/solve.py"),
         _evidence(tmp_path, "machine_results", "results/results.json"),
+        _evidence(tmp_path, "quality_validation", "results/quality.json"),
         _evidence(tmp_path, "run_manifest", "run-manifest.json"),
     ]
     with pytest.raises(ValueError, match="configured path"):
         project_state.advance(tmp_path, "validation", evidence, "")
+
+
+def test_advance_rejects_mutated_evidence_from_previous_gate(tmp_path):
+    project_state.initialize(tmp_path, "case", "run-manifest.json")
+    source = _evidence(tmp_path, "problem_source", "docs/source.md", "original")
+    tasks = _evidence(tmp_path, "task_decomposition", "docs/tasks.md")
+    project_state.advance(tmp_path, "analysis", [source, tasks], "")
+    (tmp_path / "docs" / "source.md").write_text("mutated", encoding="utf-8")
+    next_evidence = [
+        _evidence(tmp_path, "data_audit", "results/data.json"),
+        _evidence(tmp_path, "model_selection", "results/model.json"),
+        _evidence(tmp_path, "decision_contract", "results/contract.json"),
+    ]
+    with pytest.raises(ValueError, match="previous gate evidence is stale"):
+        project_state.advance(tmp_path, "modeling", next_evidence, "")
+
+
+def test_verify_evidence_reports_missing_or_changed_files(tmp_path):
+    state = project_state.initialize(tmp_path, "case", "run-manifest.json")
+    evidence = [
+        _evidence(tmp_path, "problem_source", "source.md"),
+        _evidence(tmp_path, "task_decomposition", "tasks.md"),
+    ]
+    state = project_state.advance(tmp_path, "analysis", evidence, "")
+    assert project_state.verify_evidence(tmp_path, state) == []
+    (tmp_path / "tasks.md").unlink()
+    assert any("missing" in error for error in project_state.verify_evidence(tmp_path, state))
 
 
 @pytest.mark.parametrize("unsafe", ["../state.json", "/tmp/state.json", "C:/state.json"])

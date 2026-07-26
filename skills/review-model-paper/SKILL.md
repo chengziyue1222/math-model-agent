@@ -13,9 +13,10 @@ Review in read-only mode by default and separate evidence from judgment.
 2. For Markdown, run `scripts/run_paper_check.py <paper.md> --project-root <root> --mode <mode> --report-dir <output>`; for LaTeX/Typst run the legacy structural check as a supplemental check.
 3. Enforce six fail-closed gates: structure; mathematics; figures/tables; evidence; validation; citations. A failure must produce `FAIL`, never a conditional pass.
 4. Resolve every `[claim:ID]` through its evidence JSON Pointer and SHA-256. Detect changed results, invalid pointers, uninserted registered figures/tables, invalid solver claims, absent seeds/intervals, and missing formulas.
-5. Enforce the decision contract: each question needs an executable result artifact and validation; declared multi-period state needs period balance checks; declared uncertainty needs scenario provenance and holdout/stress evidence; declared multi-objective optimization needs explicit trade-off evidence; a complex method needs a fair baseline comparison. If a complex paper has no automatic semantic finding, run `scripts/second_pass_content_review.py` and require its hash-bound report before clearing the anti-shallow gate.
-6. Write both `paper_review_report.md` and `paper_review_report.json`, including blocking issues, unsupported claims, missing figures/tables, stale evidence, and return stage.
-7. Keep subjective rubric observations separate from machine gates. Do not create a competition score from a constant or use it as quality evidence.
+5. Enforce the decision contract: each question needs an existing executable result artifact and validation; declared multi-period state needs period balance checks; declared uncertainty needs scenario provenance and holdout/stress evidence; declared multi-objective optimization needs explicit trade-off evidence; a complex method needs a fair baseline comparison.
+6. If a complex paper has no automatic semantic finding, run `scripts/second_pass_content_review.py` with the manuscript, decision contract, and quality validation. Require all structured checks plus hashes for all three artifacts before clearing the anti-shallow gate; changing any artifact invalidates the report.
+7. Write both `paper_review_report.md` and `paper_review_report.json`, including blocking issues, unsupported claims, missing figures/tables, stale evidence, and return stage.
+8. Keep subjective rubric observations separate from machine gates. Do not create a competition score from a constant or use it as quality evidence.
 
 ## Guardrails
 

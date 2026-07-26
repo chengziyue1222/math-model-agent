@@ -96,13 +96,71 @@ def test_hash_bound_second_pass_review_clears_only_the_anti_shallow_gate(tmp_pat
     reports.mkdir()
     manuscript = paper_dir / "main.md"
     manuscript.write_text("问题一\n问题二\n问题三\n问题四\n", encoding="utf-8")
+    contract = tmp_path / "decision_contract.json"
+    quality = tmp_path / "quality_validation.json"
+    contract.write_text(json.dumps({"questions": []}), encoding="utf-8")
+    quality.write_text(json.dumps({"uncertainty": {"passed": True}}), encoding="utf-8")
+    checks = [
+        {"id": item, "passed": True}
+        for item in (
+            "limitations_disclosed",
+            "contract_artifacts_exist",
+            "question_sections_present",
+            "declared_quality_discussed",
+            "quality_artifact_structured",
+        )
+    ]
     reports.joinpath("independent_review.json").write_text(json.dumps({
         "status": "PASS",
+        "reviewer": "deterministic_second_pass_content_review_v1_1",
         "reviewed_path": "paper/main.md",
+        "decision_contract_path": "decision_contract.json",
+        "quality_validation_path": "quality_validation.json",
         "manuscript_sha256": hashlib.sha256(manuscript.read_bytes()).hexdigest(),
-        "checks": [{"id": "a", "passed": True}, {"id": "b", "passed": True}, {"id": "c", "passed": True}],
+        "decision_contract_sha256": hashlib.sha256(contract.read_bytes()).hexdigest(),
+        "quality_validation_sha256": hashlib.sha256(quality.read_bytes()).hexdigest(),
+        "checks": checks,
     }), encoding="utf-8")
 
     codes = {issue["code"] for issue in semantic_issues(tmp_path, manuscript)}
 
     assert "REVIEW_SUSPICIOUSLY_SHALLOW" not in codes
+
+
+def test_second_pass_review_is_invalidated_when_quality_artifact_changes(tmp_path):
+    paper_dir = tmp_path / "paper"
+    reports = tmp_path / "reports"
+    paper_dir.mkdir()
+    reports.mkdir()
+    manuscript = paper_dir / "main.md"
+    manuscript.write_text("问题一\n问题二\n问题三\n问题四\n", encoding="utf-8")
+    contract = tmp_path / "decision_contract.json"
+    quality = tmp_path / "quality_validation.json"
+    contract.write_text(json.dumps({"questions": []}), encoding="utf-8")
+    quality.write_text(json.dumps({"uncertainty": {"passed": True}}), encoding="utf-8")
+    checks = [
+        {"id": item, "passed": True}
+        for item in (
+            "limitations_disclosed",
+            "contract_artifacts_exist",
+            "question_sections_present",
+            "declared_quality_discussed",
+            "quality_artifact_structured",
+        )
+    ]
+    reports.joinpath("independent_review.json").write_text(json.dumps({
+        "status": "PASS",
+        "reviewer": "deterministic_second_pass_content_review_v1_1",
+        "reviewed_path": "paper/main.md",
+        "decision_contract_path": "decision_contract.json",
+        "quality_validation_path": "quality_validation.json",
+        "manuscript_sha256": hashlib.sha256(manuscript.read_bytes()).hexdigest(),
+        "decision_contract_sha256": hashlib.sha256(contract.read_bytes()).hexdigest(),
+        "quality_validation_sha256": hashlib.sha256(quality.read_bytes()).hexdigest(),
+        "checks": checks,
+    }), encoding="utf-8")
+    quality.write_text(json.dumps({"uncertainty": {"passed": False}}), encoding="utf-8")
+
+    codes = {issue["code"] for issue in semantic_issues(tmp_path, manuscript)}
+
+    assert "REVIEW_SUSPICIOUSLY_SHALLOW" in codes

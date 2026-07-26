@@ -49,11 +49,30 @@ def _independent_review_passed(root: Path, paper: Path) -> bool:
         return False
     if review.get("manuscript_sha256") != hashlib.sha256(paper.read_bytes()).hexdigest():
         return False
+    if not str(review.get("reviewer", "")).startswith("deterministic_second_pass_content_review_"):
+        return False
+    for path_key, hash_key in (
+        ("decision_contract_path", "decision_contract_sha256"),
+        ("quality_validation_path", "quality_validation_sha256"),
+    ):
+        relative = review.get(path_key)
+        if not isinstance(relative, str):
+            return False
+        artifact = root / relative
+        if not artifact.is_file() or review.get(hash_key) != hashlib.sha256(artifact.read_bytes()).hexdigest():
+            return False
     checks = review.get("checks")
-    return isinstance(checks, list) and len(checks) >= 3 and all(
-        isinstance(check, dict) and check.get("passed") is True and _present(check.get("id"))
-        for check in checks
-    )
+    if not isinstance(checks, list):
+        return False
+    by_id = {check.get("id"): check for check in checks if isinstance(check, dict)}
+    required = {
+        "limitations_disclosed",
+        "contract_artifacts_exist",
+        "question_sections_present",
+        "declared_quality_discussed",
+        "quality_artifact_structured",
+    }
+    return required <= set(by_id) and all(by_id[check_id].get("passed") is True for check_id in required)
 
 
 def _contains_any(value: Any, tokens: tuple[str, ...]) -> bool:

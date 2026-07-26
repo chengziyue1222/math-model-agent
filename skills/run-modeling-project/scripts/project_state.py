@@ -16,10 +16,26 @@ STAGES = ("intake", "analysis", "modeling", "validation", "writing", "review", "
 GATE_REQUIREMENTS = {
     "intake": (),
     "analysis": ("problem_source", "task_decomposition"),
-    "modeling": ("data_audit", "model_selection"),
-    "validation": ("implementation", "machine_results", "run_manifest"),
-    "writing": ("validation_report", "sensitivity_report"),
-    "review": ("manuscript", "figure_inventory", "run_manifest"),
+    "modeling": ("data_audit", "model_selection", "decision_contract"),
+    "validation": ("implementation", "machine_results", "quality_validation", "run_manifest"),
+    "writing": (
+        "validation_report",
+        "quality_validation",
+        "paper_spec",
+        "evidence_index",
+        "claim_registry",
+        "figure_registry",
+        "table_registry",
+        "formula_registry",
+    ),
+    "review": (
+        "manuscript",
+        "decision_contract",
+        "quality_validation",
+        "figure_inventory",
+        "paper_review_report",
+        "run_manifest",
+    ),
     "release": ("review_report", "submission_checklist", "run_manifest"),
 }
 
@@ -119,11 +135,31 @@ def _parse_evidence(root: Path, values: list[str]) -> dict[str, dict[str, Any]]:
     return evidence
 
 
+def verify_evidence(root: Path, state: dict[str, Any]) -> list[str]:
+    """Return missing or mutated evidence errors for all previously accepted gates."""
+    errors: list[str] = []
+    for role, record in sorted(state.get("evidence", {}).items()):
+        relative = str(record.get("path", ""))
+        if not _safe_relative(relative):
+            errors.append(f"{role}: unsafe evidence path")
+            continue
+        path = root / relative
+        if not path.is_file():
+            errors.append(f"{role}: evidence file is missing: {relative}")
+            continue
+        if _sha256(path) != record.get("sha256"):
+            errors.append(f"{role}: evidence hash changed: {relative}")
+    return errors
+
+
 def advance(root: Path, target: str, evidence_values: list[str], note: str) -> dict[str, Any]:
     root = root.resolve()
     state = _read_state(root)
     if state.get("active_blocker") is not None:
         raise ValueError("cannot advance while an active blocker exists")
+    stale_errors = verify_evidence(root, state)
+    if stale_errors:
+        raise ValueError("previous gate evidence is stale: " + "; ".join(stale_errors))
     current = state.get("current_stage")
     if current not in STAGES or target not in STAGES:
         raise ValueError("unknown project stage")
@@ -202,7 +238,7 @@ def handoff(state: dict[str, Any]) -> dict[str, Any]:
 def main() -> int:
     parser = argparse.ArgumentParser(description=__doc__)
     subparsers = parser.add_subparsers(dest="action", required=True)
-    for action in ("status", "resume", "handoff"):
+    for action in ("status", "resume", "handoff", "verify"):
         command = subparsers.add_parser(action)
         command.add_argument("--project-root", type=Path, default=Path.cwd())
         if action == "handoff":
@@ -232,7 +268,13 @@ def main() -> int:
             result = resume(args.project_root)
         else:
             state = _read_state(args.project_root.resolve())
-            result = handoff(state) if args.action == "handoff" else state
+            if args.action == "handoff":
+                result = handoff(state)
+            elif args.action == "verify":
+                errors = verify_evidence(args.project_root.resolve(), state)
+                result = {"status": "PASS" if not errors else "FAIL", "errors": errors}
+            else:
+                result = state
             if args.action == "handoff" and args.output:
                 args.output.parent.mkdir(parents=True, exist_ok=True)
                 args.output.write_text(
