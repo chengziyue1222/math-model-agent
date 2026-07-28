@@ -16,8 +16,9 @@ Generate only the highest paper mode supported by verified evidence. A polished 
 5. Draft from the registries and the decision/quality contracts only. Bind every reported key number with `[claim:CLAIM_ID]`; describe the supporting figure/table and uncertainty.
 6. For competition mode, follow the full structure in `references/paper-structure.md`, including a question-to-model-to-output map, model framework, assumptions, notation, result/validation sections, evaluation, citations, appendix, and reproduction note. Keep paths and commands out of the main body.
 7. For every question, show the decision variables and executable output; show the relevant balance/feasibility, baseline/trade-off, or uncertainty validation instead of claiming quality from a final table alone.
-8. Render PDF/DOCX with their formal artifact tools and inspect page output. Re-run the independent review against the exact rendered-source manuscript, decision contract, and quality validation hashes.
-9. If review fails, revise only from registered evidence, regenerate affected artifacts, invalidate old reviews, and rerun the full gate. A formal paper is approved only when every hard gate returns `PASS`.
+8. Emit a passing `cumcm_layout_validation` and a machine-readable `render_request`; a successful writing run means the source is ready to render, not that formal delivery is complete.
+9. Render PDF/DOCX with their formal artifact tools, register their producers, and produce `latex_compile_report`, `docx_render_report`, and `visual_layout_audit`. The project cannot enter review without both rendered formats and all reports.
+10. If review fails, revise only from registered evidence, regenerate affected artifacts, invalidate old reviews, and rerun the full gate. A formal paper is approved only when every hard gate returns `PASS`.
 
 ## Strict CUMCM Layout Profile
 
@@ -46,4 +47,4 @@ Read `references/paper-structure.md`. Reuse `assets/cume-template.tex` for compa
 
 ## Executable Contract
 
-Use `scripts/execute_skill.py` with all ten registered paper inputs, including `decision_contract` and `quality_validation`. Register `main_markdown`, `main_tex`, `paper_generation_report`, and `claim_usage_report`; the PDF and DOCX must then be registered by their respective formal tool producers. A project script must not write `main.tex` or compile the paper directly.
+Use `scripts/execute_skill.py` with all ten registered paper inputs, including `decision_contract` and `quality_validation`. Register `main_markdown`, `main_tex`, `paper_generation_report`, `claim_usage_report`, `cumcm_layout_validation`, and `render_request`. The PDF and DOCX must then be registered by their respective formal tool producers. A project script must not write `main.tex` or compile the paper directly.

@@ -1,7 +1,8 @@
-"""Write an evidence-bound full CUMCM 2021C manuscript from registered outputs."""
+"""CUMCM 2021C content adapter executed only inside the write-model-paper runtime."""
 from __future__ import annotations
 
 import argparse
+import hashlib
 import json
 import re
 import shutil
@@ -9,6 +10,8 @@ import subprocess
 from pathlib import Path
 
 import pandas as pd
+
+from validate_cumcm_layout import validate_layout
 
 
 TITLE = "C题：生产企业原材料的订购与运输方案"
@@ -271,7 +274,7 @@ def main(root: Path) -> None:
 \section{{参考文献}}\begin{{thebibliography}}{{9}}\bibitem{{cumcm}} 中国大学生数学建模竞赛组委会. 2021高教社杯全国大学生数学建模竞赛C题. 2021.\bibitem{{hwang}} Hwang C L, Yoon K. Multiple Attribute Decision Making. 1981.\bibitem{{charnes}} Charnes A, Cooper W W, Rhodes E. EJOR, 1978.\bibitem{{bertsimas}} Bertsimas D, Sim M. Operations Research, 2004.\bibitem{{efron}} Efron B. Annals of Statistics, 1979.\bibitem{{nemhauser}} Nemhauser G L, Wolsey L A. 1988.\bibitem{{shapiro}} Shapiro A, et al. 2009.\bibitem{{dantzig}} Dantzig G B. 1963.\end{{thebibliography}}
 \appendix\section{{Top-50供应商编号}}\begin{{longtable}}{{rr}}\toprule 序号&供应商编号\\\midrule\endfirsthead\toprule 序号&供应商编号\\\midrule\endhead{top_rows}\bottomrule\end{{longtable}}\section{{代码附录}}
 \begin{{pycode}}[caption={{求解入口}}]
-run_standard_skill("solve-model")
+execute_registered_solver(project_root, decision_contract)
 \end{{pycode}}
 \end{{document}}"""
     # Pandoc converts the evidence-bound Markdown body so that the PDF contains
@@ -298,6 +301,14 @@ run_standard_skill("solve-model")
         raise RuntimeError("Pandoc body lost the reference or appendix section")
     before_references, after_reference_start = remaining_body.split(reference_start, 1)
     _, after_references = after_reference_start.split(appendix_start, 1)
+    # A dense figure/table page can otherwise strand a first-level heading below
+    # the footer.  Start the evaluation section on a clean page so the heading
+    # and its first paragraph remain visually bound.
+    before_references = before_references.replace(
+        r"\section{模型评价}",
+        r"\clearpage\section{模型评价}",
+        1,
+    )
     bibliography_tex = r"""\begin{thebibliography}{9}
 \bibitem{cumcm2021c} 中国大学生数学建模竞赛组委会. 2021高教社杯全国大学生数学建模竞赛C题：生产企业原材料的订购与运输[EB/OL]. 2021.
 \bibitem{hwang1981} Hwang C L, Yoon K. Multiple Attribute Decision Making: Methods and Applications[M]. Springer, 1981. doi:10.1007/978-3-642-48318-9.
@@ -319,11 +330,35 @@ run_standard_skill("solve-model")
 \section{{问题重述}}{remaining_body}
 \section{{代码附录}}
 \begin{{pycode}}[caption={{求解入口}}]
-run_standard_skill("solve-model")
+execute_registered_solver(project_root, decision_contract)
 \end{{pycode}}
 \end{{document}}
 """
     (paper / "main.tex").write_text(tex, encoding="utf-8")
+    layout_report = validate_layout(paper / "main.tex")
+    layout_path = root / "reports" / "cumcm_layout_validation.json"
+    layout_path.parent.mkdir(parents=True, exist_ok=True)
+    layout_path.write_text(json.dumps(layout_report, ensure_ascii=False, indent=2) + "\n", encoding="utf-8")
+    if layout_report["status"] != "PASS":
+        raise RuntimeError("strict CUMCM layout validation failed")
+    render_request = {
+        "status": "READY_TO_RENDER",
+        "source_markdown": "paper/main.md",
+        "source_markdown_sha256": hashlib.sha256((paper / "main.md").read_bytes()).hexdigest(),
+        "source_tex": "paper/main.tex",
+        "source_tex_sha256": hashlib.sha256((paper / "main.tex").read_bytes()).hexdigest(),
+        "required_deliveries": [
+            {"role": "main_pdf", "path": "paper/main.pdf", "producer": "compile-latex"},
+            {"role": "main_docx", "path": "paper/main.docx", "producer": "paper-docx"},
+            {"role": "latex_compile_report", "path": "reports/latex_compile_report.json", "producer": "compile-latex"},
+            {"role": "docx_render_report", "path": "reports/docx_render_report.json", "producer": "paper-docx"},
+            {"role": "visual_layout_audit", "path": "reports/visual_layout_audit.json", "producer": "paper-render-audit"},
+        ],
+    }
+    (paper / "render-request.json").write_text(
+        json.dumps(render_request, ensure_ascii=False, indent=2) + "\n",
+        encoding="utf-8",
+    )
     (paper / "paper_generation_report.json").write_text(json.dumps({"status": "FULL_DRAFT_GENERATED", "mode": "competition_paper", "layout_profile": "strict_cumcm_a4_v1", "claim_bindings": 13, "evidence_bound": True}, ensure_ascii=False, indent=2)+"\n", encoding="utf-8")
     (paper / "claim_usage_report.json").write_text(json.dumps({"used_claim_ids": ["CLAIM_TOP50", "CLAIM_Q2_COUNT", "CLAIM_Q2_COST", "CLAIM_Q2_RECEIVED", "CLAIM_Q2_INVENTORY", "CLAIM_Q2_HOLDOUT_MEAN", "CLAIM_Q2_HOLDOUT_MIN", "CLAIM_Q3_A_SHARE", "CLAIM_Q3_C_SHARE", "CLAIM_Q3_LOSS", "CLAIM_Q4_CAPACITY", "CLAIM_Q4_INCREASE", "CLAIM_Q2_SIM"]}, ensure_ascii=False, indent=2)+"\n", encoding="utf-8")
 

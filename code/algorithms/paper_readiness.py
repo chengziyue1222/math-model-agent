@@ -211,6 +211,23 @@ def review_paper(project_root: str | Path, paper_path: str | Path, *, mode: str 
             label = str(item.get("figure_id"))
             review.missing_figures.append(label)
             review.fail("figures_tables", "figure_not_inserted", f"图 {label} 未实际插入正文或文件缺失", "writing")
+            continue
+        if item.get("sha256") is not None and item.get("sha256") != _sha256(path):
+            review.fail(
+                "figures_tables",
+                "figure_hash_mismatch",
+                f"图 {item.get('figure_id')} 与注册哈希不一致",
+                "validation",
+            )
+        if item.get("data_file") is not None or item.get("data_sha256") is not None:
+            data_path = root / str(item.get("data_file", ""))
+            if not data_path.is_file() or item.get("data_sha256") != _sha256(data_path):
+                review.fail(
+                    "figures_tables",
+                    "figure_source_hash_mismatch",
+                    f"图 {item.get('figure_id')} 的源数据缺失或已经改变",
+                    "validation",
+                )
     for image in IMAGE_RE.findall(text):
         if not (paper.parent / image).is_file() and not (root / image).is_file():
             review.fail("figures_tables", "image_missing", f"正文引用图片不存在：{image}", "writing")
@@ -232,11 +249,15 @@ def review_paper(project_root: str | Path, paper_path: str | Path, *, mode: str 
             review.fail("mathematics", "formula_registry_incomplete", f"公式注册表未登记至少 {minimums['minimum_equations']} 个已插入公式", "writing")
     if "infeasible" in text.lower() and re.search(r"最优|optimal", text, re.I):
         review.fail("validation", "invalid_solver_claim", "论文同时声称 infeasible 和最优", "modeling")
-    validation_text = (root / "results" / "simulation_metrics.json")
+    validation_text = root / "results" / "simulation_metrics.json"
+    temporal_validation_text = root / "results" / "bootstrap_metrics.json"
     if mode == "competition_paper":
         data = _load_json(validation_text, review, "validation") if validation_text.is_file() else None
-        if not isinstance(data, dict) or not data.get("seeds") or not data.get("aggregate"):
-            review.fail("validation", "simulation_validation_missing", "仿真缺少 seed 列表或置信区间聚合结果", "validation")
+        temporal = _load_json(temporal_validation_text, review, "validation") if temporal_validation_text.is_file() else None
+        has_simulation = isinstance(data, dict) and bool(data.get("seeds")) and bool(data.get("aggregate"))
+        has_temporal_holdout = isinstance(temporal, dict) and isinstance(temporal.get("q2_alert_accuracy"), dict) and bool(temporal["q2_alert_accuracy"].get("ci95"))
+        if not has_simulation and not has_temporal_holdout:
+            review.fail("validation", "simulation_validation_missing", "正式论文需要可复核的仿真聚合结果，或时间预测任务的保留集自助法区间", "validation")
     references = text.split("参考文献", 1)[-1] if "参考文献" in text else ""
     ref_lines = [line for line in references.splitlines() if re.match(r"\s*\[\d+\]", line)]
     if mode == "competition_paper" and len(ref_lines) < minimums["minimum_references"]:

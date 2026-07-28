@@ -146,7 +146,7 @@ def semantic_issues(project_root: str | Path, paper_path: str | Path) -> list[di
     solution = result.get("solution", {}) if isinstance(result, dict) else {}
     supplier_count = solution.get("supplier_count") if isinstance(solution, dict) else None
     if isinstance(supplier_count, (int, float)) and supplier_count >= 150 and not re.search(r"(?:实施|管理复杂|implementation|management complexity)", text, re.I):
-        issues.append({"gate": "validation", "code": "implementation_risk_undiscussed", "severity": "warning", "message": f"recommendation uses {supplier_count} suppliers without an implementation-complexity discussion"})
+        issues.append({"gate": "validation", "code": "implementation_risk_undiscussed", "severity": "blocking", "message": f"recommendation uses {supplier_count} suppliers without an implementation-complexity discussion"})
     if re.search(r"(?:24\s*weeks?|24\s*周).{0,100}(?:identical|完全相同|unchanged)", text, re.I | re.S) and not re.search(r"(?:切换成本|contract cost|switching cost)", text, re.I):
         issues.append({"gate": "validation", "code": "static_plan_without_switching_cost", "severity": "warning", "message": "static multi-week plan omits switching or contract-cost discussion"})
 
@@ -162,7 +162,22 @@ def semantic_issues(project_root: str | Path, paper_path: str | Path) -> list[di
         missing = sorted(name for name in required if not table.get(name))
         if missing:
             issues.append({"gate": "figures_tables", "code": "table_registry_incomplete", "severity": "blocking", "message": f"table registry item {index} is missing {', '.join(missing)}"})
-    questions = len(re.findall(r"(?:问题|question)\s*[一二三四1234]", text, re.I))
+    figures = _registrations(_load_json(paper.parent / "figure-registry.json"), "figures")
+    for index, figure in enumerate(figures):
+        required = {"path", "sha256", "data_file", "data_sha256", "metadata", "inserted_in_body"}
+        missing = sorted(name for name in required if not figure.get(name))
+        if missing:
+            issues.append({"gate": "figures_tables", "code": "figure_registry_incomplete", "severity": "blocking", "message": f"figure registry item {index} is missing {', '.join(missing)}"})
+            continue
+        figure_path = root / str(figure["path"])
+        if not figure_path.is_file() or hashlib.sha256(figure_path.read_bytes()).hexdigest() != figure["sha256"]:
+            issues.append({"gate": "figures_tables", "code": "figure_hash_mismatch", "severity": "blocking", "message": f"figure registry item {index} has stale rendered output"})
+        if figure.get("data_file") or figure.get("data_sha256"):
+            data_path = root / str(figure.get("data_file", ""))
+            if not data_path.is_file() or hashlib.sha256(data_path.read_bytes()).hexdigest() != figure.get("data_sha256"):
+                issues.append({"gate": "figures_tables", "code": "figure_source_hash_mismatch", "severity": "blocking", "message": f"figure registry item {index} has stale source data"})
+    contract = _first_named_json(root, "decision_contract.json")
+    questions = max(len(_question_rows(contract)), len(re.findall(r"(?:问题[一二三四五六七八九十]|\bQ[1-9]\b)", text)))
     if questions >= 4 and not issues and not _independent_review_passed(root, paper):
         issues.append({"gate": "validation", "code": "REVIEW_SUSPICIOUSLY_SHALLOW", "severity": "blocking", "message": "complex paper produced no semantic findings; run an independent second review"})
     return issues

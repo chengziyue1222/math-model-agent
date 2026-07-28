@@ -26,7 +26,7 @@ def main(root: Path, source_candidates: Path) -> None:
         raise ValueError("source_candidates must be a JSON array")
     records = [record for record in loaded if isinstance(record, dict)]
     malformed = len(loaded) - len(records)
-    issues = validate_source_records(records)
+    issues = validate_source_records(records, require_retrieval_evidence=True)
     if malformed:
         issues.append({"id": "source_record_invalid", "message": f"{malformed} candidates are not objects"})
 
@@ -40,6 +40,28 @@ def main(root: Path, source_candidates: Path) -> None:
     ]
     dump(root, "search_queries.json", queries)
     dump(root, "search_results.json", records)
+    retrieval_log = [
+        {
+            "candidate_id": record.get("id"),
+            "origin": record.get("origin"),
+            "retrieval_provider": record.get("retrieval_provider"),
+            "retrieval_timestamp": record.get("retrieval_timestamp"),
+            "source_fetch_status": record.get("source_fetch_status"),
+            "url": record.get("url") or (f"https://doi.org/{record['doi']}" if record.get("doi") else None),
+        }
+        for record in records
+    ]
+    metadata_verification = [
+        {"candidate_id": record.get("id"), **(record.get("metadata_verification") or {})}
+        for record in records
+    ]
+    relevance_evidence = [
+        {"candidate_id": record.get("id"), **(record.get("content_relevance_evidence") or {})}
+        for record in records
+    ]
+    dump(root, "retrieval_log.json", retrieval_log)
+    dump(root, "metadata_verification.json", metadata_verification)
+    dump(root, "relevance_evidence.json", relevance_evidence)
     if issues:
         dump(root, "selected_sources.json", [])
         dump(root, "rejected_sources.json", issues)
@@ -52,7 +74,7 @@ def main(root: Path, source_candidates: Path) -> None:
     report.parent.mkdir(parents=True, exist_ok=True)
     report.write_text(
         "# Literature evidence\n\n"
-        f"{len(records)} explicitly supplied source candidates passed identity and duplication checks. "
+        f"{len(records)} source candidates passed identity, fetch-provenance, metadata, duplication, and relevance checks. "
         "They may support framing and method choices; project-specific numerical claims must still "
         "come from registered data and result artifacts.\n",
         encoding="utf-8",

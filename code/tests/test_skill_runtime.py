@@ -6,12 +6,12 @@ from scripts.run_standard_skill import main as run_standard_skill
 from scripts.skill_runtime import (
     STANDARD_SKILLS,
     finish_skill_run,
+    register_external_artifact,
     start_skill_run,
     validate_skill_run,
 )
 from scripts.skill_contracts import CONTRACT_VERSION, contract_for, validate_terminal_run
 from scripts.validate_skill_workflow import scan_project_scripts, validate_producers
-from scripts.skill_contracts import contract_for
 
 
 def _write(root: Path, relative: str, text: str = "{}") -> None:
@@ -30,6 +30,11 @@ def test_runtime_records_start_finish_and_producer_hashes(tmp_path):
     registry = json.loads((tmp_path / "manifests" / "artifact-producers.json").read_text(encoding="utf-8"))
     assert registry[0]["producer_name"] == "solve-model"
     assert validate_producers(tmp_path) == []
+    assert "filesystem_delta" in finish_skill_run(
+        tmp_path,
+        start_skill_run(tmp_path, "case", "solve-model")["run_id"],
+        status="BLOCKED",
+    )
 
 
 def test_directory_backed_skill_has_stable_implementation_identity(tmp_path):
@@ -83,6 +88,43 @@ def test_standard_runner_blocks_before_executing_incomplete_contract(tmp_path):
     assert not marker.exists()
 
 
+def test_runtime_records_created_and_modified_files(tmp_path):
+    _write(tmp_path, "before.txt", "before")
+    start = start_skill_run(tmp_path, "case", "solve-model")
+    _write(tmp_path, "before.txt", "after")
+    _write(tmp_path, "created.txt", "new")
+    terminal = finish_skill_run(tmp_path, start["run_id"], status="BLOCKED")
+    assert "before.txt" in terminal["filesystem_delta"]["modified"]
+    assert "created.txt" in terminal["filesystem_delta"]["created"]
+
+
+def test_runtime_blocks_tampered_filesystem_snapshot(tmp_path):
+    start = start_skill_run(tmp_path, "case", "solve-model")
+    snapshot = tmp_path / start["filesystem_snapshot_path"]
+    snapshot.write_text('{"forged": true}', encoding="utf-8")
+    errors = validate_skill_run(tmp_path, project_id="case")
+    assert any("filesystem_snapshot_hash_mismatch" in error for error in errors)
+    try:
+        finish_skill_run(tmp_path, start["run_id"], status="BLOCKED")
+    except ValueError as exc:
+        assert "snapshot missing or tampered" in str(exc)
+    else:
+        raise AssertionError("tampered snapshot must block finish")
+
+
+def test_external_render_producer_registration(tmp_path):
+    _write(tmp_path, "paper/main.pdf", "%PDF-test")
+    record = register_external_artifact(
+        tmp_path,
+        role="main_pdf",
+        path="paper/main.pdf",
+        producer_name="compile-latex",
+        producer_version="xelatex-test",
+    )
+    assert record["producer_type"] == "external_tool"
+    assert validate_producers(tmp_path) == []
+
+
 def test_runtime_detects_tampered_trace_and_output(tmp_path):
     _write(tmp_path, "input.json")
     _write(tmp_path, "results/result_object.json")
@@ -94,6 +136,18 @@ def test_runtime_detects_tampered_trace_and_output(tmp_path):
     trace = tmp_path / "manifests" / "skill-runs.jsonl"
     trace.write_text(trace.read_text(encoding="utf-8").replace("solve-model", "fake-skill", 1), encoding="utf-8")
     assert any("trace_signature_invalid" in error for error in validate_skill_run(tmp_path, project_id="case"))
+
+
+def test_runtime_accepts_superseded_signed_run_but_checks_current_run(tmp_path):
+    _write(tmp_path, "input.json", '{"version": 1}')
+    _write(tmp_path, "results/result_object.json", '{"value": 1}')
+    first = start_skill_run(tmp_path, "case", "solve-model", inputs=[("selected_model_plan", "input.json")])
+    finish_skill_run(tmp_path, first["run_id"], outputs=[("result_object", "results/result_object.json")])
+    _write(tmp_path, "input.json", '{"version": 2}')
+    _write(tmp_path, "results/result_object.json", '{"value": 2}')
+    second = start_skill_run(tmp_path, "case", "solve-model", inputs=[("selected_model_plan", "input.json")])
+    finish_skill_run(tmp_path, second["run_id"], outputs=[("result_object", "results/result_object.json")])
+    assert validate_skill_run(tmp_path, project_id="case", required_skills=["solve-model"]) == []
 
 
 def test_runtime_requires_each_standard_skill(tmp_path):
@@ -119,6 +173,18 @@ def test_quality_evidence_roles_are_required_across_the_competition_pipeline():
     assert {"decision_contract", "quality_validation"} <= set(contract_for("write-model-paper")["inputs"])
     assert {"decision_contract", "quality_validation"} <= set(contract_for("review-model-paper")["inputs"])
     assert "source_candidates" in contract_for("research-model-literature")["inputs"]
+    assert {"retrieval_log", "metadata_verification", "relevance_evidence"} <= set(
+        contract_for("research-model-literature")["outputs"]
+    )
+    assert {"cumcm_layout_validation", "render_request"} <= set(
+        contract_for("write-model-paper")["outputs"]
+    )
+    assert {"main_pdf", "main_docx", "visual_layout_audit"} <= set(
+        contract_for("review-model-paper")["inputs"]
+    )
+    assert {"independent_content_review", "review_hash_binding", "submission_readiness"} <= set(
+        contract_for("review-model-paper")["outputs"]
+    )
 
 
 def test_legacy_contract_run_is_not_reinterpreted_as_current_version():
@@ -126,6 +192,19 @@ def test_legacy_contract_run_is_not_reinterpreted_as_current_version():
     run = {
         "run_id": "legacy",
         "skill": "research-model-literature",
+        "status": "PASS",
+        "inputs": [{"role": role} for role in legacy["inputs"]],
+        "outputs": [{"role": role} for role in legacy["outputs"]],
+    }
+    assert validate_terminal_run(run) == []
+
+
+def test_v12_contract_run_remains_valid_after_v13_render_gates():
+    legacy = contract_for("write-model-paper", version="1.2")
+    run = {
+        "run_id": "legacy-v12",
+        "skill": "write-model-paper",
+        "contract_version": "1.2",
         "status": "PASS",
         "inputs": [{"role": role} for role in legacy["inputs"]],
         "outputs": [{"role": role} for role in legacy["outputs"]],

@@ -3,6 +3,7 @@
 from __future__ import annotations
 
 import re
+from datetime import datetime
 from collections.abc import Mapping, Sequence
 from pathlib import Path
 from typing import Any
@@ -79,7 +80,11 @@ def validate_quality_validation(
     return issues
 
 
-def validate_source_records(records: Sequence[Mapping[str, Any]]) -> list[dict[str, str]]:
+def validate_source_records(
+    records: Sequence[Mapping[str, Any]],
+    *,
+    require_retrieval_evidence: bool = False,
+) -> list[dict[str, str]]:
     """Reject unverifiable or duplicate bibliography candidates."""
     issues: list[dict[str, str]] = []
     seen_ids: set[str] = set()
@@ -101,10 +106,59 @@ def validate_source_records(records: Sequence[Mapping[str, Any]]) -> list[dict[s
         ]
         if not identifiers:
             issues.append({"id": "source_identifier_missing", "message": f"{source_id or index} has no DOI/ISBN/URL"})
+        doi = str(record.get("doi", "")).strip()
+        url = str(record.get("url", "")).strip()
+        if doi and not re.fullmatch(r"10\.\d{4,9}/\S+", doi, flags=re.IGNORECASE):
+            issues.append({"id": "source_doi_invalid", "message": f"{source_id or index} has a malformed DOI"})
+        if doi and re.match(r"https?://(?:dx\.)?doi\.org/", url, flags=re.IGNORECASE):
+            resolved = re.sub(r"^https?://(?:dx\.)?doi\.org/", "", url, flags=re.IGNORECASE)
+            if resolved.rstrip("/").lower() != doi.rstrip("/").lower():
+                issues.append(
+                    {
+                        "id": "source_doi_url_mismatch",
+                        "message": f"{source_id or index} DOI does not match its resolver URL",
+                    }
+                )
         for identifier in identifiers:
             if identifier in seen_identifiers:
                 issues.append({"id": "source_identifier_duplicate", "message": f"duplicate identifier: {identifier}"})
             seen_identifiers.add(identifier)
+        if require_retrieval_evidence:
+            origin = str(record.get("origin", "")).strip().upper()
+            if origin not in {"SEARCHED", "USER_SUPPLIED", "MANUALLY_ENTERED"}:
+                issues.append({"id": "source_origin_invalid", "message": f"{source_id or index} has invalid origin"})
+            provider = str(record.get("retrieval_provider", "")).strip()
+            if not provider:
+                issues.append({"id": "retrieval_provider_missing", "message": f"{source_id or index} has no retrieval provider"})
+            timestamp = str(record.get("retrieval_timestamp", "")).strip()
+            try:
+                parsed = datetime.fromisoformat(timestamp.replace("Z", "+00:00"))
+                if parsed.tzinfo is None:
+                    raise ValueError
+            except ValueError:
+                issues.append({"id": "retrieval_timestamp_invalid", "message": f"{source_id or index} lacks a UTC/offset retrieval timestamp"})
+            if str(record.get("source_fetch_status", "")).strip().upper() != "FETCHED":
+                issues.append({"id": "source_not_fetched", "message": f"{source_id or index} was not fetched"})
+            verification = record.get("metadata_verification")
+            if not isinstance(verification, Mapping) or str(verification.get("status", "")).upper() != "VERIFIED":
+                issues.append({"id": "metadata_unverified", "message": f"{source_id or index} metadata is not verified"})
+            elif not str(verification.get("evidence", "")).strip():
+                issues.append({"id": "metadata_evidence_missing", "message": f"{source_id or index} has no metadata evidence"})
+            elif doi and str(verification.get("verified_identifier", "")).strip().lower() != doi.lower():
+                issues.append(
+                    {
+                        "id": "doi_verification_evidence_missing",
+                        "message": f"{source_id or index} DOI is not the identifier recorded by metadata verification",
+                    }
+                )
+            relevance = record.get("content_relevance_evidence")
+            if not isinstance(relevance, Mapping):
+                issues.append({"id": "relevance_evidence_missing", "message": f"{source_id or index} has no relevance evidence"})
+            else:
+                if not str(relevance.get("supports", "")).strip():
+                    issues.append({"id": "relevance_support_missing", "message": f"{source_id or index} has no supported claim/method"})
+                if not str(relevance.get("location", "")).strip():
+                    issues.append({"id": "relevance_location_missing", "message": f"{source_id or index} has no page/section/metadata location"})
     return issues
 
 

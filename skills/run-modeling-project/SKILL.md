@@ -43,7 +43,7 @@ Coordinate the existing specialist Skills without letting artifacts, decisions, 
 
 ## Completion
 
-The project is complete only at `release`, after the review report, submission checklist, decision contract, quality validation, and verified run manifest pass the final gate. Report unresolved limitations even when every gate passes.
+The project is complete only at `release`, after the Markdown/TeX sources, PDF, DOCX, compile/render reports, visual audit, independent content review, submission-readiness report, submission checklist, decision contract, quality validation, and verified run manifest pass the final gate. Report unresolved limitations even when every gate passes.
 
 ## Resources
 
@@ -53,4 +53,4 @@ The project is complete only at `release`, after the review report, submission c
 
 ## Executable Contract
 
-Use `scripts/execute_skill.py` to record the orchestration invocation with `project_config` and `skill_trace`, then register `project_state`, `stage_gate`, and `handoff`. The runtime records the contract version and aggregate implementation hash for directory-backed Skills. Before release, run the repository workflow validator; it fails if a required standard Skill has no successful trace, an artifact producer is invalid, prior gate evidence is stale, or a project script bypasses the workflow.
+Use `scripts/advance_project.py` with an explicit project-relative stage plan, then call it through `scripts/execute_skill.py` to record the orchestration invocation with `project_config` and `skill_trace`. It registers `project_state`, `stage_gate`, and `handoff`; it never skips stages or accepts un-hashed evidence. The runtime records the contract version and aggregate implementation hash for directory-backed Skills. Before release, run the repository workflow validator; it fails if a required standard Skill has no successful trace, an artifact producer is invalid, prior gate evidence is stale, or a project script bypasses the workflow.

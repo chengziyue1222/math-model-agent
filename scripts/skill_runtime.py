@@ -27,7 +27,7 @@ if __package__ in (None, ""):
 from scripts.skill_contracts import CONTRACT_VERSION
 
 
-RUNTIME_VERSION = "1.1"
+RUNTIME_VERSION = "1.2"
 STANDARD_SKILLS = (
     "run-modeling-project",
     "select-model",
@@ -39,6 +39,7 @@ STANDARD_SKILLS = (
     "review-model-paper",
 )
 TERMINAL_STATUSES = {"PASS", "FAIL", "BLOCKED"}
+ALLOWED_EXTERNAL_PRODUCERS = {"compile-latex", "paper-docx", "paper-render-audit"}
 
 
 def _now() -> str:
@@ -92,6 +93,58 @@ def _producer_path(root: Path) -> Path:
 
 def _key_path(root: Path) -> Path:
     return root / ".modeling" / "skill-runtime.key"
+
+
+def _snapshot_path(root: Path, run_id: str) -> Path:
+    return root / ".modeling" / "runtime-snapshots" / f"{run_id}.json"
+
+
+def _project_snapshot(root: Path) -> dict[str, dict[str, Any]]:
+    ignored = {
+        ".git",
+        ".modeling",
+        ".test-tmp",
+        "__pycache__",
+        "node_modules",
+        "venv",
+        ".venv",
+    }
+    snapshot: dict[str, dict[str, Any]] = {}
+    for path in root.rglob("*"):
+        if not path.is_file() or any(part in ignored for part in path.relative_to(root).parts):
+            continue
+        relative = str(path.relative_to(root)).replace("\\", "/")
+        if relative in {"manifests/skill-runs.jsonl", "manifests/artifact-producers.json"}:
+            continue
+        stat = path.stat()
+        snapshot[relative] = {
+            "bytes": stat.st_size,
+            "mtime_ns": stat.st_mtime_ns,
+            "sha256": _sha256(path),
+        }
+    return snapshot
+
+
+def _write_snapshot(root: Path, run_id: str, snapshot: dict[str, dict[str, Any]]) -> Path:
+    path = _snapshot_path(root, run_id)
+    path.parent.mkdir(parents=True, exist_ok=True)
+    path.write_text(json.dumps(snapshot, ensure_ascii=False, sort_keys=True), encoding="utf-8")
+    return path
+
+
+def _filesystem_delta(
+    before: dict[str, dict[str, Any]],
+    after: dict[str, dict[str, Any]],
+) -> dict[str, list[str]]:
+    return {
+        "created": sorted(set(after) - set(before)),
+        "modified": sorted(
+            path
+            for path in set(before) & set(after)
+            if before[path].get("sha256") != after[path].get("sha256")
+        ),
+        "deleted": sorted(set(before) - set(after)),
+    }
 
 
 def _key(root: Path) -> bytes:
@@ -178,16 +231,20 @@ def start_skill_run(
         raise ValueError("project_id must be non-empty")
     input_records = _input_records(root, inputs or [])
     implementation_hashes = _implementation_hashes(skill_path)
+    run_id = uuid.uuid4().hex
+    snapshot_file = _write_snapshot(root, run_id, _project_snapshot(root))
     record = {
         "event": "start",
         "runtime_version": RUNTIME_VERSION,
         "contract_version": CONTRACT_VERSION,
-        "run_id": uuid.uuid4().hex,
+        "run_id": run_id,
         "project_id": project_id,
         "skill": skill,
         "skill_path": str(skill_path or ""),
         "skill_sha256": _implementation_digest(implementation_hashes),
         "implementation_hashes": implementation_hashes,
+        "filesystem_snapshot_path": str(snapshot_file.relative_to(root)).replace("\\", "/"),
+        "filesystem_snapshot_sha256": _sha256(snapshot_file),
         "started_at": _now(),
         "inputs": input_records,
         "command_or_invocation": command_or_invocation,
@@ -243,6 +300,12 @@ def finish_skill_run(
         output_records.append(record)
     finished_at = _now()
     duration = max(0.0, time.time() - datetime.fromisoformat(start["started_at"]).timestamp())
+    snapshot_file = root / str(start.get("filesystem_snapshot_path", ""))
+    expected_snapshot_hash = str(start.get("filesystem_snapshot_sha256", ""))
+    if not snapshot_file.is_file() or _sha256(snapshot_file) != expected_snapshot_hash:
+        raise ValueError(f"filesystem snapshot missing or tampered: {snapshot_file}")
+    before = json.loads(snapshot_file.read_text(encoding="utf-8"))
+    filesystem_delta = _filesystem_delta(before, _project_snapshot(root))
     record = {
         "event": "finish",
         "runtime_version": RUNTIME_VERSION,
@@ -262,6 +325,7 @@ def finish_skill_run(
         "manual_interventions": manual_interventions or [],
         "fallback_scripts": fallback_scripts or [],
         "fallback_reason": fallback_reason,
+        "filesystem_delta": filesystem_delta,
     }
     terminal = _append(root, record)
     if status == "PASS":
@@ -280,6 +344,37 @@ def finish_skill_run(
         ]
         _write_producers(root, registrations)
     return terminal
+
+
+def register_external_artifact(
+    project_root: str | Path,
+    *,
+    role: str,
+    path: str,
+    producer_name: str,
+    producer_version: str,
+    input_paths: list[str] | None = None,
+) -> dict[str, Any]:
+    """Register a rendered artifact produced outside the eight standard Skills."""
+    root = Path(project_root).resolve()
+    if producer_name not in ALLOWED_EXTERNAL_PRODUCERS:
+        raise ValueError(f"external producer is not allowed: {producer_name}")
+    output = _relative_record(root, path)
+    inputs = [_relative_record(root, item) for item in input_paths or []]
+    registration = {
+        **output,
+        "role": role,
+        "producer_type": "external_tool",
+        "producer_name": producer_name,
+        "producer_version": producer_version,
+        "producer_sha256": None,
+        "run_id": f"external-{uuid.uuid4().hex}",
+        "input_hashes": {item["path"]: item["sha256"] for item in inputs},
+        "output_sha256": output["sha256"],
+        "registered_at": _now(),
+    }
+    _write_producers(root, [registration])
+    return registration
 
 
 def fail_skill_run(project_root: str | Path, run_id: str, reason: str, *, exit_code: int = 1) -> dict[str, Any]:
@@ -342,8 +437,26 @@ def validate_skill_run(
             finished[run_id] = event
         else:
             errors.append(f"unknown trace event at {index}")
-    passed = set()
+    # A project legitimately reruns downstream Skills after correcting an input.
+    # Historical events remain signed audit evidence, but only the newest
+    # successful run of each Skill is the current artifact assertion.  Requiring
+    # every historical hash to equal today's files would make any honest rerun
+    # permanently fail validation and encourage trace deletion.
+    latest_successful: dict[str, str] = {}
     for run_id, start in starts.items():
+        final = finished.get(run_id)
+        if final and final.get("skill") == start.get("skill") and final.get("status") == "PASS":
+            latest_successful[str(start.get("skill"))] = run_id
+
+    passed = set(latest_successful)
+    for run_id, start in starts.items():
+        if verify_files:
+            snapshot_path = root / str(start.get("filesystem_snapshot_path", ""))
+            if (
+                not snapshot_path.is_file()
+                or start.get("filesystem_snapshot_sha256") != _sha256(snapshot_path)
+            ):
+                errors.append(f"filesystem_snapshot_hash_mismatch: {run_id}")
         final = finished.get(run_id)
         if final is None:
             errors.append(f"unfinished skill run: {run_id}")
@@ -351,13 +464,16 @@ def validate_skill_run(
         if final.get("skill") != start.get("skill") or final.get("status") not in TERMINAL_STATUSES:
             errors.append(f"invalid terminal record: {run_id}")
             continue
-        if final.get("status") == "PASS":
-            passed.add(str(start.get("skill")))
-        if verify_files:
+        if verify_files and latest_successful.get(str(start.get("skill"))) == run_id:
             for label, records in (("input", start.get("inputs", [])), ("output", final.get("outputs", []))):
                 for item in records:
                     if not isinstance(item, dict):
                         errors.append(f"invalid {label} record in {run_id}")
+                        continue
+                    # The orchestration trace is append-only: its terminal event
+                    # necessarily changes the trace file after its own start.
+                    # Signature verification above still authenticates it.
+                    if label == "input" and item.get("role") == "skill_trace":
                         continue
                     path = root / str(item.get("path", ""))
                     if not path.is_file() or item.get("sha256") != _sha256(path):
@@ -409,6 +525,13 @@ def main(argv: list[str] | None = None) -> int:
     listing = commands.add_parser("list")
     listing.add_argument("--project-root", type=Path, required=True)
     listing.add_argument("--project-id")
+    external = commands.add_parser("register-external")
+    external.add_argument("--project-root", type=Path, required=True)
+    external.add_argument("--role", required=True)
+    external.add_argument("--path", required=True)
+    external.add_argument("--producer", choices=sorted(ALLOWED_EXTERNAL_PRODUCERS), required=True)
+    external.add_argument("--producer-version", required=True)
+    external.add_argument("--input", action="append", default=[])
     args = parser.parse_args(argv)
     try:
         if args.action == "start":
@@ -424,6 +547,17 @@ def main(argv: list[str] | None = None) -> int:
             return 0
         if args.action == "list":
             print(json.dumps(list_project_skill_runs(args.project_root, args.project_id), ensure_ascii=False, indent=2))
+            return 0
+        if args.action == "register-external":
+            result = register_external_artifact(
+                args.project_root,
+                role=args.role,
+                path=args.path,
+                producer_name=args.producer,
+                producer_version=args.producer_version,
+                input_paths=args.input,
+            )
+            print(json.dumps(result, ensure_ascii=False, indent=2))
             return 0
         errors = validate_skill_run(args.project_root, project_id=args.project_id, required_skills=args.require_skill, verify_files=not args.no_verify_files)
     except (OSError, UnicodeError, ValueError, json.JSONDecodeError) as exc:

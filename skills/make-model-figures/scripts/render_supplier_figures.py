@@ -88,8 +88,11 @@ def main(root: Path) -> None:
         pdf_path = pdf_path.with_suffix(".pdf")
         metadata_path = (figures / name).with_suffix(".figure.json")
         metadata = json.loads(metadata_path.read_text(encoding="utf-8"))
+        data_sha256 = sha(root / data_file)
+        metadata["source_data"] = {"path": data_file, "sha256": data_sha256}
+        metadata_path.write_text(json.dumps(metadata, ensure_ascii=False, indent=2) + "\n", encoding="utf-8")
         audit_records.append({"figure_id": fid, "metadata": str(metadata_path.relative_to(root)).replace("\\", "/"), **metadata["audit"]})
-        entries.append({"figure_id": fid, "path": str(pdf_path.relative_to(root)).replace("\\", "/"), "metadata": str(metadata_path.relative_to(root)).replace("\\", "/"), "data_file": data_file, "claim_ids": [], "unit": "m3 or proportion", "title": fid, "sample_size": sample_size, "inserted_in_body": True, "sha256": sha(pdf_path)})
+        entries.append({"figure_id": fid, "path": str(pdf_path.relative_to(root)).replace("\\", "/"), "metadata": str(metadata_path.relative_to(root)).replace("\\", "/"), "data_file": data_file, "data_sha256": data_sha256, "claim_ids": [], "unit": "m3 or proportion", "title": fid, "sample_size": sample_size, "inserted_in_body": True, "sha256": sha(pdf_path)})
     (paper / "figure-registry.json").write_text(json.dumps(entries, ensure_ascii=False, indent=2) + "\n", encoding="utf-8")
     (root / "reports" / "figure_audit_report.json").parent.mkdir(exist_ok=True)
     passed = all(record["passed"] for record in audit_records)

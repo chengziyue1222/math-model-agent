@@ -10,7 +10,7 @@ from pathlib import Path
 from typing import Any
 
 
-CONTRACT_VERSION = "1.2"
+CONTRACT_VERSION = "1.3"
 CONTRACTS: dict[str, dict[str, tuple[str, ...]]] = {
     "run-modeling-project": {
         "inputs": ("project_config", "skill_trace"),
@@ -26,7 +26,18 @@ CONTRACTS: dict[str, dict[str, tuple[str, ...]]] = {
     },
     "research-model-literature": {
         "inputs": ("model_problem", "selected_model", "citation_requirements", "source_candidates"),
-        "outputs": ("search_queries", "search_results", "selected_sources", "rejected_sources", "literature_evidence", "references_bib", "bib_validation"),
+        "outputs": (
+            "search_queries",
+            "search_results",
+            "selected_sources",
+            "rejected_sources",
+            "retrieval_log",
+            "metadata_verification",
+            "relevance_evidence",
+            "literature_evidence",
+            "references_bib",
+            "bib_validation",
+        ),
     },
     "solve-model": {
         "inputs": ("selected_model_plan", "decision_contract", "data_analysis", "model_config", "baseline_plan"),
@@ -38,6 +49,50 @@ CONTRACTS: dict[str, dict[str, tuple[str, ...]]] = {
     },
     "write-model-paper": {
         "inputs": ("paper_spec", "evidence_index", "decision_contract", "quality_validation", "claim_registry", "formula_registry", "figure_registry", "table_registry", "references_bib", "result_object"),
+        "outputs": (
+            "main_markdown",
+            "main_tex",
+            "paper_generation_report",
+            "claim_usage_report",
+            "cumcm_layout_validation",
+            "render_request",
+        ),
+    },
+    "review-model-paper": {
+        "inputs": (
+            "manuscript",
+            "main_pdf",
+            "main_docx",
+            "official_problem",
+            "decision_contract",
+            "quality_validation",
+            "result_object",
+            "claim_registry",
+            "figure_registry",
+            "table_registry",
+            "references_bib",
+            "project_manifest",
+            "cumcm_layout_validation",
+            "latex_compile_report",
+            "docx_render_report",
+            "visual_layout_audit",
+        ),
+        "outputs": (
+            "paper_review_report",
+            "independent_content_review",
+            "review_hash_binding",
+            "submission_readiness",
+        ),
+    },
+}
+LEGACY_CONTRACTS_1_2 = {
+    **CONTRACTS,
+    "research-model-literature": {
+        "inputs": ("model_problem", "selected_model", "citation_requirements", "source_candidates"),
+        "outputs": ("search_queries", "search_results", "selected_sources", "rejected_sources", "literature_evidence", "references_bib", "bib_validation"),
+    },
+    "write-model-paper": {
+        "inputs": CONTRACTS["write-model-paper"]["inputs"],
         "outputs": ("main_markdown", "main_tex", "paper_generation_report", "claim_usage_report"),
     },
     "review-model-paper": {
@@ -46,16 +101,21 @@ CONTRACTS: dict[str, dict[str, tuple[str, ...]]] = {
     },
 }
 LEGACY_CONTRACTS_1_1 = {
-    **CONTRACTS,
+    **LEGACY_CONTRACTS_1_2,
     "research-model-literature": {
         "inputs": ("model_problem", "selected_model", "citation_requirements"),
-        "outputs": CONTRACTS["research-model-literature"]["outputs"],
+        "outputs": LEGACY_CONTRACTS_1_2["research-model-literature"]["outputs"],
     },
 }
 
 
 def contract_for(skill: str, *, version: str = CONTRACT_VERSION) -> dict[str, tuple[str, ...]]:
-    contracts = LEGACY_CONTRACTS_1_1 if version == "1.1" else CONTRACTS
+    if version == "1.1":
+        contracts = LEGACY_CONTRACTS_1_1
+    elif version == "1.2":
+        contracts = LEGACY_CONTRACTS_1_2
+    else:
+        contracts = CONTRACTS
     try:
         return contracts[skill]
     except KeyError as exc:

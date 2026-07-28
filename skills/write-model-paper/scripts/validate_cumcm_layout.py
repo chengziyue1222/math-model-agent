@@ -2,6 +2,7 @@
 from __future__ import annotations
 
 import argparse
+import json
 from pathlib import Path
 
 
@@ -17,10 +18,31 @@ REQUIRED = {
 }
 
 
-def main(tex_path: Path) -> int:
+def validate_layout(tex_path: Path) -> dict[str, object]:
     text = tex_path.read_text(encoding="utf-8")
     missing = {name: [token for token in tokens if token not in text] for name, tokens in REQUIRED.items()}
     missing = {name: tokens for name, tokens in missing.items() if tokens}
+    return {
+        "status": "FAIL" if missing else "PASS",
+        "profile": "strict_cumcm_a4_v1",
+        "tex_path": str(tex_path),
+        "checks": {
+            name: {"passed": name not in missing, "missing_tokens": missing.get(name, [])}
+            for name in REQUIRED
+        },
+    }
+
+
+def main(tex_path: Path, report_path: Path | None = None) -> int:
+    report = validate_layout(tex_path)
+    missing = {
+        name: check["missing_tokens"]
+        for name, check in report["checks"].items()
+        if not check["passed"]
+    }
+    if report_path:
+        report_path.parent.mkdir(parents=True, exist_ok=True)
+        report_path.write_text(json.dumps(report, ensure_ascii=False, indent=2) + "\n", encoding="utf-8")
     if missing:
         for name, tokens in missing.items():
             print(f"FAIL {name}: {', '.join(tokens)}")
@@ -32,4 +54,6 @@ def main(tex_path: Path) -> int:
 if __name__ == "__main__":
     parser = argparse.ArgumentParser()
     parser.add_argument("--tex", required=True, type=Path)
-    raise SystemExit(main(parser.parse_args().tex))
+    parser.add_argument("--report", type=Path)
+    args = parser.parse_args()
+    raise SystemExit(main(args.tex, args.report))

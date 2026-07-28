@@ -59,3 +59,19 @@ def test_source_records_require_unique_verifiable_identifiers() -> None:
     rendered = records_to_bibtex(records[:1])
     assert "@article{a" in rendered
     assert "doi = {10/x}" in rendered
+
+
+def test_retrieval_evidence_is_required_when_requested() -> None:
+    issues = validate_source_records(
+        [{"id": "a", "title": "One", "year": 2020, "type": "article", "doi": "10/x"}],
+        require_retrieval_evidence=True,
+    )
+    ids = {issue["id"] for issue in issues}
+    assert {
+        "source_origin_invalid",
+        "retrieval_provider_missing",
+        "retrieval_timestamp_invalid",
+        "source_not_fetched",
+        "metadata_unverified",
+        "relevance_evidence_missing",
+    } <= ids

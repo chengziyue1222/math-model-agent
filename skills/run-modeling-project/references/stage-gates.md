@@ -9,7 +9,7 @@ Stages are strictly ordered. Evidence means an existing project-relative file wi
 | `modeling` | `data_audit`, `model_selection`, `decision_contract` | Is there a leakage-safe data contract, a fair baseline, and a justified model route for every question? |
 | `validation` | `implementation`, `machine_results`, `quality_validation`, `run_manifest` | Can the solver be rerun with recorded parameters and seeds, and are balance, uncertainty, baseline, and trade-off checks appropriate to the declared decisions? |
 | `writing` | `validation_report`, `quality_validation`, `paper_spec`, `evidence_index`, `claim_registry`, `figure_registry`, `table_registry`, `formula_registry` | Is the project `READY_FOR_DRAFT`, are all proposed claims resolvable, and does each question have a decision-grade result and validation artifact? |
-| `review` | `manuscript`, `decision_contract`, `quality_validation`, `figure_inventory`, `paper_review_report`, `run_manifest` | Is the project `DRAFT_GENERATED`; do all hard paper gates pass and are hashes current? |
+| `review` | `manuscript`, `main_pdf`, `main_docx`, `decision_contract`, `quality_validation`, `figure_inventory`, `cumcm_layout_validation`, `latex_compile_report`, `docx_render_report`, `visual_layout_audit`, `paper_review_report`, `independent_content_review`, `submission_readiness`, `run_manifest` | Are the manuscript and both rendered formats present, visually audited, independently reviewed, and hash-current? |
 | `release` | `review_report`, `submission_checklist`, `run_manifest` | Is the project `FORMAL_PAPER_APPROVED`, with no review failure or stale evidence? |
 
 ## Transition Rules
