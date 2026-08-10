@@ -1,18 +1,19 @@
 # 数学建模论文结构
 
-For `competition_paper`, use the following mandatory order: 摘要、关键词、问题重述、问题分析、模型总体框架、模型假设、符号说明、数据预处理与探索性分析、问题一至五的模型/求解/验证、模型评价、最终建议、参考文献、附录、复现说明。
+For `competition_paper`, default to: 摘要、关键词、目录、问题重述、问题分析、模型假设、符号说明、（条件性）统一模型层、问题一至五的模型/求解/结果与分析、模型检验与灵敏度分析、模型评价与推广、参考文献、附录。
 
 1. 摘要：逐个子问题给出方法、关键结果、验证和结论，不写空泛背景。
-2. 问题重述与分析：明确任务、输入输出和子问题关系。
+2. 问题重述与分析：重述对象、条件和交付；随后说明输入输出、子问题关系、难点和建模判据。
 3. 模型假设：逐条说明理由、适用范围和可能影响。
 4. 符号说明：统一符号、单位、维度和代码变量名。
-5. 模型建立：给出目标、约束、推导和模型选择理由。
-6. 求解方法：说明算法、参数、初始化、停止条件和软件环境。
-7. 结果与验证：报告基线、误差、敏感性、稳健性和不确定性。
+5. 统一模型层只在至少两个子问题共享状态、约束、数据、几何、目标或求解内核时出现；否则各题独立建立模型。
+6. 模型建立：按现实关系、数学表达、公式、参数解释和适用范围展开。
+7. 求解方法：说明算法、参数、初始化、停止条件；内部软件与运行细节不进入正文。
+8. 结果与分析：用结果、规律、原因、证据和实际含义形成段落；按需要报告基线、约束审计、误差、敏感性、稳健性或不确定性。
 8. 讨论：解释机制、优势、局限、失败条件和可迁移性。
 9. 参考文献：只保留真实、可核验且正文使用的来源。
-10. 附录：放置复现所需代码、补充推导和数据说明。
+10. 附录：附录 A 放补充结果/检验，附录 B 放模块化关键代码；完整代码和全量数据随提交包提供。
 
 建立“结论—表格/图—结果文件—代码入口”映射。任何无法追溯的数字都不得进入终稿。
 
-Competition mode uses the explicit readiness thresholds in `paper-spec.yaml`: `minimum_body_characters`, `minimum_equations`, `minimum_figures`, `minimum_tables`, and `minimum_references`. If omitted, the conservative fallback is 9000 characters, 10 explained formulas, 8 body figures, 6 body tables, and 8 verifiable references. These counts are lower-bound delivery checks, not quality targets: every declared question must still have an executable result, a validation artifact, and decision-grade discussion. Include a framework diagram and notation table when they materially clarify the model; include sensitivity/robustness evidence whenever the decision contract requires it. Each key number appears with `[claim:CLAIM_ID]`.
+Counts in `paper-spec.yaml` are lower-bound delivery checks, not quality targets. Every declared question still needs a result, suitable validation and decision-grade discussion. Include a framework diagram and notation table only when they clarify the model; include sensitivity/robustness evidence whenever the conclusion depends on it. Backend claim anchors may be retained in source files for audit but are removed from reader-facing PDF/DOCX output.

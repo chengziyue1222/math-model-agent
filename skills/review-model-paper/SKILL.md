@@ -1,34 +1,34 @@
 ---
 name: review-model-paper
-description: Audit mathematical-modeling papers with fail-closed hard gates for structure, mathematics, figures/tables, evidence, validation, and citations. Use when Codex needs a pre-submission review, explicit PASS/FAIL decision, claim verification, stale-evidence detection, or LaTeX/Typst/Markdown inspection.
+description: Audit mathematical-modeling papers for reasoning, evidence, figures/tables, citations and final layout. Use when Codex needs a pre-submission review, revision plan, claim verification, or LaTeX/Typst/Markdown inspection.
 ---
 
 # Review Model Paper
 
-Review in read-only mode by default and separate evidence from judgment.
+Review in read-only mode unless revision is explicitly requested. First judge the reader-visible paper, then run backend consistency checks.
 
 ## Workflow
 
-1. Identify the manuscript, rendered PDF and DOCX, compile/render reports, visual audit, declared paper mode, registries, manifest, result files, figures, citations, decision contract, and quality validation.
-2. For Markdown, run `scripts/run_paper_check.py <paper.md> --project-root <root> --mode <mode> --report-dir <output>`; for LaTeX/Typst run the legacy structural check as a supplemental check.
-3. Enforce six fail-closed gates: structure; mathematics; figures/tables; evidence; validation; citations. A failure must produce `FAIL`, never a conditional pass.
-4. Resolve every `[claim:ID]` through its evidence JSON Pointer and SHA-256. Detect changed results, invalid pointers, uninserted registered figures/tables, invalid solver claims, absent seeds/intervals, and missing formulas.
-5. Enforce the decision contract: each question needs an existing executable result artifact and validation; declared multi-period state needs period balance checks; declared uncertainty needs scenario provenance and holdout/stress evidence; declared multi-objective optimization needs explicit trade-off evidence; a complex method needs a fair baseline comparison.
-6. For every competition paper, run `scripts/second_pass_content_review.py` with the manuscript, decision contract, and quality validation; do not make the second pass conditional on the first pass finding nothing. Require all structured checks plus hashes for all three artifacts before passing.
-7. Write `paper_review_report`, `independent_content_review`, `review_hash_binding`, and `submission_readiness`. Bind the latter two to the manuscript, PDF, DOCX, decision contract, quality validation, layout, compile, render, and visual-audit hashes.
-8. Keep subjective rubric observations separate from machine gates. Do not create a competition score from a constant or use it as quality evidence.
+1. Collect the problem, manuscript, rendered PDF, result files, figures/tables, validation material, citations and contest template.
+2. Read `references/paper-quality-review.md` and `references/review-rubric.md`.
+3. Check abstract, problem analysis, unified-core decision, formula explanation, per-question model/solution/result coverage, result reasoning and limitation disclosure.
+4. Check that figures and tables have different evidentiary roles, are readable on A4 pages, and receive useful surrounding prose.
+5. Check citations for relevance and verifiability; check appendices for structured, readable code rather than a miniature dump of the full repository.
+6. Render and inspect layout: title and first-level headings centered; no top-left running header; natural body flow; no orphan headings; references and appendices begin on clean pages.
+7. Run structural, value-consistency and PDF preflight checks. Keep backend findings separate from the paper's own prose.
+8. Report findings by severity with direct evidence, impact and the smallest repair. A PASS means the visible paper and its evidence both meet the declared standard, not that it will win a contest.
 
 ## Guardrails
 
-- Do not edit the manuscript unless the user explicitly requests revision.
-- Do not assert that a citation or numerical claim is verified without checking its source; invalid evidence is a blocker.
-- Do not use agent count as a proxy for review quality.
-- Require explicit authorization before publishing, pushing, or submitting anything.
+- Do not claim a citation or numerical result is verified without checking its source.
+- Do not use a fixed count of equations, figures or references as a proxy for quality.
+- Do not edit, publish or submit the paper without authorization.
 
 ## Resources
 
-Read `references/review-rubric.md`. Run `scripts/run_paper_check.py <paper-path>` for deterministic structural checks.
+- `references/paper-quality-review.md` — reader-visible quality checklist.
+- `references/review-rubric.md` — modeling quality rubric.
 
 ## Executable Contract
 
-Run `scripts/execute_skill.py` with the manuscript, PDF, DOCX, source problem, decision contract, quality validation, result object, registries, bibliography, project manifest, layout validation, compile report, DOCX render report, and visual audit. Register `paper_review_report`, `independent_content_review`, `review_hash_binding`, and `submission_readiness`. The runtime trace, not a hand-written review log, is the evidence that this Skill was invoked.
+For repository-managed `competition` and `audit` projects, inspect the shared contract registry with `python -m scripts.skill_contracts --skill review-model-paper` and run this Skill through the local `scripts/execute_skill.py` with every contracted input and output role. In `rapid`, provide a labelled peer-style critique of the available artifact; do not issue a submission-ready or formally verified verdict.

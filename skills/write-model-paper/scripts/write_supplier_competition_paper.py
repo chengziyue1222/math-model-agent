@@ -35,7 +35,6 @@ def main(root: Path) -> None:
     simulation = json.loads((results / "simulation_metrics.json").read_text(encoding="utf-8"))
     quality = json.loads((results / "quality_validation.json").read_text(encoding="utf-8"))
     decision_contract = json.loads((results / "decision_contract.json").read_text(encoding="utf-8"))
-    tradeoff = pd.read_csv(results / "q3_tradeoff.csv")
     q = result["questions"]
     metrics = result["metrics"]
     ids = top50.supplier_id.tolist()

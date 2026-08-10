@@ -34,6 +34,9 @@ jobs:
       - name: Validate Codex Skills
         run: python scripts/validate_skills.py
 
+      - name: Validate public repository facts
+        run: python scripts/validate_repository_facts.py
+
       - name: Validate historical benchmark catalog
         run: python scripts/validate_benchmarks.py
 

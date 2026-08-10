@@ -4,7 +4,7 @@ build-backend = "setuptools.build_meta"
 
 [project]
 name = "math-model-agent"
-version = "6.6.0"
+version = "7.2.0"
 description = "Mathematical-modeling algorithm library used by the Math Model Agent repository"
 readme = "README.md"
 license = "MIT"
@@ -30,11 +30,14 @@ dev = [
 
 [tool.setuptools.packages.find]
 where = ["code"]
-include = ["algorithms*"]
+include = ["algorithms*", "nova_core*", "nova_eval*"]
 
 [tool.pytest.ini_options]
 testpaths = ["code/tests"]
 pythonpath = ["code", "."]
+# Keep pytest out of a potentially access-controlled system temp directory.
+# This directory is dedicated to pytest and is ignored by Git.
+addopts = "--basetemp=.test-tmp/pytest"
 
 [tool.coverage.report]
 exclude_also = [

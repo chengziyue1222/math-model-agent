@@ -1,8 +1,8 @@
 # Math Model Agent
 
-> **数学建模 AI 助手** — 8 个标准 Codex Skills + 17 个算法模块，覆盖从选题到答辩的完整竞赛工作流。
+> **数学建模 AI 助手** — 8 个标准 Codex Skills + 25 个算法与质量模块，覆盖从选题到答辩的完整竞赛工作流。
 >
-> An AI-powered toolkit for mathematical modeling competitions: 56 skill files + 17 algorithm modules, covering the full workflow from problem selection to final presentation.
+> An AI-powered toolkit for mathematical modeling competitions: 8 standard Codex Skills, 56 archived legacy commands, and 25 algorithm/quality modules.
 
 ---
 
@@ -10,7 +10,7 @@
 
 ### 🧮 算法库 / Algorithm Library (`code/algorithms/`)
 
-129 个导出，17 个模块，分 9 大类：
+144 个公开导出，25 个模块文件；核心算法按 9 大类组织，另含数据诊断、证据契约、质量、文档和生产保护模块：
 
 **决策与评价 (23)**
 
@@ -164,7 +164,7 @@ python scripts/check_coverage.py coverage.json
 math-model-agent/
 │
 ├── code/                            # 🔧 代码模块
-│   ├── algorithms/                  # 17 个 Python 算法模块（可直接 import）
+│   ├── algorithms/                  # 25 个 Python 算法与质量模块（可直接 import）
 │   │   ├── __init__.py              # 统一导出入口，from algorithms import * 即用
 │   │   ├── ahp.py                   # 层次分析法：AHP 构造、一致性检验 CR
 │   │   ├── grey_system.py           # 灰色系统：GM(1,1) 预测、灰色关联分析
@@ -390,6 +390,7 @@ python scripts/install_skills.py --dry-run
 
 ## 版本历史 / Changelog
 
+- **v7.2.0** (2026-08-10) — 新增 rapid / competition / audit 三档工作流，统一标准 Skill 的可执行契约入口，并校正文档与 Windows 测试体验
 - **v6.0** (2026-07-08) — 蒸馏 zhanwen/MathModel + MathModelAgent，新增蒙特卡罗、图像处理、综合评价、竞赛工作流
 - **v5.0** (2026-06-16) — 部署 CodeBuddy 论文 Skills + 数学建模 Skills，总计 55 个 slash commands
 - **v4.0** (2026-06-16) — 整合 36 个 Claude Code Skills
@@ -397,6 +398,20 @@ python scripts/install_skills.py --dry-run
 - **v2.0** (2026-06-15) — 融合获奖论文模式库
 
 详见 [CHANGELOG.md](CHANGELOG.md)。
+
+---
+
+## 反馈、贡献与支持 / Feedback, Contributions, and Support
+
+欢迎通过 GitHub Issues 提交可复现的 bug、功能建议或文档问题；请附上 Python 版本、运行命令、完整报错和最小复现数据（请勿上传敏感或受限数据）。
+
+如需私下联系，请发送邮件至 [chengziyue1222@163.com](mailto:chengziyue1222@163.com)。
+
+如果这个项目对你有帮助，欢迎自愿扫码赞赏以支持维护；感谢你的支持，赞赏不附带技术支持或功能交付承诺。
+
+<p align="center">
+  <img src="assets/support/wechat-support.jpg" alt="微信赞赏码" width="280">
+</p>
 
 ---
 

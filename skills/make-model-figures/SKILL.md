@@ -5,27 +5,29 @@ description: Design, generate, audit, and export figures for mathematical modeli
 
 # Make Model Figures
 
-Create figures that communicate a specific modeling conclusion and remain reproducible.
+Generate figures that prove a particular modeling conclusion. A chart is not included merely because there is data available.
 
 ## Workflow
 
-1. Start from the modeling question, decision objective, or validation claim. Do not start from a chart template.
-2. Assign each figure one role: data overview, assumption check, model result, diagnostic, comparison, sensitivity, robustness, optimization, or decision support.
-3. Read the project `run-manifest.json` and `quality_validation`, then write a figure contract covering model/version, baseline or scenario, parameter and result sources, deterministic status or random seed, sample definition, statistics, uncertainty, review risks, and final paper size.
-4. Read `references/figure-standards.md` and `references/publication-workflow.md`. Inspect relevant functions in `code/algorithms/sci_figures.py` or `diagram.py`.
-5. Choose the smallest chart or multi-panel archetype that proves the modeling claim without distortion. Explain the panel plan before producing a large figure set.
-6. Generate every mark from saved, machine-readable model inputs and outputs. Never silently discard rows, variables, groups, scenarios, or failed runs; report filtering and downsampling.
-7. Use semantic, colorblind-safe colors with line-style or marker redundancy. Keep variables, units, constraints, baselines, uncertainty, and statistical annotations explicit. For each decision question, include at least one decision-grade artifact: a feasibility/balance diagnostic, a baseline-trade-off comparison, or a scenario/sensitivity result; do not substitute decorative charts.
-8. For final delivery, use `FigureContract`, `publication_size`, `publication_rc_params`, and `export_publication_figure` to produce PDF/SVG masters, a 450 dpi PNG proof, and `.figure.json` audit metadata. A project adapter may choose data columns and labels, but it must not implement a separate lower-resolution save path.
-9. Run four reviews: anti-patterns, code/export compliance, model/data integrity, and rendered visual inspection. Cross-check plotted optima, metrics, parameters, and sample counts against saved results and paper text.
-10. Register final figure files and their audit metadata as manifest artifacts, then revalidate file hashes.
+1. Start from a conclusion, validation claim or mechanism that the paper must establish.
+2. Read `references/paper-figure-language.md`, `references/figure-standards.md` and the relevant functions in `code/algorithms/sci_figures.py` or `diagram.py`.
+3. Select the smallest appropriate form: route diagram, mechanism sketch, snapshots, global-plus-inset, trend/threshold, sensitivity, convergence or a representative comparison table. Record why competing forms were not needed.
+4. Plan panels and final A4 dimensions before plotting. One page should not contain four unreadable mini-plots; no run of pages should become pure figures without explanatory text.
+5. Plot from saved data/results. Label variables and units; show reference values, thresholds, feasible regions, uncertainty or baseline whenever these are needed for the conclusion.
+6. Apply `paper_figure_rc_params` (or `publication_rc_params` where venue settings require it), export vector masters and inspect the rendered PDF-size proof.
+7. For every formal figure, record source data, model/scenario, claim, units, filtering, final size and any randomness. This metadata is for audit, not reader-facing prose.
+8. In the manuscript, introduce why the figure is needed and explain its pattern, mechanism and limitation after it.
 
-Do not use decorative 3-D effects, rainbow color maps, truncated axes without disclosure, hidden sampling, cherry-picked scenarios, or significance marks unsupported by a stated test.
+## Style
+
+Use white backgrounds, muted semantic colors, one restrained emphasis color, weak grids and readable Chinese/Latin labels. Avoid rainbow maps, decorative 3-D effects, generic dashboard palettes, obscuring legends and unlabeled axes.
 
 ## Resources
 
-Read `references/figure-standards.md` for chart selection and formatting. Read `references/publication-workflow.md` for figure contracts, export code, and the audit checklist.
+- `references/paper-figure-language.md` — conclusion-to-figure grammar.
+- `references/figure-standards.md` — sizing and export rules.
+- `references/publication-workflow.md` — reproducibility and rendered inspection.
 
 ## Executable Contract
 
-Run `scripts/execute_skill.py` under the shared runtime with `result_object`, `quality_validation`, `claim_registry`, and `figure_plan`. Register the `figure_registry` and `figure_audit_report` outputs. Every registry entry must link its `.figure.json`, machine-readable source, final-file hash, and insertion status; only this successful Skill run may register formal figures for a paper.
+For repository-managed `competition` and `audit` projects, inspect the shared contract registry with `python -m scripts.skill_contracts --skill make-model-figures` and run this Skill through the local `scripts/execute_skill.py` with every contracted input and output role. In `rapid`, retain the plotted source data, claim, units, and generation parameters; reserve formal registry and PDF-size audit work for a stricter profile.

@@ -58,9 +58,18 @@ from matplotlib.text import Text
 
 PUBLICATION_WIDTH_MM = {"single": 89.0, "double": 183.0}
 MODELING_PALETTE = {
-    "categorical": ("#0072B2", "#009E73", "#E69F00", "#CC79A7", "#D55E00", "#56B4E9"),
-    "diverging": ("#2166AC", "#F7F7F7", "#B2182B"),
-    "sequential": ("#F7FBFF", "#C6DBEF", "#6BAED6", "#2171B5", "#084594"),
+    "categorical": ("#3C6E8F", "#5B8C6A", "#B27A45", "#8A6E9C", "#A6534C", "#6E8FA8"),
+    "diverging": ("#3C6E8F", "#F7F7F5", "#A6534C"),
+    "sequential": ("#F7F8F5", "#D7E4E7", "#A6C4CF", "#6F9DB0", "#315D78"),
+}
+MODELING_PAPER_THEME = {
+    "background": "#FFFFFF",
+    "text": "#262626",
+    "axis": "#4D4D4D",
+    "grid": "#D8D8D2",
+    "emphasis": "#A6534C",
+    "reference": "#6B6B6B",
+    "categorical": MODELING_PALETTE["categorical"],
 }
 _MODELING_FIGURE_ROLES = {
     "data-overview",
@@ -176,6 +185,39 @@ def publication_rc_params(font_family: str = "sans-serif") -> dict[str, object]:
         "savefig.dpi": 450,
         "savefig.facecolor": "white",
     }
+
+
+def paper_figure_rc_params(font_family: str = "sans-serif") -> dict[str, object]:
+    """Return the restrained A4-paper theme used by modeling-paper figures.
+
+    The values are deliberately independent of individual chart scripts so a
+    figure set reads as one paper rather than a sequence of dashboard panels.
+    Venue-specific size constraints still belong to :func:`publication_size`.
+    """
+    params = publication_rc_params(font_family)
+    params.update(
+        {
+            "font.size": 7.5,
+            "axes.labelsize": 7.5,
+            "axes.titlesize": 8.0,
+            "xtick.labelsize": 6.5,
+            "ytick.labelsize": 6.5,
+            "legend.fontsize": 6.5,
+            "axes.edgecolor": MODELING_PAPER_THEME["axis"],
+            "axes.labelcolor": MODELING_PAPER_THEME["text"],
+            "xtick.color": MODELING_PAPER_THEME["axis"],
+            "ytick.color": MODELING_PAPER_THEME["axis"],
+            "text.color": MODELING_PAPER_THEME["text"],
+            "axes.facecolor": MODELING_PAPER_THEME["background"],
+            "figure.facecolor": MODELING_PAPER_THEME["background"],
+            "axes.grid": True,
+            "grid.color": MODELING_PAPER_THEME["grid"],
+            "grid.linewidth": 0.45,
+            "grid.alpha": 0.55,
+            "legend.frameon": False,
+        }
+    )
+    return params
 
 
 def _intersection_fraction(first, second) -> float:

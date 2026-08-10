@@ -63,7 +63,6 @@ def main(root: Path) -> None:
     paper.mkdir(exist_ok=True)
     ranking = pd.read_csv(results / "supplier_ranking.csv")
     q2 = pd.read_csv(results / "q2_weekly_plan.csv")
-    q3 = pd.read_csv(results / "q3_weekly_plan.csv")
     q4 = pd.read_csv(results / "q4_weekly_plan.csv")
     tradeoff = pd.read_csv(results / "q3_tradeoff.csv")
     carrier = pd.read_csv(results / "carrier_loss_summary.csv")

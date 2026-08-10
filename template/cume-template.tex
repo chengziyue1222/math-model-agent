@@ -7,7 +7,8 @@
 
 % ============ 页面与字体 ============
 \usepackage{geometry}
-\geometry{a4paper,left=3.17cm,right=3.17cm,top=2.54cm,bottom=2.54cm,centering}
+% Canonical defaults are recorded in config/paper_style.yaml; contest rules may override.
+\geometry{a4paper,left=2.5cm,right=2.5cm,top=2.5cm,bottom=2.8cm,centering}
 \usepackage{fontspec}
 \setmainfont{SimSun}[BoldFont=SimHei,BoldFeatures={FakeBold=1.5}]
 \setmonofont{SimSun}[AutoFakeBold=1.5]
@@ -29,10 +30,12 @@
 \usepackage{makecell}
 \usepackage{multirow}
 \usepackage{calc}
+\usepackage{tocloft}
 
 % ============ 图表中文标签 ============
 \renewcommand{\figurename}{图}
 \renewcommand{\tablename}{表}
+\renewcommand{\contentsname}{目录}
 \renewcommand{\arraystretch}{1.25}
 \renewcommand{\refname}{参考文献}
 
@@ -47,7 +50,7 @@
 \renewcommand{\thesubsubsection}{\arabic{section}.\arabic{subsection}.\arabic{subsubsection}}
 % 一级标题：居中、16pt黑体、"一、"前缀
 \titleformat{\section}
-  {\fontsize{16pt}{24pt}\selectfont\bfseries\heitifont\centering}
+  {\fontsize{15pt}{22pt}\selectfont\bfseries\heitifont\centering}
   {}{0em}{\zhsectionnum{\value{section}}、}
 \titleformat{name=\section,numberless}
   {\large\bfseries\heitifont\centering}{}{0em}{}
@@ -64,7 +67,7 @@
 
 % ============ 段落与行距 ============
 \setlength{\parindent}{2em}
-\linespread{1.5}
+\linespread{1.65}
 \setlength{\parskip}{0pt}
 \tolerance=800
 \hbadness=4000
@@ -72,6 +75,8 @@
 \widowpenalty=10000
 \clubpenalty=10000
 \raggedbottom
+\pagestyle{plain} % no top-left running header
+\setcounter{tocdepth}{2}
 
 % 英文术语断词规则（消除表格 Overfull hbox）
 \hyphenation{Ran-dom-For-est Grad-i-ent-Boost-ing Lo-gis-tic-Re-gres-sion}
@@ -110,24 +115,28 @@
 % ============ 代码框格式（核心：附录代码排版） ============
 \lstdefinestyle{modelcode}{
     language=Python,
-    basicstyle=\ttfamily\fontsize{10.5pt}{13pt}\selectfont,
+    % Compact appendix box: denser than body text, but still readable in A4.
+    basicstyle=\ttfamily\fontsize{8.5pt}{10.5pt}\selectfont,
     keywordstyle=\bfseries,
     commentstyle=\itshape\color{gray},
     numbers=left,
-    numberstyle=\scriptsize\ttfamily\color{gray},
+    numberstyle=\fontsize{6.5pt}{7.5pt}\selectfont\ttfamily\color{gray},
     stepnumber=1,
-    numbersep=10pt,
+    numbersep=7pt,
     frame=single,
-    rulecolor=\color{black!30},
-    backgroundcolor=\color{gray!4},
+    framerule=0.35pt,
+    rulecolor=\color{black!25},
+    backgroundcolor=\color{gray!3},
+    framesep=5pt,
     breaklines=true,
+    breakatwhitespace=false,
     tabsize=4,
     showstringspaces=false,
     columns=fullflexible,
     keepspaces=true,
-    xleftmargin=2.8em,
-    xrightmargin=0.5em,
-    framexleftmargin=2.4em
+    xleftmargin=2.45em,
+    xrightmargin=0.25em,
+    framexleftmargin=2.1em
 }
 \lstdefinestyle{dgcupPython}{style=modelcode}
 \renewcommand{\lstlistingname}{算法}
@@ -150,39 +159,31 @@
 % ============================================================
 %  论文正文开始
 % ============================================================
-\title{在此填写论文标题}
-\author{学校名称}
-\date{2026年X月}
+\newcommand{\PaperTitle}{在此填写论文标题}
 
 \begin{document}
 
-% ============ 封面 ============
-\thispagestyle{empty}\pagenumbering{gobble}
-\vspace*{7cm}
+% ============ 首页：题目、摘要、关键词（无强制封面） ============
+\thispagestyle{plain}
 \begin{center}
-  {\fontsize{22pt}{33pt}\selectfont\bfseries 在此填写论文标题\par}
-  \vspace{2cm}
-  {\fontsize{14pt}{21pt}\selectfont 学校名称数学建模竞赛\par}
-  \vspace{1cm}
-  {\normalsize 2026年X月\par}
+  {\fontsize{16pt}{24pt}\selectfont\bfseries\heitifont \PaperTitle\par}
 \end{center}
-\newpage
-
-% ============ 摘要 ============
-\thispagestyle{empty}
 \begin{center}
   {\fontsize{14pt}{21pt}\selectfont\bfseries 摘\quad 要}
 \end{center}\vspace{0.6cm}
 
-% 摘要正文：概述问题、方法、主要结果（300-500字）
-在此填写摘要内容。针对XX问题，本文建立了XX模型。通过XX方法，得到XX结果。
+% 摘要：问题本质与框架；逐题方法、关键结果、必要验证；适用范围。
+在此填写摘要内容。第一段概述问题本质与总体框架；随后按题号写方法、最重要结果和必要验证。
 
 \noindent{\bfseries 关键词：}关键词1；关键词2；关键词3；关键词4
 
 \newpage
+% ============ 目录 ============
+\tableofcontents
+\newpage
 
 % ============ 正文 ============
-\pagestyle{plain}\pagenumbering{arabic}\setcounter{page}{1}
+\pagenumbering{arabic}\setcounter{page}{1}
 
 % ---------- 一级标题示例：中文数字编号，居中 ----------
 \section{问题重述}
@@ -239,7 +240,8 @@
 
 本文主要符号说明如表2所示。
 
-\section{模型的建立与求解}
+% 仅当多个子问题确有共用状态、约束、数据或求解内核时，在此加入“统一模型层”。
+\section{问题一}
 
 \subsection{数据预处理与特征工程}
 
@@ -252,26 +254,28 @@
   \label{fig:example}
 \end{figure}
 
-\subsection{问题一}
-
-\subsubsection{模型建立}
+\subsection{模型建立}
 
 在此建立数学模型。公式示例：
 \begin{equation}
   \min_w \|Xw - y\|^2 + \alpha\|w\|^2
 \end{equation}
 
-\subsubsection{模型求解}
+\subsection{模型求解}
 
 在此求解模型。
 
-\subsubsection{结果分析}
+\subsection{结果分析}
 
 在此分析结果。
 
-\subsection{问题二}
+\section{问题二}
 
 % 按需继续添加子问题...
+
+\section{模型检验与灵敏度分析}
+
+在此给出约束审计、基线比较、独立复核、参数灵敏度或数值收敛中的必要证据，并解释其与结论的关系。
 
 \section{模型的评价与推广}
 
@@ -288,6 +292,10 @@
 % 格式：[编号] 作者. 标题[文献类型]. 出版信息, 年份.
 \clearpage
 \section{参考文献}
+
+% the section title is already printed above; suppress the bibliography's
+% second automatic heading while retaining its numbered entries.
+\renewcommand{\refname}{}
 
 \begin{thebibliography}{99}
 \setlength{\itemsep}{2pt}

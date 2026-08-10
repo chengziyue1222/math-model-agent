@@ -2,6 +2,20 @@
 
 ## Unreleased
 
+## v7.2.0 (2026-08-10)
+
+### Workflow Profiles and Usability
+
+- Added `rapid`, `competition`, and `audit` workflow profiles so exploratory work keeps mathematical non-negotiables without inheriting every formal-delivery gate.
+- Made CUMCM layout checks venue-specific rather than a default for every modeling task.
+- Added a concise executable-contract entry point to every standard Skill and aligned the project coordinator UI prompt with profile selection.
+
+### Consistency and Developer Experience
+
+- Corrected public documentation to report 8 standard Skills, 56 archived legacy commands, 25 module files, and 144 public algorithm exports.
+- Configured pytest to use the Git-ignored repository-local `.test-tmp/pytest` directory, avoiding access-controlled Windows system temp directories.
+- Removed four Ruff-reported unused imports and variables from shipped Skill scripts.
+
 ### 总控建模 Skill
 
 - 新增 `$run-modeling-project`，按 intake、analysis、modeling、validation、writing、review、release 七阶段协调现有专项 Skills。

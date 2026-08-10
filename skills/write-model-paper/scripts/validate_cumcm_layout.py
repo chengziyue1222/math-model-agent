@@ -7,14 +7,21 @@ from pathlib import Path
 
 
 REQUIRED = {
-    "A4 margins": ("left=3.17cm", "right=3.17cm", "top=2.54cm", "bottom=2.54cm"),
+    "A4 margins": ("left=2.5cm", "right=2.5cm", "top=2.5cm", "bottom=2.8cm"),
     "Song/Hei fonts": ("SimSun", "SimHei"),
-    "paragraph spacing": (r"\setlength{\parindent}{2em}", r"\linespread{1.5}"),
-    "heading hierarchy": (r"\titleformat{\section}", r"\titleformat{\subsection}", r"\fontsize{16pt}{24pt}"),
+    "paragraph spacing": (r"\setlength{\parindent}{2em}", r"\linespread{1.65}"),
+    "heading hierarchy": (r"\titleformat{\section}", r"\titleformat{\subsection}", r"\fontsize{15pt}{22pt}"),
     "float and three-line tables": (r"\setlength{\floatsep}", r"\toprule", r"\midrule", r"\bottomrule"),
-    "cover": (r"\thispagestyle{empty}\pagenumbering{gobble}", r"\vspace*{7cm}"),
-    "abstract and body reset": ("摘\\quad 要", r"\pagenumbering{arabic}\setcounter{page}{1}"),
-    "caption, bibliography, code appendix": (r"\@makecaption", r"\begin{thebibliography}", r"\begin{pycode}"),
+    "front matter and contents": (r"\PaperTitle", "摘\\quad 要", r"\tableofcontents"),
+    "no running header": (r"\pagestyle{plain}",),
+    "abstract and body reset": (r"\pagenumbering{arabic}\setcounter{page}{1}",),
+    "caption, bibliography, code appendix": (
+        r"\@makecaption",
+        r"\begin{thebibliography}",
+        r"\begin{pycode}",
+        "numbers=left",
+        "numbersep=7pt",
+    ),
 }
 
 
@@ -24,7 +31,7 @@ def validate_layout(tex_path: Path) -> dict[str, object]:
     missing = {name: tokens for name, tokens in missing.items() if tokens}
     return {
         "status": "FAIL" if missing else "PASS",
-        "profile": "strict_cumcm_a4_v1",
+        "profile": "cumcm_modeling_paper_v2",
         "tex_path": str(tex_path),
         "checks": {
             name: {"passed": name not in missing, "missing_tokens": missing.get(name, [])}

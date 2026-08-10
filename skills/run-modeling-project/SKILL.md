@@ -1,56 +1,39 @@
 ---
 name: run-modeling-project
-description: Orchestrate an end-to-end mathematical-modeling project through resumable stage gates and evidence-based handoffs. Use when Codex needs to start, continue, recover, or coordinate a multi-stage competition project spanning problem intake, data analysis, model selection, solving, validation, figures, paper writing, review, and release.
+description: Coordinate a mathematical-modeling project from problem intake through analysis, model selection, solution, figures, paper, review and delivery. Use when Codex needs to organize a complete modeling workflow or hand off between modeling Skills.
 ---
 
 # Run Modeling Project
 
-Coordinate the existing specialist Skills without letting artifacts, decisions, or failed runs fall between stages.
+Coordinate the existing Skills around a strong final paper. The project record supports reproducibility, but it is not a second product or a substitute for modeling.
 
-## Start or Resume
+## Workflow
 
-1. Read `references/stage-gates.md` and `references/handoff-schema.md`.
-2. Run `scripts/project_state.py status --project-root <root>` and `scripts/project_state.py verify --project-root <root>` before doing project work.
-3. If no state exists, initialize it with a project ID and the project-relative `run-manifest.json` path.
-4. If state exists, resume its `current_stage`; do not restart completed work unless its evidence is invalid.
-5. Inspect the run manifest and verify registered files before relying on prior results.
+1. Read `references/workflow-profiles.md` and choose `rapid`, `competition` (the default), or `audit` before creating deliverables.
+2. Record the problem, data sources, deliverables and venue constraints. Apply CUMCM-only layout rules only when that venue requires them.
+3. Invoke `analyze-model-data` where data is used and `select-model` for decomposition, dependency analysis and structure opportunities. Invoke `research-model-literature` when external facts, parameters, datasets, or citations affect a claim.
+4. Invoke `solve-model` for equations, algorithms, baselines, constraints, sensitivity and independent checks.
+5. Invoke `make-model-figures` only after identifying the conclusions each figure must establish.
+6. Invoke `write-model-paper` to turn verified results into a contest paper, then `review-model-paper` for reader-visible and technical review.
+7. Render and inspect the final PDF when the selected profile requires a paper; revise the original Skill outputs rather than creating a parallel demonstration workflow.
 
-## Orchestration Loop
+## Priority Order
 
-1. State the current stage, its exit gate, known blocker, and smallest next action.
-2. Invoke only the specialist Skill needed for that action:
-   - intake or route selection: `$select-model`
-   - data work: `$analyze-model-data`
-   - source support: `$research-model-literature`
-   - implementation, optimization, simulation, validation: `$solve-model`
-   - figures: `$make-model-figures`
-   - manuscript: `$write-model-paper`
-   - audit: `$review-model-paper`
-3. Carry the `decision_contract` from model selection through solving, figure design, writing, and review; carry `quality_validation` from solving through figure design, writing, and review.
-4. Save machine-readable evidence under stable project-relative paths.
-5. Update and verify `run-manifest.json`; preserve failed runs, diagnostics, seeds, metrics, and limitations.
-6. Run the standard Skill executor's contract preflight before any specialist command. A missing input/output role is a blocked run and the underlying command must not execute.
-7. Advance with `scripts/project_state.py advance` only when every required evidence role exists, hashes successfully, and all evidence accepted by earlier gates is still present and unchanged.
-8. Emit the handoff described in `references/handoff-schema.md` before changing stages or ending the task.
+1. final paper quality and layout;
+2. modeling and reasoning;
+3. validation and consistency;
+4. engineering convenience.
 
-## Failure and Recovery
+Read `references/paper-first-flow.md` for the actual handoff order. Existing manifests, stage gates and validations are permitted as backstage controls; their terms and traces do not belong in the submitted paper. In `rapid`, retain the non-negotiables but defer audit-only artifacts; do not label the result as formally verified.
 
-- Record a real blocker with `scripts/project_state.py block`; include the cause and next action.
-- Use `resume` only after the cause is addressed. The blocker remains in history.
-- Never skip a stage, silently replace evidence, or mark a gate complete from narrative alone.
-- If evidence changed after a gate, `project_state.py verify` must fail. Revalidate the manifest and rerun every affected downstream gate; never overwrite the recorded hash to make the state appear current.
-- Stop before publishing or submitting unless the user explicitly authorizes that external action.
+## Handoff Minimums
 
-## Completion
-
-The project is complete only at `release`, after the Markdown/TeX sources, PDF, DOCX, compile/render reports, visual audit, independent content review, submission-readiness report, submission checklist, decision contract, quality validation, and verified run manifest pass the final gate. Report unresolved limitations even when every gate passes.
-
-## Resources
-
-- Read `references/stage-gates.md` for required evidence and transition rules.
-- Read `references/handoff-schema.md` for status and artifact handoffs.
-- Run `scripts/project_state.py` to initialize, inspect, block, resume, advance, and export state.
+- analysis → selection: question decomposition, data/units, constraints and dependencies;
+- selection → solution: model rationale, rejected alternatives, baseline and validation plan;
+- solution → figures/writing: results, formulas, source tables, validations and limitations;
+- figures → writing: claim, source, figure role, final artifact and interpretation;
+- writing → review: manuscript, PDF, sources and a list of evidence used.
 
 ## Executable Contract
 
-Use `scripts/advance_project.py` with an explicit project-relative stage plan, then call it through `scripts/execute_skill.py` to record the orchestration invocation with `project_config` and `skill_trace`. It registers `project_state`, `stage_gate`, and `handoff`; it never skips stages or accepts un-hashed evidence. The runtime records the contract version and aggregate implementation hash for directory-backed Skills. Before release, run the repository workflow validator; it fails if a required standard Skill has no successful trace, an artifact producer is invalid, prior gate evidence is stale, or a project script bypasses the workflow.
+For repository-managed `competition` and `audit` projects, inspect the shared contract registry with `python -m scripts.skill_contracts --skill run-modeling-project` and execute this Skill through the local `scripts/execute_skill.py`. Supply every contracted input and output role. Record a failed preflight as blocked rather than repairing the trace by hand.

@@ -2,7 +2,7 @@
 数学建模算法工具箱
 ==================
 
-129 个导出函数/类，17 个模块，覆盖数学建模竞赛全流程。
+144 个公开导出，25 个算法与质量模块，覆盖数学建模竞赛全流程。
 全部基于 numpy/scipy 实现，无深度学习框架依赖。
 
 来源:
@@ -86,8 +86,8 @@ from .sci_figures import (
     CircularHeatmap, ComboComparison, ChordDiagram, ShapBeeswarm,
     TaylorPoint, RocModelSpec, PredModelPanel, HeatmapTrait, HeatmapGroup,
     ChordNode, FigureContract, FigureAuditReport, PUBLICATION_WIDTH_MM,
-    MODELING_PALETTE, mm_to_inches, publication_size,
-    publication_rc_params, audit_publication_figure,
+    MODELING_PALETTE, MODELING_PAPER_THEME, mm_to_inches, publication_size,
+    publication_rc_params, paper_figure_rc_params, audit_publication_figure,
     export_publication_figure, save_figure as save_sci_figure,
 )
 from .diagram import (
@@ -154,8 +154,8 @@ __all__ = [
     'CircularHeatmap', 'ComboComparison', 'ChordDiagram', 'ShapBeeswarm',
     'TaylorPoint', 'RocModelSpec', 'PredModelPanel', 'save_sci_figure',
     'FigureContract', 'FigureAuditReport', 'PUBLICATION_WIDTH_MM',
-    'MODELING_PALETTE', 'mm_to_inches', 'publication_size',
-    'publication_rc_params', 'audit_publication_figure', 'export_publication_figure',
+    'MODELING_PALETTE', 'MODELING_PAPER_THEME', 'mm_to_inches', 'publication_size',
+    'publication_rc_params', 'paper_figure_rc_params', 'audit_publication_figure', 'export_publication_figure',
     'FlowchartLayout', 'ERDiagramLayout', 'SystemModuleLayout',
     'AcademicTable', 'SQLParser', 'save_svg', 'save_drawio', 'save_html',
     # Reusable evidence and quality contracts

@@ -47,10 +47,25 @@ desktop.ini
 *.bcf
 *.run.xml
 
-# Temporary
+# Temporary / build artifacts
 *.tmp
 *.bak
 *.backup
 .pytest_tmp*/
+.test-tmp/
+tmp/
 .coverage
 coverage.xml
+.pytest_cache/
+.ruff_cache/
+
+# Project temp / archive / build output
+.legacy-final-temp/
+.artifacts/
+artifacts/
+output/
+reports/
+skill_paper_archive_*/
+build/
+.agents/
+.external-review/

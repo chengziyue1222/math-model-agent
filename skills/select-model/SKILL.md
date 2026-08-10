@@ -5,39 +5,35 @@ description: Select and justify mathematical models for competition problems. Us
 
 # Select Model
 
-Select a defensible modeling route before writing equations or code.
+Choose a defensible route before writing code. The output is a modeling argument a reader can follow, not an algorithm label.
 
 ## Workflow
 
-1. Read the complete problem and separate its subproblems.
-2. Extract objectives, decision variables, constraints, data availability, uncertainty, and required outputs.
-3. Classify each subproblem with `references/model-catalog.md`.
-4. Shortlist two to four candidate models. Compare assumptions, sample requirements, interpretability, computational cost, and validation options.
-5. Choose a primary model, a simpler baseline run on the same inputs, and an independent validation method.
-6. Create a machine-readable decision contract for every subproblem: objective, decisions, constraints, required state transitions, uncertainty mode, multi-objective strategy, executable output, and validation evidence.
-7. Validate the contract with `algorithms.modeling_contracts.validate_decision_contract`; duplicate question IDs, missing result artifacts, or missing validation artifacts block handoff.
-8. For a multi-period decision, declare whether a state balance is required; for uncertainty, declare scenario/robust/stochastic semantics and calibration evidence; for competing objectives, declare a Pareto, epsilon-constraint, lexicographic, or weight-sensitivity route.
-9. State why rejected candidates are weaker for this problem.
-10. Return the result using the output contract below.
+1. Read the complete problem; list each deliverable, object, datum, unit, objective, constraint and ambiguity.
+2. Decompose the problem into subproblems and draw their input/output dependencies.
+3. Read `references/structure-opportunity-scan.md` and inspect shared states, constraints, data, geometry, objectives and solvers. Decide explicitly whether a unified core is justified.
+4. Use `references/model-catalog.md` to shortlist two to four candidates for each subproblem. Compare assumptions, data demand, interpretability, computational cost and what would falsify each candidate.
+5. Prefer a route where analytical reasoning exposes structure and numerical methods resolve only the remaining unknowns. Treat reduction, symmetry, monotonicity and event functions as hypotheses requiring evidence.
+6. Select a primary route, a simple baseline and a validation route. For threshold search, state the monotonicity evidence or select a non-monotone alternative.
+7. State rejected candidates and the reason each fails this problem.
 
-## Output Contract
+## Output
 
-Provide:
+Return a concise `模型选择与结构分析` containing:
 
-- problem type and evidence;
-- primary, baseline, and validation models;
-- variables, objective, constraints, and assumptions;
-- required data and preprocessing;
-- expected outputs and validation plan;
-- a per-question decision contract, not only a narrative model list;
-- failure risks and fallback route.
+- dependency diagram and the unified-core decision;
+- per-question objective, variables, units, constraints and assumptions;
+- primary, baseline and independent validation methods;
+- proposed formulas/outputs, critical events and anticipated figures;
+- data requirements, uncertainty/limitation risks and fallback route.
 
-Do not claim novelty, data availability, or model performance without evidence. Do not start implementation unless the user asks for it.
+Keep internal decision records machine-readable when a project uses them, but do not mistake a record for an explanation. Do not claim novelty, data availability or expected performance without evidence.
 
 ## Resources
 
-Read `references/model-catalog.md` for the selection matrix and disqualifying conditions.
+- `references/model-catalog.md` — candidate matrix and disqualifying conditions.
+- `references/structure-opportunity-scan.md` — structural reasoning before algorithm choice.
 
 ## Executable Contract
 
-Use `scripts/execute_skill.py` before implementation. Record `official_problem`, `data_dictionary`, `constraint_summary`, and `project_goal`; register `problem_decomposition`, `candidate_models`, `baseline_plan`, `selected_model_plan`, `decision_contract`, `risk_register`, and `model_selection_report`. Keep task-specific decomposition in an adapter script, but keep contract validation problem-agnostic. A prose-only or unvalidated selection is not a completed run.
+For repository-managed `competition` and `audit` projects, inspect the shared contract registry with `python -m scripts.skill_contracts --skill select-model` and run this Skill through the local `scripts/execute_skill.py` with every contracted input and output role. In `rapid`, return the Output above with a baseline and falsification plan; do not claim the route is formally verified.
