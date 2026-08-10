@@ -1,8 +1,60 @@
 # Math Model Agent
 
-> **数学建模 AI 助手** — 8 个标准 Codex Skills + 25 个算法与质量模块，覆盖从选题到答辩的完整竞赛工作流。
->
-> An AI-powered toolkit for mathematical modeling competitions: 8 standard Codex Skills, 56 archived legacy commands, and 25 algorithm/quality modules.
+<p align="center">
+  <strong>从题意拆解、模型求解到可提交论文的一体化数学建模工作流</strong>
+</p>
+
+<p align="center">
+  <a href="https://github.com/chengziyue1222/math-model-agent/actions/workflows/ci.yml"><img src="https://github.com/chengziyue1222/math-model-agent/actions/workflows/ci.yml/badge.svg" alt="CI"></a>
+  <a href="LICENSE"><img src="https://img.shields.io/badge/license-MIT-green.svg" alt="MIT License"></a>
+  <img src="https://img.shields.io/badge/Python-3.10%2B-blue.svg" alt="Python 3.10+">
+</p>
+
+**Math Model Agent** 是一个面向数学建模竞赛与建模报告的开源工具箱。它不只提供算法函数，还把题目拆解、数据诊断、模型选择、求解验证、图表、论文写作和提交前审查串成一条可复现的工作流。
+
+它适合希望减少重复劳动、保留建模判断并交付可检查结果的参赛者、课程项目团队和研究型建模使用者。它不承诺获奖；模型洞察、数据质量与问题理解仍是决定性因素。
+
+> 8 个标准 Codex Skills · 25 个算法与质量模块 · 144 个公开导出 · 56 个历史命令归档
+
+## 为什么使用它？
+
+| 你在做什么 | 对应能力 |
+|---|---|
+| 面对陌生赛题，不知道从哪里拆 | 逐题目标、变量、单位、约束与候选模型比较 |
+| 有模型但担心结果站不住 | 基线、约束审计、时间留出、灵敏度与不确定性验证 |
+| 算完了却写不成论文 | 结论驱动图表、CUMCM 风格 TeX 模板、可读的论文结构与终审 |
+| 需要快一点，或需要严一点 | `rapid`、`competition`、`audit` 三档工作流按风险选择 |
+
+## 三种工作方式
+
+| 档位 | 适合什么情况 | 交付重点 |
+|---|---|---|
+| `rapid` | 选题、可行性验证、早期迭代 | 题意、基线、可复现参数/种子、结果与局限 |
+| `competition` | 数学建模竞赛与正式建议 | 逐题选型、验证、图表、论文与提交前审查 |
+| `audit` | 高风险、可复用或外部评审项目 | 完整契约、运行追踪、证据哈希与独立复核 |
+
+## 30 秒开始
+
+```bash
+git clone https://github.com/chengziyue1222/math-model-agent.git
+cd math-model-agent
+python -m pip install ".[dev]"
+python scripts/install_skills.py
+```
+
+在 Codex 中直接说：
+
+```text
+使用 $run-modeling-project 以 competition 档完成这个数学建模项目。
+```
+
+只想使用算法库时：
+
+```python
+from algorithms import topsis
+
+ranking = topsis(decision_matrix, weights, benefit_indicators)
+```
 
 ---
 

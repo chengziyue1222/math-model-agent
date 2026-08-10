@@ -24,12 +24,17 @@ def _export_count() -> int:
     return len(algorithms.__all__)
 
 
+def _standard_skill_count() -> int:
+    return sum(path.is_dir() for path in (REPOSITORY_ROOT / "skills").iterdir())
+
+
 def main() -> int:
     module_count = _module_count()
     export_count = _export_count()
+    skill_count = _standard_skill_count()
     expected = {
         REPOSITORY_ROOT / "README.md": (
-            f"8 个标准 Codex Skills + {module_count} 个算法与质量模块",
+            f"{skill_count} 个标准 Codex Skills · {module_count} 个算法与质量模块",
             f"{export_count} 个公开导出，{module_count} 个模块文件",
         ),
         REPOSITORY_ROOT / "使用说明.md": (
