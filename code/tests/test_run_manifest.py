@@ -39,13 +39,13 @@ def _spec() -> dict:
 
 
 def test_build_manifest_hashes_inputs_and_records_environment(tmp_path):
-    (tmp_path / "data.csv").write_text("x\n1\n", encoding="utf-8")
+    (tmp_path / "data.csv").write_bytes(b"x\n1\n")
     (tmp_path / "result.json").write_text('{"ok": true}\n', encoding="utf-8")
 
     manifest = build_manifest(_spec(), tmp_path)
 
     assert manifest["data_inputs"][0]["sha256"] == (
-        "eacfc544fa2eb45c119cece76777d3b7087ba7ac82b26080c941bd65350f806a"
+        "daff832f802000e645771a60983c76c963f6ee602a6230e45237bd360e91cc1a"
     )
     assert manifest["artifacts"][0]["role"] == "result"
     assert manifest["environment"]["python"]
