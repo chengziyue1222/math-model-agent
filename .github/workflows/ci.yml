@@ -49,6 +49,8 @@ jobs:
 
       - name: Run tests with coverage
         run: |
+          # pytest creates the final basetemp directory, but not its parent.
+          mkdir -p .test-tmp/pytest
           python -m pytest code/tests -v --tb=short \
             --cov=algorithms --cov-report=term-missing --cov-report=xml \
             --cov-report=json:coverage.json
