@@ -29,7 +29,8 @@ jobs:
 
       - name: Verify installed package outside the checkout
         working-directory: ${{ runner.temp }}
-        run: python -c "import algorithms; print(f'algorithms exports: {len(algorithms.__all__)}')"
+        run: >-
+          python -c "import algorithms; print(f'algorithms exports: {len(algorithms.__all__)}')"
 
       - name: Validate Codex Skills
         run: python scripts/validate_skills.py
