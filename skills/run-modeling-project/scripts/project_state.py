@@ -7,7 +7,7 @@ import hashlib
 import json
 import sys
 from datetime import datetime, timezone
-from pathlib import Path, PurePath
+from pathlib import Path, PurePath, PureWindowsPath
 from typing import Any
 
 
@@ -57,24 +57,16 @@ def _state_path(root: Path) -> Path:
 
 
 def _safe_relative(value: str) -> bool:
-    """Check if a path is a safe, relative project path.
-    
-    Rejects:
-    - Absolute paths on Unix/POSIX (starting with /)
-    - Absolute paths on Windows (C:/, D:/, etc.)
-    - Parent directory references (..)
-    - Empty strings
-    - Paths with drive letters (Windows: C:, D:, etc.)
-    """
-    # Reject Windows absolute paths (C:/, D:/, etc.) and Unix paths
-    if value.startswith(("/", "\\")) or ":" in value:
-        return False
-    
     path = PurePath(value)
+    windows_path = PureWindowsPath(value)
     return (
         bool(value)
         and not path.is_absolute()
         and not path.anchor
+        # Reject Windows drive paths even while this code runs on POSIX CI.
+        and not windows_path.is_absolute()
+        and not windows_path.drive
+        and not value.startswith(("/", "\\"))
         and ".." not in path.parts
     )
 

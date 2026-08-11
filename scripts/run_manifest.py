@@ -14,7 +14,7 @@ import sys
 import uuid
 from copy import deepcopy
 from datetime import datetime, timezone
-from pathlib import Path, PurePath
+from pathlib import Path, PurePath, PureWindowsPath
 from typing import Any
 
 
@@ -51,10 +51,14 @@ def _sha256(path: Path) -> str:
 
 def _safe_relative_path(value: str) -> bool:
     path = PurePath(value)
+    windows_path = PureWindowsPath(value)
     return (
         bool(value)
         and not path.is_absolute()
         and not path.anchor
+        # CI runs on POSIX, where ``C:/...`` would otherwise look relative.
+        and not windows_path.is_absolute()
+        and not windows_path.drive
         and not value.startswith(("/", "\\"))
         and ".." not in path.parts
     )
