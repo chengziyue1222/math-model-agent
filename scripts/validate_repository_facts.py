@@ -38,8 +38,8 @@ def main() -> int:
             f"{export_count} 个公开导出，{module_count} 个模块文件",
         ),
         REPOSITORY_ROOT / "使用说明.md": (
-            f"**{module_count} 个模块文件、{export_count} 个公开导出**",
-            f"有 {module_count} 个模块文件和 {export_count} 个公开导出",
+            f"{module_count} 个模块文件",
+            f"{export_count} 个公开导出",
         ),
         REPOSITORY_ROOT / "code" / "algorithms" / "__init__.py": (
             f"{export_count} 个公开导出，{module_count} 个算法与质量模块",
