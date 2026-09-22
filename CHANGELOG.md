@@ -2,6 +2,38 @@
 
 ## Unreleased
 
+## v7.3.0 (2026-09-23)
+
+### Nova 本地演示与部署分层
+
+- 新增 `demo/` 离线演示：`python demo/run_demo.py --case <CASE>` 在无服务器、无公网、无云账号、无模型 Key 的条件下跑通三个案例，分别产出 `READY_FOR_REVIEW`、`BLOCKED`、`NEEDS_REVIEW` 门禁结论。
+- 新增 `ui/app.py` Streamlit 单页演示、`start_api.sh`、`requirements-prod.txt` 与 `DEPLOYMENT_TENCENT.md`，明确 Nova Core、Nova API、Nova Eval、本地演示与 UI 的分层边界。
+- 新增 `README_DEMO.md`，说明 `READY_FOR_REVIEW` 仅表示可进入人工复核，不代表自动批准或自动上线。
+
+### 图表设计系统
+
+- `algorithms` 新增 5 个公开导出：`get_modeling_palette`、`resolve_cjk_font`、`add_panel_label`、`mm_to_inches`、`publication_size`；公开导出总数由 144 增至 149。
+- `sci_figures` 补充语义调色板、CJK 字体解析与期刊栏宽换算能力；找不到中文字体时回退到 DejaVu Sans，不在无中文字体的 Linux 环境下中断出图。
+- `$make-model-figures` 新增 `references/palette-system.md`、`design-and-routing.md`、`visual-qa-checklist.md` 与 `scripts/preview_palettes.py`。
+
+### 提交预检与匿名化
+
+- 新增 `$review-model-paper/scripts/submission_preflight.py` 与 `references/cumcm-2026-preflight.md`，覆盖 2026 CUMCM 提交前的身份信息、绝对路径、支持包依赖与归档格式检查。
+- `document_validation.py` 与 `production_guards.py` 改为报告工作区相对路径，论文、图表、运行清单与提交预检不再写入用户绝对路径。
+- 新增 `config/cumcm-identities.example.json` 占位模板；真实身份字典 `.cumcm-identities.json` 由 `.gitignore` 排除。
+
+### Skill 安装与运行契约
+
+- `scripts/install_skills.py` 为每个 Skill 复制私有 `scripts/_runtime/`，安装后的 `execute_skill.py` 入口不再要求源码仓库保留在原路径。
+- `scripts/validate_skills.py` 改为按安装器实际复制的源文件校验 `scripts/_runtime/*` 引用，而不是按检出目录校验，使该检查在未安装状态下依然有效。
+- 新增 `distilled-competition-playbook.md`、`cumcm-2026-authoring.md` 与 AI 工具使用说明模板。
+
+### 发布与打包
+
+- `pyproject.toml` 的 wheel 仅包含可导入的 `algorithms` 包，与 README 的安装约定一致；`nova_*` 应用继续从仓库运行。
+- 源码分发包不再包含 `__pycache__`、`.pyc` 与本机构建元数据。
+- `.gitignore` 新增 `coverage.json` 与 `.cumcm-identities.json`。
+
 ## v7.2.0 (2026-08-10)
 
 ### Workflow Profiles and Usability

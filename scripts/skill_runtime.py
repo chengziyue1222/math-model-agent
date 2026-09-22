@@ -24,10 +24,13 @@ from typing import Any
 if __package__ in (None, ""):
     sys.path.insert(0, str(Path(__file__).resolve().parents[1]))
 
-from scripts.skill_contracts import CONTRACT_VERSION
+try:
+    from .skill_contracts import CONTRACT_VERSION
+except ImportError:  # direct execution from the repository checkout
+    from scripts.skill_contracts import CONTRACT_VERSION
 
 
-RUNTIME_VERSION = "1.2"
+RUNTIME_VERSION = "1.3"
 STANDARD_SKILLS = (
     "run-modeling-project",
     "select-model",
@@ -59,16 +62,24 @@ def _safe_relative(value: str) -> bool:
     return bool(value) and not path.is_absolute() and not path.anchor and ".." not in path.parts
 
 
-def _relative_record(root: Path, value: str) -> dict[str, Any]:
+def _relative_record(root: Path, value: str, *, hash_file: bool = True) -> dict[str, Any]:
     if not _safe_relative(value):
         raise ValueError(f"path must be project-relative: {value!r}")
     path = root / value
     if not path.is_file():
         raise FileNotFoundError(f"tracked file does not exist: {value}")
-    return {"path": value.replace("\\", "/"), "sha256": _sha256(path), "bytes": path.stat().st_size}
+    record: dict[str, Any] = {"path": value.replace("\\", "/"), "bytes": path.stat().st_size}
+    if hash_file:
+        record["sha256"] = _sha256(path)
+    return record
 
 
-def _input_records(root: Path, values: list[str | tuple[str, str]]) -> list[dict[str, Any]]:
+def _input_records(
+    root: Path,
+    values: list[str | tuple[str, str]],
+    *,
+    hash_files: bool,
+) -> list[dict[str, Any]]:
     records: list[dict[str, Any]] = []
     for value in values:
         if isinstance(value, tuple):
@@ -77,7 +88,7 @@ def _input_records(root: Path, values: list[str | tuple[str, str]]) -> list[dict
             role, relative = value.split("=", 1)
         else:
             role, relative = "input", value
-        record = _relative_record(root, relative)
+        record = _relative_record(root, relative, hash_file=hash_files)
         record["role"] = role
         records.append(record)
     return records
@@ -165,7 +176,8 @@ def _signature(key: bytes, record: dict[str, Any]) -> str:
 
 def _append(root: Path, record: dict[str, Any]) -> dict[str, Any]:
     record = dict(record)
-    record["trace_signature"] = _signature(_key(root), record)
+    if record.get("profile", "audit") == "audit":
+        record["trace_signature"] = _signature(_key(root), record)
     path = _trace_path(root)
     path.parent.mkdir(parents=True, exist_ok=True)
     with path.open("a", encoding="utf-8", newline="\n") as stream:
@@ -222,6 +234,7 @@ def start_skill_run(
     skill_path: str | Path | None = None,
     inputs: list[str | tuple[str, str]] | None = None,
     command_or_invocation: str = "",
+    profile: str = "competition",
 ) -> dict[str, Any]:
     """Append the required start event and return its stable run identifier."""
     root = Path(project_root).resolve()
@@ -229,22 +242,26 @@ def start_skill_run(
         raise ValueError(f"unknown standard skill: {skill}")
     if not project_id.strip():
         raise ValueError("project_id must be non-empty")
-    input_records = _input_records(root, inputs or [])
-    implementation_hashes = _implementation_hashes(skill_path)
+    if profile not in {"rapid", "competition", "audit"}:
+        raise ValueError(f"unknown workflow profile: {profile}")
+    audit = profile == "audit"
+    input_records = _input_records(root, inputs or [], hash_files=audit)
+    implementation_hashes = _implementation_hashes(skill_path) if audit else {}
     run_id = uuid.uuid4().hex
-    snapshot_file = _write_snapshot(root, run_id, _project_snapshot(root))
+    snapshot_file = _write_snapshot(root, run_id, _project_snapshot(root)) if audit else None
     record = {
         "event": "start",
         "runtime_version": RUNTIME_VERSION,
         "contract_version": CONTRACT_VERSION,
+        "profile": profile,
         "run_id": run_id,
         "project_id": project_id,
         "skill": skill,
         "skill_path": str(skill_path or ""),
         "skill_sha256": _implementation_digest(implementation_hashes),
         "implementation_hashes": implementation_hashes,
-        "filesystem_snapshot_path": str(snapshot_file.relative_to(root)).replace("\\", "/"),
-        "filesystem_snapshot_sha256": _sha256(snapshot_file),
+        "filesystem_snapshot_path": str(snapshot_file.relative_to(root)).replace("\\", "/") if snapshot_file else None,
+        "filesystem_snapshot_sha256": _sha256(snapshot_file) if snapshot_file else None,
         "started_at": _now(),
         "inputs": input_records,
         "command_or_invocation": command_or_invocation,
@@ -295,21 +312,29 @@ def finish_skill_run(
     for role, relative in outputs or []:
         if not role.strip():
             raise ValueError("output role must be non-empty")
-        record = _relative_record(root, relative)
+        record = _relative_record(
+            root,
+            relative,
+            hash_file=start.get("profile", "audit") == "audit",
+        )
         record["role"] = role
         output_records.append(record)
     finished_at = _now()
     duration = max(0.0, time.time() - datetime.fromisoformat(start["started_at"]).timestamp())
-    snapshot_file = root / str(start.get("filesystem_snapshot_path", ""))
-    expected_snapshot_hash = str(start.get("filesystem_snapshot_sha256", ""))
-    if not snapshot_file.is_file() or _sha256(snapshot_file) != expected_snapshot_hash:
-        raise ValueError(f"filesystem snapshot missing or tampered: {snapshot_file}")
-    before = json.loads(snapshot_file.read_text(encoding="utf-8"))
-    filesystem_delta = _filesystem_delta(before, _project_snapshot(root))
+    audit = start.get("profile", "audit") == "audit"
+    filesystem_delta: dict[str, list[str]] = {"created": [], "modified": [], "deleted": []}
+    if audit:
+        snapshot_file = root / str(start.get("filesystem_snapshot_path", ""))
+        expected_snapshot_hash = str(start.get("filesystem_snapshot_sha256", ""))
+        if not snapshot_file.is_file() or _sha256(snapshot_file) != expected_snapshot_hash:
+            raise ValueError(f"filesystem snapshot missing or tampered: {snapshot_file}")
+        before = json.loads(snapshot_file.read_text(encoding="utf-8"))
+        filesystem_delta = _filesystem_delta(before, _project_snapshot(root))
     record = {
         "event": "finish",
         "runtime_version": RUNTIME_VERSION,
         "contract_version": start.get("contract_version", CONTRACT_VERSION),
+        "profile": start.get("profile", "audit"),
         "run_id": run_id,
         "project_id": start["project_id"],
         "skill": start["skill"],
@@ -328,7 +353,7 @@ def finish_skill_run(
         "filesystem_delta": filesystem_delta,
     }
     terminal = _append(root, record)
-    if status == "PASS":
+    if status == "PASS" and audit:
         registrations = [
             {
                 **item,
@@ -404,14 +429,16 @@ def validate_skill_run(
     project_id: str | None = None,
     required_skills: list[str] | None = None,
     verify_files: bool = True,
+    profile: str | None = None,
 ) -> list[str]:
     """Return trace, integrity, and required-producer violations."""
     root = Path(project_root).resolve()
     errors: list[str] = []
     try:
         events = _read_events(root)
+        audit_events = [event for event in events if event.get("profile", "audit") == "audit"]
         key_path = _key_path(root)
-        if not events:
+        if not audit_events:
             key = b""
         elif not key_path.is_file():
             return ["skill trace has no runtime key; possible hand-written trace"]
@@ -422,8 +449,11 @@ def validate_skill_run(
     starts: dict[str, dict[str, Any]] = {}
     finished: dict[str, dict[str, Any]] = {}
     for index, event in enumerate(events, 1):
-        if event.get("trace_signature") != _signature(key, event):
+        event_profile = str(event.get("profile", "audit"))
+        if event_profile == "audit" and event.get("trace_signature") != _signature(key, event):
             errors.append(f"trace_signature_invalid at event {index}")
+        if profile and event_profile != profile:
+            continue
         if project_id and event.get("project_id") != project_id:
             continue
         run_id = str(event.get("run_id", ""))
@@ -450,7 +480,8 @@ def validate_skill_run(
 
     passed = set(latest_successful)
     for run_id, start in starts.items():
-        if verify_files:
+        audit = start.get("profile", "audit") == "audit"
+        if verify_files and audit:
             snapshot_path = root / str(start.get("filesystem_snapshot_path", ""))
             if (
                 not snapshot_path.is_file()
@@ -464,7 +495,7 @@ def validate_skill_run(
         if final.get("skill") != start.get("skill") or final.get("status") not in TERMINAL_STATUSES:
             errors.append(f"invalid terminal record: {run_id}")
             continue
-        if verify_files and latest_successful.get(str(start.get("skill"))) == run_id:
+        if verify_files and audit and latest_successful.get(str(start.get("skill"))) == run_id:
             for label, records in (("input", start.get("inputs", [])), ("output", final.get("outputs", []))):
                 for item in records:
                     if not isinstance(item, dict):
@@ -504,6 +535,7 @@ def main(argv: list[str] | None = None) -> int:
     start.add_argument("--project-id", required=True)
     start.add_argument("--skill", choices=STANDARD_SKILLS, required=True)
     start.add_argument("--skill-path")
+    start.add_argument("--profile", choices=("rapid", "competition", "audit"), default="competition")
     start.add_argument("--input", action="append", default=[])
     start.add_argument("--command", default="")
     finish = commands.add_parser("finish")
@@ -522,6 +554,7 @@ def main(argv: list[str] | None = None) -> int:
     validate.add_argument("--project-id")
     validate.add_argument("--require-skill", action="append", default=[])
     validate.add_argument("--no-verify-files", action="store_true")
+    validate.add_argument("--profile", choices=("rapid", "competition", "audit"))
     listing = commands.add_parser("list")
     listing.add_argument("--project-root", type=Path, required=True)
     listing.add_argument("--project-id")
@@ -535,7 +568,15 @@ def main(argv: list[str] | None = None) -> int:
     args = parser.parse_args(argv)
     try:
         if args.action == "start":
-            result = start_skill_run(args.project_root, args.project_id, args.skill, skill_path=args.skill_path, inputs=args.input, command_or_invocation=args.command)
+            result = start_skill_run(
+                args.project_root,
+                args.project_id,
+                args.skill,
+                skill_path=args.skill_path,
+                inputs=args.input,
+                command_or_invocation=args.command,
+                profile=args.profile,
+            )
             print(json.dumps(result, ensure_ascii=False, indent=2))
             return 0
         if args.action == "finish":
@@ -559,7 +600,13 @@ def main(argv: list[str] | None = None) -> int:
             )
             print(json.dumps(result, ensure_ascii=False, indent=2))
             return 0
-        errors = validate_skill_run(args.project_root, project_id=args.project_id, required_skills=args.require_skill, verify_files=not args.no_verify_files)
+        errors = validate_skill_run(
+            args.project_root,
+            project_id=args.project_id,
+            required_skills=args.require_skill,
+            verify_files=not args.no_verify_files,
+            profile=args.profile,
+        )
     except (OSError, UnicodeError, ValueError, json.JSONDecodeError) as exc:
         print(f"skill runtime error: {exc}", file=sys.stderr)
         return 2

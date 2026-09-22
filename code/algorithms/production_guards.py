@@ -115,21 +115,26 @@ def preflight_pdf(pdf_path: str | Path) -> dict[str, Any]:
     except ImportError as exc:  # pragma: no cover - environment dependent
         return {"status": "blocked", "issues": [asdict(_issue("TEST-PDF-001", str(exc), "PyMuPDF available", "install PyMuPDF"))]}
     path = Path(pdf_path)
+    reported_path = path.name
+    try:
+        reported_path = path.resolve().relative_to(Path.cwd().resolve()).as_posix()
+    except ValueError:
+        pass
     issues: list[GateIssue] = []
     if not path.is_file():
-        return {"status": "fail", "issues": [asdict(_issue("TEST-PDF-001", "PDF missing", "readable PDF", "render the document", str(path)))]}
+        return {"status": "fail", "issues": [asdict(_issue("TEST-PDF-001", "PDF missing", "readable PDF", "render the document", reported_path))]}
     document = fitz.open(path)
     pages = []
     if not document.page_count:
-        issues.append(_issue("TEST-PDF-001", "0 pages", "at least 1 page", "render a nonempty document", str(path)))
+            issues.append(_issue("TEST-PDF-001", "0 pages", "at least 1 page", "render a nonempty document", reported_path))
     for number, page in enumerate(document, start=1):
         rect = page.rect
         page_info = {"page": number, "width_pt": round(rect.width, 2), "height_pt": round(rect.height, 2), "rotation": page.rotation, "text_chars": len(page.get_text().strip())}
         pages.append(page_info)
         if abs(rect.width - 595.28) > 1 or abs(rect.height - 841.89) > 1 or page.rotation != 0:
-            issues.append(_issue("TEST-PDF-001", json.dumps(page_info), "A4 portrait (595±1 × 842±1, rotation 0)", "use A4 portrait template", str(path)))
+            issues.append(_issue("TEST-PDF-001", json.dumps(page_info), "A4 portrait (595±1 × 842±1, rotation 0)", "use A4 portrait template", reported_path))
         if page_info["text_chars"] < 10:
-            issues.append(_issue("PDF-PREFLIGHT-004", f"page {number} has little extractable text", "nonblank page", "inspect rendered page", str(path), severity="warning"))
+            issues.append(_issue("PDF-PREFLIGHT-004", f"page {number} has little extractable text", "nonblank page", "inspect rendered page", reported_path, severity="warning"))
     document.close()
     status = "pass" if not any(issue.severity == "error" for issue in issues) else "fail"
-    return {"status": status, "pdf": str(path), "page_count": len(pages), "pages": pages, "issues": [asdict(issue) for issue in issues], "manual_review_required": ["overflow/cropping", "font substitution", "caption separation", "table and code clipping"]}
+    return {"status": status, "pdf": reported_path, "page_count": len(pages), "pages": pages, "issues": [asdict(issue) for issue in issues], "manual_review_required": ["overflow/cropping", "font substitution", "caption separation", "table and code clipping"]}

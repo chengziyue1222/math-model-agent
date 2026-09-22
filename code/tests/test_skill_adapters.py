@@ -143,45 +143,74 @@ def test_second_pass_review_binds_contract_and_quality_hashes(tmp_path) -> None:
     assert len(report["quality_validation_sha256"]) == 64
 
 
-def test_review_package_requires_both_rendered_formats_and_all_gates(tmp_path) -> None:
-    module = _load(
-        "finalize_review_package",
-        "skills/review-model-paper/scripts/finalize_review_package.py",
-    )
-    paths = {
-        "manuscript": tmp_path / "paper" / "main.md",
-        "pdf": tmp_path / "paper" / "main.pdf",
-        "docx": tmp_path / "paper" / "main.docx",
-        "official_problem": tmp_path / "problem" / "official.pdf",
-        "decision_contract": tmp_path / "results" / "decision_contract.json",
-        "quality_validation": tmp_path / "results" / "quality_validation.json",
-        "result_object": tmp_path / "results" / "result_object.json",
-        "claim_registry": tmp_path / "paper" / "claim-registry.json",
-        "figure_registry": tmp_path / "paper" / "figure-registry.json",
-        "table_registry": tmp_path / "paper" / "table-registry.json",
-        "references_bib": tmp_path / "paper" / "references.bib",
-        "project_manifest": tmp_path / "run-manifest.json",
-        "layout_validation": tmp_path / "reports" / "cumcm_layout_validation.json",
-        "latex_compile_report": tmp_path / "reports" / "latex_compile_report.json",
-        "docx_render_report": tmp_path / "reports" / "docx_render_report.json",
-        "visual_layout_audit": tmp_path / "reports" / "visual_layout_audit.json",
-        "paper_review_report": tmp_path / "reports" / "paper_review_report.json",
-        "independent_review": tmp_path / "reports" / "independent_review.json",
+def _review_paths(tmp_path: Path, *, audit: bool = False) -> dict[str, Path]:
+    relatives = {
+        "manuscript": "paper/main.md",
+        "pdf": "paper/main.pdf",
+        "official_problem": "problem/official.pdf",
+        "decision_contract": "results/decision_contract.json",
+        "quality_validation": "results/quality_validation.json",
+        "result_object": "results/result_object.json",
+        "project_manifest": "run-manifest.json",
+        "layout_validation": "reports/cumcm_layout_validation.json",
+        "latex_compile_report": "reports/latex_compile_report.json",
+        "visual_layout_audit": "reports/visual_layout_audit.json",
+        "paper_review_report": "reports/paper_review_report.json",
+        "support_archive": "delivery/support.zip",
+        "support_manifest": "delivery/support-manifest.json",
+        "reproduction_report": "reports/reproduction_report.json",
+        "submission_preflight": "reports/submission_preflight.json",
     }
-    for name, path in paths.items():
+    if audit:
+        relatives.update(
+            {
+                "docx": "paper/main.docx",
+                "docx_render_report": "reports/docx_render_report.json",
+                "claim_registry": "paper/claim-registry.json",
+                "figure_registry": "paper/figure-registry.json",
+                "table_registry": "paper/table-registry.json",
+                "references_bib": "paper/references.bib",
+                "independent_review": "reports/independent_review.json",
+            }
+        )
+    paths = {}
+    for name, relative in relatives.items():
+        path = tmp_path / relative
         path.parent.mkdir(parents=True, exist_ok=True)
+        paths[name] = path
         if name == "paper_review_report":
-            value = {"overall_status": "PASS"}
+            payload = {"overall_status": "PASS"}
         elif path.suffix == ".json":
-            value = {"status": "PASS"}
+            payload = {"status": "PASS"}
         else:
             path.write_bytes(b"rendered")
             continue
-        path.write_text(json.dumps(value), encoding="utf-8")
-    binding, readiness = module.finalize(tmp_path, **paths)
-    assert binding["status"] == "PASS"
+        path.write_text(json.dumps(payload), encoding="utf-8")
+    return paths
+
+
+def test_competition_review_package_accepts_pdf_only(tmp_path) -> None:
+    module = _load(
+        "finalize_review_package_competition",
+        "skills/review-model-paper/scripts/finalize_review_package.py",
+    )
+    binding, readiness = module.finalize(tmp_path, **_review_paths(tmp_path))
+    assert binding is None
     assert readiness["status"] == "READY_FOR_SUBMISSION"
-    assert {"main_pdf", "main_docx"} <= set(binding["artifacts"])
+    assert readiness["paper_formats"] == ["pdf"]
+    assert not (tmp_path / "reports" / "review_hash_binding.json").exists()
+
+
+def test_audit_review_package_keeps_full_evidence_boundary(tmp_path) -> None:
+    module = _load(
+        "finalize_review_package_audit",
+        "skills/review-model-paper/scripts/finalize_review_package.py",
+    )
+    paths = _review_paths(tmp_path, audit=True)
+    binding, readiness = module.finalize(tmp_path, profile="audit", **paths)
+    assert binding is not None and binding["status"] == "PASS"
+    assert {"main_pdf", "main_docx", "independent_content_review"} <= set(binding["artifacts"])
+    assert readiness["status"] == "READY_FOR_SUBMISSION"
 
 
 def test_review_package_fails_when_visual_audit_fails(tmp_path) -> None:
@@ -189,37 +218,7 @@ def test_review_package_fails_when_visual_audit_fails(tmp_path) -> None:
         "finalize_review_package_failure",
         "skills/review-model-paper/scripts/finalize_review_package.py",
     )
-    paths = {}
-    for name, relative in {
-        "manuscript": "paper/main.md",
-        "pdf": "paper/main.pdf",
-        "docx": "paper/main.docx",
-        "official_problem": "problem/official.pdf",
-        "decision_contract": "results/decision_contract.json",
-        "quality_validation": "results/quality_validation.json",
-        "result_object": "results/result_object.json",
-        "claim_registry": "paper/claim-registry.json",
-        "figure_registry": "paper/figure-registry.json",
-        "table_registry": "paper/table-registry.json",
-        "references_bib": "paper/references.bib",
-        "project_manifest": "run-manifest.json",
-        "layout_validation": "reports/cumcm_layout_validation.json",
-        "latex_compile_report": "reports/latex_compile_report.json",
-        "docx_render_report": "reports/docx_render_report.json",
-        "visual_layout_audit": "reports/visual_layout_audit.json",
-        "paper_review_report": "reports/paper_review_report.json",
-        "independent_review": "reports/independent_review.json",
-    }.items():
-        path = tmp_path / relative
-        path.parent.mkdir(parents=True, exist_ok=True)
-        paths[name] = path
-        if name == "paper_review_report":
-            payload = {"overall_status": "PASS"}
-        elif path.suffix == ".json":
-            payload = {"status": "FAIL" if name == "visual_layout_audit" else "PASS"}
-        else:
-            path.write_bytes(b"rendered")
-            continue
-        path.write_text(json.dumps(payload), encoding="utf-8")
+    paths = _review_paths(tmp_path)
+    paths["visual_layout_audit"].write_text(json.dumps({"status": "FAIL"}), encoding="utf-8")
     with pytest.raises(ValueError, match="submission readiness"):
         module.finalize(tmp_path, **paths)

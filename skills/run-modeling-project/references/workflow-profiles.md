@@ -4,9 +4,9 @@ Choose the lightest profile that can support the decision being made. A profile 
 
 | Profile | Use for | Required minimum | Optional or deferred work | Completion claim |
 |---|---|---|---|---|
-| `rapid` | Exploratory work, feasibility checks, and early competition iteration | Problem/objective/units/constraints, raw-data preservation, a simple baseline, reproducible parameters or seed, a result file, and stated limitations | Full role contracts, source registry, formal figure registry, PDF/DOCX delivery, independent review | `exploratory` only; never call it submission-ready |
-| `competition` | Default for a contest deliverable | Per-question selection rationale, data audit where data is used, a fair baseline, validation appropriate to the decision, reproducible result artifacts, reader-facing figures/paper, and pre-submission review | Audit-only hash binding and adversarial mutation checks | `competition-ready` after the venue's required checks pass |
-| `audit` | Reproducibility-sensitive, regulated, reusable, or externally reviewed work | Everything in `competition`, plus complete role contracts, signed Skill traces, run manifest, producer registration, hash-current evidence, and independent content review | None; fix blockers rather than downgrading the claim | `formally verified` only after every audit gate passes |
+| `rapid` | Problem understanding, exploration, and preliminary modeling | Explicit problem/objective/units/constraints, raw-data preservation, exploratory model or simple baseline, reproducible parameters/seed, preliminary result, and limitations | Formal paper, complete role contracts, registries, support archive, submission review | `exploratory` only; never call it submission-ready |
+| `competition` | Complete CUMCM contest work and submission | Full modeling, necessary fair baselines and validation, reproducible results, formal PDF by default (PDF or DOCX is sufficient), complete self-authored source/support archive, clean-directory reproduction, 30-page/20-MiB checks, anonymity/path scan, and pre-submission review | HMAC trace signing, complete hash/producer registries, independent content review, dual-format delivery | `competition-ready` only after every submission preflight passes |
+| `audit` | Reproducibility-sensitive, regulated, reusable, or externally reviewed work | Everything in `competition`, plus complete role contracts and registries, HMAC-signed Skill traces, full input/output/implementation hashes, producer registration, independent content review, review hash binding, and both PDF and DOCX | None; fix blockers rather than downgrading the claim | `formally verified` only after every audit gate passes |
 
 ## Non-negotiables in every profile
 
@@ -19,8 +19,8 @@ Choose the lightest profile that can support the decision being made. A profile 
 
 ## Profile selection
 
-Start in `rapid` when the question is still being understood. Move to `competition` before committing to a paper structure or final recommendation. Choose `audit` only when the cost of an unverifiable result is higher than the added workflow time. A project can promote to a stricter profile, but it cannot inherit a stricter completion claim without producing the missing evidence.
+Start in `rapid` while understanding the problem and exploring candidate models. Move to `competition` for full modeling, necessary baselines/validation, the formal paper, complete support materials and submission checks. Choose `audit` when independent verification and tamper-evident provenance justify HMAC, full hashes/registries and dual-format delivery. A project can promote to a stricter profile, but it cannot inherit a stricter completion claim without producing the missing evidence.
 
 ## Venue rules
 
-Use CUMCM layout and PDF/DOCX checks only when CUMCM (or an explicitly equivalent venue requirement) applies. For another contest or a research report, use that venue's official template and retain the same evidence, baseline, and validation principles.
+Use CUMCM layout and delivery checks only when CUMCM (or an explicitly equivalent venue requirement) applies. The CUMCM default has no contents page, starts numbering at 1 on the abstract, permits no more than 30 pages before the appendix, and caps the paper and support archive separately at 20 MiB. For another contest or a research report, use that venue's official template and retain the same evidence, baseline, validation, anonymity, and reproducibility principles.

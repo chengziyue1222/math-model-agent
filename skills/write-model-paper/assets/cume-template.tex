@@ -30,12 +30,10 @@
 \usepackage{makecell}
 \usepackage{multirow}
 \usepackage{calc}
-\usepackage{tocloft}
 
 % ============ 图表中文标签 ============
 \renewcommand{\figurename}{图}
 \renewcommand{\tablename}{表}
-\renewcommand{\contentsname}{目录}
 \renewcommand{\arraystretch}{1.25}
 \renewcommand{\refname}{参考文献}
 
@@ -43,7 +41,7 @@
 \usepackage{titlesec}
 % 中文数字编号转换：1→一、2→二、...
 \newcommand{\zhsectionnum}[1]{%
-  \ifcase#1\or 一\or 二\or 三\or 四\or 五\or 六\or 七\or 八\or 九\or 十\else #1\fi}
+  \ifcase#1\or 一\or 二\or 三\or 四\or 五\or 六\or 七\or 八\or 九\or 十\or 十一\or 十二\or 十三\or 十四\or 十五\or 十六\or 十七\or 十八\or 十九\or 二十\else\number#1\fi}
 % 编号格式
 \renewcommand{\thesection}{\arabic{section}}
 \renewcommand{\thesubsection}{\arabic{section}.\arabic{subsection}}
@@ -76,7 +74,6 @@
 \clubpenalty=10000
 \raggedbottom
 \pagestyle{plain} % no top-left running header
-\setcounter{tocdepth}{2}
 
 % 英文术语断词规则（消除表格 Overfull hbox）
 \hyphenation{Ran-dom-For-est Grad-i-ent-Boost-ing Lo-gis-tic-Re-gres-sion}
@@ -162,6 +159,7 @@
 \newcommand{\PaperTitle}{在此填写论文标题}
 
 \begin{document}
+\pagenumbering{arabic}\setcounter{page}{1}
 
 % ============ 首页：题目、摘要、关键词（无强制封面） ============
 \thispagestyle{plain}
@@ -178,12 +176,8 @@
 \noindent{\bfseries 关键词：}关键词1；关键词2；关键词3；关键词4
 
 \newpage
-% ============ 目录 ============
-\tableofcontents
-\newpage
-
 % ============ 正文 ============
-\pagenumbering{arabic}\setcounter{page}{1}
+% 摘要是电子版第 1 页；正文紧随其后并延续同一页码序列。
 
 % ---------- 一级标题示例：中文数字编号，居中 ----------
 \section{问题重述}
@@ -287,6 +281,12 @@
 
 （1）缺点一。（2）缺点二。
 
+% ============ AI 工具使用声明（2026 起） ============
+% 必须按实际情况改写。若未使用 AI，应删除下段并明确写“竞赛过程中未使用任何 AI 工具”。
+\section{AI工具使用声明}
+
+本参赛队在竞赛过程中使用了 AI 工具，主要用于【按实际填写使用环节和目的】。所有采用的 AI 参与内容均由团队逐项人工修改和核验，具体记录见支撑材料中的 \texttt{AI工具使用详情.pdf}。
+
 % ============ 参考文献 ============
 % 【重要】按正文中首次出现顺序排列
 % 格式：[编号] 作者. 标题[文献类型]. 出版信息, 年份.
@@ -311,34 +311,47 @@
 \clearpage
 \section{附录}
 
-\subsection*{附录A\quad 数据预处理代码（preprocess.py 节选）}
+\subsection*{附录A\quad 支撑材料完整文件清单}
 
-以下为核心代码节选，完整代码见随附文件\texttt{src/preprocess.py}。
+实际提交时逐项列出压缩包中的每个文件，并由预检程序核对清单与 ZIP/RAR 条目完全一致。最小示例清单如下：
+
+\noindent\texttt{src/main.py}；\texttt{data/data.csv}；\texttt{requirements.txt}；\texttt{README.md}；\texttt{AI工具使用详情.pdf}（仅在使用 AI 时）。
+
+\subsection*{附录B\quad 自有完整源程序（src/main.py）}
+
+以下代码作为“完整文件”的排版示例。实际论文必须用同样方式纳入全部自有源程序，不得只摘录关键代码。
 
 \begin{pycode}
-import pandas as pd
-import numpy as np
+import argparse
+import json
 from pathlib import Path
 
-def load_data(data_dir="data"):
-    """加载原始数据"""
-    data_dir = Path(data_dir)
-    df = pd.read_csv(data_dir / "data.csv")
-    return df
-\end{pycode}
-
-\subsection*{附录B\quad 模型训练代码（model.py 节选）}
-
-以下为核心代码节选，完整代码见随附文件\texttt{src/model.py}。
-
-\begin{pycode}
+import pandas as pd
 from sklearn.linear_model import Ridge
 
-def train_model(X_train, y_train, alpha=1.0):
-    """训练 Ridge 回归模型"""
-    model = Ridge(alpha=alpha)
-    model.fit(X_train, y_train)
-    return model
+def main():
+    parser = argparse.ArgumentParser()
+    parser.add_argument("--data", default="data/data.csv")
+    parser.add_argument("--output", default="results.json")
+    args = parser.parse_args()
+
+    frame = pd.read_csv(Path(args.data))
+    X = frame.drop(columns=["target"])
+    y = frame["target"]
+    model = Ridge(alpha=1.0).fit(X, y)
+    result = {"intercept": float(model.intercept_),
+              "coefficients": model.coef_.tolist()}
+    Path(args.output).write_text(
+        json.dumps(result, ensure_ascii=False, indent=2),
+        encoding="utf-8",
+    )
+
+if __name__ == "__main__":
+    main()
 \end{pycode}
+
+\subsection*{附录C\quad 第三方依赖与安装}
+
+\texttt{requirements.txt} 记录 pandas 与 scikit-learn 的确切版本；\texttt{README.md} 给出安装命令和从干净目录运行 \texttt{python src/main.py} 的步骤。不得把第三方库完整源码或二进制嵌入论文。
 
 \end{document}

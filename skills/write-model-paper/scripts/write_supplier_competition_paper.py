@@ -258,12 +258,11 @@ def main(root: Path) -> None:
     figures_tex = "\n".join([rf"\begin{{figure}}[H]\centering\includegraphics[width=0.78\linewidth]{{../figures/{name}.pdf}}\caption{{{caption}}}\end{{figure}}" for name, caption in [("fig_q1_score_curve", "供应商重要性评分曲线"), ("fig_q1_top50_scatter", "Top-50容量与活跃率"), ("fig_q2_weekly_received", "问题二周接收量"), ("fig_q2_material_mix", "问题二材料配比"), ("fig_carrier_loss", "转运商历史平均损耗"), ("fig_q3_material_mix", "问题三材料配比"), ("fig_q3_carrier_allocation", "问题三转运分配"), ("fig_q4_capacity", "问题四技术改造产能")]])
     top_rows = "\n".join(f"{i} & {esc(s)} \\\\" for i, s in enumerate(ids, 1))
     tex = rf"""{header}\begin{{document}}
-\thispagestyle{{empty}}\pagenumbering{{gobble}}\vspace*{{7cm}}
-\begin{{center}}{{\fontsize{{22pt}}{{33pt}}\selectfont\bfseries {TITLE}\par}}\vspace{{2cm}}{{\fontsize{{14pt}}{{21pt}}\selectfont 数学建模竞赛\par}}\vspace{{1cm}}{{\normalsize 2026年7月\par}}\end{{center}}\newpage
-\thispagestyle{{empty}}\begin{{center}}{{\fontsize{{14pt}}{{21pt}}\selectfont\bfseries 摘\quad 要}}\end{{center}}\vspace{{0.6cm}}
+\pagenumbering{{arabic}}\setcounter{{page}}{{1}}\thispagestyle{{plain}}
+\begin{{center}}{{\fontsize{{16pt}}{{24pt}}\selectfont\bfseries {TITLE}\par}}\vspace{{0.6cm}}{{\fontsize{{14pt}}{{21pt}}\selectfont\bfseries 摘\quad 要}}\end{{center}}\vspace{{0.6cm}}
 本文依据官方附件建立供应商重要性评价、容量覆盖、材料优先订购、低损耗转运与历史自助法压力检验模型。问题二最少覆盖集为{q['q2']['minimum_supplier_count']}家，问题四条件性产能为{q['q4']['mean_capacity_product']:.2f}m$^3$/周；所有数值均由登记结果对象支持。模型为分解式规划，规划容量不是最坏情形保证。
 \noindent{{\bfseries 关键词：}}供应商评价；整数规划；转运损耗；产能边界
-\newpage\pagestyle{{plain}}\pagenumbering{{arabic}}\setcounter{{page}}{{1}}
+\newpage\pagestyle{{plain}}
 \section{{问题重述}} 本文处理402家供应商、8家转运商和24周订购转运决策，周需求为28200m$^3$产品等价量。
 \section{{模型总体框架}} 先按规模、活跃率、稳定性和履约指数排序，再通过容量覆盖选集和低损耗转运生成三种场景方案。规划容量为正供货量75\%分位数，实施前需按库存与合同滚动重优化。
 \section{{模型建立}} 令$x_i$表示是否选择供应商，$p_i$表示折算规划产能，核心模型为\begin{{equation}}\min\sum_i x_i,\quad \sum_i p_ix_i\ge D/(1-0.01).\end{{equation}} 转运变量$y_{{ij}}$满足$\sum_jy_{{ij}}=o_i$和$\sum_i y_{{ij}}\le6000$。
@@ -321,11 +320,10 @@ execute_registered_solver(project_root, decision_contract)
 """
     remaining_body = before_references + bibliography_tex + appendix_start + after_references
     tex = header + "\\providecommand{\\tightlist}{\\setlength{\\itemsep}{0pt}\\setlength{\\parskip}{0pt}}\n\\newsavebox{\\pandocbox}\n\\newcommand{\\pandocbounded}[1]{\\sbox{\\pandocbox}{#1}\\ifdim\\wd\\pandocbox>\\linewidth\\resizebox{\\linewidth}{!}{#1}\\else\\usebox{\\pandocbox}\\fi}\n" + rf"""\begin{{document}}
-\thispagestyle{{empty}}\pagenumbering{{gobble}}\vspace*{{7cm}}
-\begin{{center}}{{\fontsize{{22pt}}{{33pt}}\selectfont\bfseries {TITLE}\par}}\vspace{{2cm}}{{\fontsize{{14pt}}{{21pt}}\selectfont 数学建模竞赛\par}}\vspace{{1cm}}{{\normalsize 2026年7月\par}}\end{{center}}\newpage
-\thispagestyle{{empty}}\begin{{center}}{{\fontsize{{14pt}}{{21pt}}\selectfont\bfseries 摘\quad 要}}\end{{center}}\vspace{{0.6cm}}
+\pagenumbering{{arabic}}\setcounter{{page}}{{1}}\thispagestyle{{plain}}
+\begin{{center}}{{\fontsize{{16pt}}{{24pt}}\selectfont\bfseries {TITLE}\par}}\vspace{{0.6cm}}{{\fontsize{{14pt}}{{21pt}}\selectfont\bfseries 摘\quad 要}}\end{{center}}\vspace{{0.6cm}}
 {abstract_body}
-\newpage\pagestyle{{plain}}\pagenumbering{{arabic}}\setcounter{{page}}{{1}}
+\newpage\pagestyle{{plain}}
 \section{{问题重述}}{remaining_body}
 \section{{代码附录}}
 \begin{{pycode}}[caption={{求解入口}}]
@@ -348,9 +346,7 @@ execute_registered_solver(project_root, decision_contract)
         "source_tex_sha256": hashlib.sha256((paper / "main.tex").read_bytes()).hexdigest(),
         "required_deliveries": [
             {"role": "main_pdf", "path": "paper/main.pdf", "producer": "compile-latex"},
-            {"role": "main_docx", "path": "paper/main.docx", "producer": "paper-docx"},
             {"role": "latex_compile_report", "path": "reports/latex_compile_report.json", "producer": "compile-latex"},
-            {"role": "docx_render_report", "path": "reports/docx_render_report.json", "producer": "paper-docx"},
             {"role": "visual_layout_audit", "path": "reports/visual_layout_audit.json", "producer": "paper-render-audit"},
         ],
     }

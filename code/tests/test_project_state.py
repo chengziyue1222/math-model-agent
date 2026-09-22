@@ -20,7 +20,7 @@ def _evidence(root, role, relative, content="verified"):
 
 
 def test_project_state_advances_one_verified_gate_at_a_time(tmp_path):
-    state = project_state.initialize(tmp_path, "case-2026-a", "run-manifest.json")
+    state = project_state.initialize(tmp_path, "case-2026-a", "run-manifest.json", "audit")
     assert state["current_stage"] == "intake"
     evidence = [
         _evidence(tmp_path, "problem_source", "docs/source.md"),
@@ -36,7 +36,7 @@ def test_project_state_advances_one_verified_gate_at_a_time(tmp_path):
 
 
 def test_gate_rejects_skips_missing_files_and_missing_roles(tmp_path):
-    project_state.initialize(tmp_path, "case", "run-manifest.json")
+    project_state.initialize(tmp_path, "case", "run-manifest.json", "audit")
     with pytest.raises(ValueError, match="exactly one stage"):
         project_state.advance(tmp_path, "modeling", [], "")
     with pytest.raises(FileNotFoundError, match="evidence file"):
@@ -80,7 +80,7 @@ def test_manifest_gate_requires_configured_manifest_path(tmp_path):
 
 
 def test_advance_rejects_mutated_evidence_from_previous_gate(tmp_path):
-    project_state.initialize(tmp_path, "case", "run-manifest.json")
+    project_state.initialize(tmp_path, "case", "run-manifest.json", "audit")
     source = _evidence(tmp_path, "problem_source", "docs/source.md", "original")
     tasks = _evidence(tmp_path, "task_decomposition", "docs/tasks.md")
     project_state.advance(tmp_path, "analysis", [source, tasks], "")
@@ -95,7 +95,7 @@ def test_advance_rejects_mutated_evidence_from_previous_gate(tmp_path):
 
 
 def test_verify_evidence_reports_missing_or_changed_files(tmp_path):
-    state = project_state.initialize(tmp_path, "case", "run-manifest.json")
+    state = project_state.initialize(tmp_path, "case", "run-manifest.json", "audit")
     evidence = [
         _evidence(tmp_path, "problem_source", "source.md"),
         _evidence(tmp_path, "task_decomposition", "tasks.md"),
@@ -110,3 +110,30 @@ def test_verify_evidence_reports_missing_or_changed_files(tmp_path):
 def test_initialization_rejects_unsafe_manifest_path(tmp_path, unsafe):
     with pytest.raises(ValueError, match="safe project-relative"):
         project_state.initialize(tmp_path, "case", unsafe)
+
+
+def test_competition_review_accepts_pdf_without_docx(tmp_path):
+    state = project_state.initialize(tmp_path, "case", "run-manifest.json", "competition")
+    state["current_stage"] = "writing"
+    project_state._write_state(tmp_path, state)
+    roles = list(project_state.COMPETITION_GATES["review"]) + ["main_pdf", "latex_compile_report"]
+    evidence = [
+        _evidence(tmp_path, role, "run-manifest.json" if role == "run_manifest" else f"evidence/{role}.json")
+        for role in roles
+    ]
+    advanced = project_state.advance(tmp_path, "review", evidence, "PDF delivery")
+    assert advanced["current_stage"] == "review"
+    assert "main_docx" not in advanced["evidence"]
+
+
+def test_audit_review_still_requires_full_audit_evidence(tmp_path):
+    state = project_state.initialize(tmp_path, "case", "run-manifest.json", "audit")
+    state["current_stage"] = "writing"
+    project_state._write_state(tmp_path, state)
+    roles = [role for role in project_state.AUDIT_GATES["review"] if role != "review_hash_binding"]
+    evidence = [
+        _evidence(tmp_path, role, "run-manifest.json" if role == "run_manifest" else f"evidence/{role}.json")
+        for role in roles
+    ]
+    with pytest.raises(ValueError, match="review_hash_binding"):
+        project_state.advance(tmp_path, "review", evidence, "missing audit binding")

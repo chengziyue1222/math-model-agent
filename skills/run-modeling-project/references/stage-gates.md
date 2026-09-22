@@ -1,6 +1,6 @@
 # Modeling Project Stage Gates
 
-Stages are strictly ordered. Evidence means an existing project-relative file with a recorded SHA-256 hash; a prose claim is not evidence.
+Stages are strictly ordered. All evidence paths are project-relative. Competition requires existing checked artifacts; audit additionally records and revalidates SHA-256 for every accepted artifact.
 
 | Enter stage | Required evidence roles | Exit question |
 |---|---|---|
@@ -8,17 +8,16 @@ Stages are strictly ordered. Evidence means an existing project-relative file wi
 | `analysis` | `problem_source`, `task_decomposition` | Is every subproblem, objective, constraint, datum, unit, and ambiguity explicit? |
 | `modeling` | `data_audit`, `model_selection`, `decision_contract` | Is there a leakage-safe data contract, a fair baseline, and a justified model route for every question? |
 | `validation` | `implementation`, `machine_results`, `quality_validation`, `run_manifest` | Can the solver be rerun with recorded parameters and seeds, and are balance, uncertainty, baseline, and trade-off checks appropriate to the declared decisions? |
-| `writing` | `validation_report`, `quality_validation`, `paper_spec`, `evidence_index`, `claim_registry`, `figure_registry`, `table_registry`, `formula_registry` | Is the project `READY_FOR_DRAFT`, are all proposed claims resolvable, and does each question have a decision-grade result and validation artifact? |
-| `review` | `manuscript`, `main_pdf`, `main_docx`, `decision_contract`, `quality_validation`, `figure_inventory`, `cumcm_layout_validation`, `latex_compile_report`, `docx_render_report`, `visual_layout_audit`, `paper_review_report`, `independent_content_review`, `submission_readiness`, `run_manifest` | Are the manuscript and both rendered formats present, visually audited, independently reviewed, and hash-current? |
+| `writing` | Competition: `validation_report`, `quality_validation`, `paper_spec`, `evidence_index`, `figure_registry`. Audit adds `claim_registry`, `table_registry`, `formula_registry`. | Is the project `READY_FOR_DRAFT`, and does each question have a decision-grade result and validation artifact? |
+| `review` | Competition: `manuscript`, PDF or DOCX (PDF default), its render report, `decision_contract`, `quality_validation`, `figure_inventory`, `cumcm_layout_validation`, `visual_layout_audit`, `paper_review_report`, `submission_preflight`, `submission_readiness`, support archive/manifest/reproduction report, `run_manifest`. Audit adds both rendered formats, `independent_content_review`, `review_hash_binding`, producer registry and signed Skill trace. | Did format, pagination, size, anonymity, support-manifest and clean reproduction checks pass, with the profile-specific review evidence present? |
 | `release` | `review_report`, `submission_checklist`, `run_manifest` | Is the project `FORMAL_PAPER_APPROVED`, with no review failure or stale evidence? |
 
 ## Transition Rules
 
 - Advance exactly one stage at a time.
-- Hash every evidence file when entering a stage.
-- Before every transition, re-hash all evidence accepted by previous gates with `project_state.py verify`; a missing or changed file blocks advancement.
-- Validate the standard Skill input/output role contract before executing its underlying command. A preflight failure is recorded as `BLOCKED`.
-- Never reuse a stale `run_manifest` record after changing an input or artifact.
+- In competition, require every accepted evidence file to remain present; in audit, hash it on entry and re-hash all earlier evidence with `project_state.py verify` before every transition.
+- Apply the profile's Skill role contract before execution. Rapid has no complete role-contract obligation; audit retains the complete contract. A required preflight failure is recorded as `BLOCKED`.
+- Never reuse a stale `run_manifest` record after changing an input or artifact; audit proves this with full hashes.
 - A failed or partial run remains in the manifest and is not silently replaced by a later success.
 - A blocker freezes transitions but does not erase completed-stage history.
 - Paper status is one of `NOT_READY`, `READY_FOR_DRAFT`, `DRAFT_GENERATED`, `REVIEW_FAILED`, `RETURNED_TO_MODELING`, or `FORMAL_PAPER_APPROVED`. A failed review must return to modeling/validation or writing; it cannot advance to release.

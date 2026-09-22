@@ -28,7 +28,11 @@ def test_structure_requires_sections_and_respects_dependency_trigger():
 
 
 def test_figure_grammar_selects_only_matching_signal():
-    grammar = yaml.safe_load(open("docs/reverse_engineering/skill_rule_pack_v1/04_figure_grammar.yaml", encoding="utf-8"))["grammar"]
+    with open(
+        "docs/reverse_engineering/skill_rule_pack_v1/04_figure_grammar.yaml",
+        encoding="utf-8",
+    ) as stream:
+        grammar = yaml.safe_load(stream)["grammar"]
     selected = select_figure_grammar(["运动/演化/仿真过程"], grammar)
     assert selected and selected[0]["recommended_figure"].startswith("共享坐标")
     assert select_figure_grammar(["unrelated"], grammar) == []

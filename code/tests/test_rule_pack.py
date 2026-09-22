@@ -26,7 +26,8 @@ def test_rule_pack_validation_includes_markdown_rejection_rules_in_manifest_tota
 def test_mapping_requires_registered_implementation_evidence(tmp_path):
     csv_path, markdown_path = tmp_path / "mapping.csv", tmp_path / "mapping.md"
     write_mapping(PACK, csv_path, markdown_path, Path("config/rule_implementation_registry.yaml"))
-    rows = list(csv.DictReader(csv_path.open(encoding="utf-8")))
+    with csv_path.open(encoding="utf-8") as stream:
+        rows = list(csv.DictReader(stream))
     assert len(rows) == 152
     assert any(row["implementation_status"] == "not_implemented" for row in rows)
     for row in rows:

@@ -24,8 +24,14 @@ def inspect_pdf_layout(pdf_path: str | Path, *, expected_a4: bool = True) -> dic
         import fitz
     except ImportError as exc:  # pragma: no cover
         return {"status": "blocked", "issues": [issue("TEST-PDF-001", str(exc), "PyMuPDF", "install PyMuPDF").__dict__]}
-    document = fitz.open(pdf_path)
-    report: dict[str, Any] = {"pdf": str(pdf_path), "page_count": document.page_count, "pages": [], "fonts": {}, "issues": [], "manual_review_required": []}
+    path = Path(pdf_path)
+    reported_path = path.name
+    try:
+        reported_path = path.resolve().relative_to(Path.cwd().resolve()).as_posix()
+    except ValueError:
+        pass
+    document = fitz.open(path)
+    report: dict[str, Any] = {"pdf": reported_path, "page_count": document.page_count, "pages": [], "fonts": {}, "issues": [], "manual_review_required": []}
     fonts: Counter[str] = Counter()
     sizes: Counter[float] = Counter()
     for number, page in enumerate(document, 1):
@@ -42,15 +48,15 @@ def inspect_pdf_layout(pdf_path: str | Path, *, expected_a4: bool = True) -> dic
             right, bottom = max(box[2] for box in bboxes), max(box[3] for box in bboxes)
             margins = {"left_pt": round(left, 1), "right_pt": round(rect.width-right, 1), "top_pt": round(top, 1), "bottom_pt": round(rect.height-bottom, 1)}
             if min(margins.values()) < 8:
-                report["issues"].append(issue("LAYOUT-MARGIN-001", json.dumps(margins), "no text within 8 pt of media edge", "adjust page geometry", str(pdf_path)).__dict__)
+                report["issues"].append(issue("LAYOUT-MARGIN-001", json.dumps(margins), "no text within 8 pt of media edge", "adjust page geometry", reported_path).__dict__)
         page_info = {"page": number, "width_pt": round(rect.width, 2), "height_pt": round(rect.height, 2), "rotation": page.rotation, "text_chars": sum(len(str(s.get("text", ""))) for s in text_spans), "margins": margins}
         report["pages"].append(page_info)
         if margins and margins["bottom_pt"] > 430 and page_info["text_chars"] < 220:
-            report["issues"].append(issue("LAYOUT-DENSITY-001", f"page {number} sparse: {page_info['text_chars']} chars, bottom margin {margins['bottom_pt']} pt", "review sparse page for intentional section break or missing content", "record manual disposition or revise layout", str(pdf_path), severity="warning").__dict__)
+            report["issues"].append(issue("LAYOUT-DENSITY-001", f"page {number} sparse: {page_info['text_chars']} chars, bottom margin {margins['bottom_pt']} pt", "review sparse page for intentional section break or missing content", "record manual disposition or revise layout", reported_path, severity="warning").__dict__)
         if expected_a4 and (abs(rect.width-595.28)>1 or abs(rect.height-841.89)>1 or page.rotation != 0):
-            report["issues"].append(issue("LAYOUT-PAGE-001", json.dumps(page_info), "A4 portrait", "render with configured A4 profile", str(pdf_path)).__dict__)
+            report["issues"].append(issue("LAYOUT-PAGE-001", json.dumps(page_info), "A4 portrait", "render with configured A4 profile", reported_path).__dict__)
         if page_info["text_chars"] < 10:
-            report["issues"].append(issue("PDF-PREFLIGHT-004", f"page {number} has little text", "nonblank page", "inspect or remove page", str(pdf_path), severity="warning").__dict__)
+            report["issues"].append(issue("PDF-PREFLIGHT-004", f"page {number} has little text", "nonblank page", "inspect or remove page", reported_path, severity="warning").__dict__)
     document.close()
     report["fonts"] = dict(fonts.most_common())
     report["font_sizes"] = dict(sizes.most_common())

@@ -12,8 +12,22 @@ from pathlib import Path
 if __package__ in (None, ""):
     sys.path.insert(0, str(Path(__file__).resolve().parents[1]))
 
-from scripts.skill_contracts import validate_records
-from scripts.skill_runtime import STANDARD_SKILLS, fail_skill_run, finish_skill_run, start_skill_run
+try:
+    from .skill_contracts import validate_records
+    from .skill_runtime import (
+        STANDARD_SKILLS,
+        fail_skill_run,
+        finish_skill_run,
+        start_skill_run,
+    )
+except ImportError:  # direct execution from the repository checkout
+    from scripts.skill_contracts import validate_records
+    from scripts.skill_runtime import (
+        STANDARD_SKILLS,
+        fail_skill_run,
+        finish_skill_run,
+        start_skill_run,
+    )
 
 
 def main(argv: list[str] | None = None, *, default_skill: str | None = None) -> int:
@@ -22,6 +36,7 @@ def main(argv: list[str] | None = None, *, default_skill: str | None = None) -> 
     parser.add_argument("--project-id", required=True)
     parser.add_argument("--skill", choices=STANDARD_SKILLS, default=default_skill)
     parser.add_argument("--skill-path", required=True)
+    parser.add_argument("--profile", choices=("rapid", "competition", "audit"), default="competition")
     parser.add_argument("--input", action="append", default=[], metavar="ROLE=PATH")
     parser.add_argument("--output", action="append", default=[], metavar="ROLE=PATH")
     parser.add_argument("command", nargs=argparse.REMAINDER, help="command to execute; prefix with --")
@@ -45,6 +60,7 @@ def main(argv: list[str] | None = None, *, default_skill: str | None = None) -> 
         skill_path=args.skill_path,
         inputs=args.input,
         command_or_invocation=" ".join(command),
+        profile=args.profile,
     )
     if not command:
         terminal = fail_skill_run(args.project_root, start["run_id"], "no execution command supplied", exit_code=2)
@@ -54,6 +70,7 @@ def main(argv: list[str] | None = None, *, default_skill: str | None = None) -> 
         args.skill,
         start["inputs"],
         [{"role": role} for role, _ in outputs],
+        profile=args.profile,
     )
     if contract_errors:
         terminal = finish_skill_run(

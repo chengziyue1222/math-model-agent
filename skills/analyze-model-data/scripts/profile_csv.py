@@ -72,7 +72,12 @@ def main() -> int:
         item["numeric_mean"] = numeric_sum / numeric_count if numeric_count else None
         columns[name] = item
 
-    report = {"file": str(args.csv_file.resolve()), "rows": row_count, "columns": columns}
+    resolved = args.csv_file.resolve()
+    try:
+        reported_path = resolved.relative_to(Path.cwd().resolve()).as_posix()
+    except ValueError:
+        reported_path = args.csv_file.name
+    report = {"file": reported_path, "rows": row_count, "columns": columns}
     rendered = json.dumps(report, ensure_ascii=False, indent=2)
     if args.output:
         args.output.write_text(rendered + "\n", encoding="utf-8")

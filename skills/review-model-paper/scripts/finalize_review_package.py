@@ -1,4 +1,4 @@
-"""Bind source, rendered artifacts, and all review gates into submission readiness."""
+"""Finalize competition readiness or bind the stricter audit evidence package."""
 
 from __future__ import annotations
 
@@ -9,6 +9,9 @@ from pathlib import Path
 from typing import Any
 
 
+MAX_DELIVERY_BYTES = 20 * 1024 * 1024
+
+
 def digest(path: Path) -> str:
     return hashlib.sha256(path.read_bytes()).hexdigest()
 
@@ -16,94 +19,155 @@ def digest(path: Path) -> str:
 def load_object(path: Path) -> dict[str, Any]:
     value = json.loads(path.read_text(encoding="utf-8"))
     if not isinstance(value, dict):
-        raise ValueError(f"expected JSON object: {path}")
+        raise ValueError(f"expected JSON object: {path.name}")
     return value
+
+
+def _project_path(root: Path, path: Path) -> tuple[Path, str]:
+    resolved = path.resolve()
+    try:
+        relative = resolved.relative_to(root)
+    except ValueError as exc:
+        raise ValueError(f"artifact must be inside project root: {path.name}") from exc
+    return resolved, relative.as_posix()
+
+
+def _status_pass(path: Path) -> bool:
+    payload = load_object(path)
+    return payload.get("status", payload.get("overall_status")) == "PASS"
 
 
 def finalize(
     project_root: Path,
     *,
     manuscript: Path,
-    pdf: Path,
-    docx: Path,
     official_problem: Path,
     decision_contract: Path,
     quality_validation: Path,
     result_object: Path,
-    claim_registry: Path,
-    figure_registry: Path,
-    table_registry: Path,
-    references_bib: Path,
     project_manifest: Path,
     layout_validation: Path,
-    latex_compile_report: Path,
-    docx_render_report: Path,
     visual_layout_audit: Path,
     paper_review_report: Path,
-    independent_review: Path,
-) -> tuple[dict[str, Any], dict[str, Any]]:
+    support_archive: Path,
+    support_manifest: Path,
+    reproduction_report: Path,
+    submission_preflight: Path,
+    profile: str = "competition",
+    pdf: Path | None = None,
+    docx: Path | None = None,
+    latex_compile_report: Path | None = None,
+    docx_render_report: Path | None = None,
+    claim_registry: Path | None = None,
+    figure_registry: Path | None = None,
+    table_registry: Path | None = None,
+    references_bib: Path | None = None,
+    independent_review: Path | None = None,
+) -> tuple[dict[str, Any] | None, dict[str, Any]]:
+    if profile not in {"competition", "audit"}:
+        raise ValueError(f"unknown review profile: {profile}")
     root = project_root.resolve()
-    artifacts = {
-        "manuscript": manuscript.resolve(),
-        "main_pdf": pdf.resolve(),
-        "main_docx": docx.resolve(),
-        "official_problem": official_problem.resolve(),
-        "decision_contract": decision_contract.resolve(),
-        "quality_validation": quality_validation.resolve(),
-        "result_object": result_object.resolve(),
-        "claim_registry": claim_registry.resolve(),
-        "figure_registry": figure_registry.resolve(),
-        "table_registry": table_registry.resolve(),
-        "references_bib": references_bib.resolve(),
-        "project_manifest": project_manifest.resolve(),
-        "cumcm_layout_validation": layout_validation.resolve(),
-        "latex_compile_report": latex_compile_report.resolve(),
-        "docx_render_report": docx_render_report.resolve(),
-        "visual_layout_audit": visual_layout_audit.resolve(),
-        "paper_review_report": paper_review_report.resolve(),
-        "independent_content_review": independent_review.resolve(),
+    required: dict[str, Path | None] = {
+        "manuscript": manuscript,
+        "official_problem": official_problem,
+        "decision_contract": decision_contract,
+        "quality_validation": quality_validation,
+        "result_object": result_object,
+        "project_manifest": project_manifest,
+        "cumcm_layout_validation": layout_validation,
+        "visual_layout_audit": visual_layout_audit,
+        "paper_review_report": paper_review_report,
+        "support_archive": support_archive,
+        "support_manifest": support_manifest,
+        "reproduction_report": reproduction_report,
+        "submission_preflight": submission_preflight,
     }
-    for role, path in artifacts.items():
-        if not path.is_file() or path.stat().st_size == 0:
-            raise FileNotFoundError(f"{role} is missing or empty: {path}")
+    formats = {"main_pdf": pdf, "main_docx": docx}
+    if profile == "competition" and not any(formats.values()):
+        raise ValueError("competition requires PDF or DOCX; PDF is the default")
+    if profile == "audit":
+        required.update(
+            {
+                **formats,
+                "latex_compile_report": latex_compile_report,
+                "docx_render_report": docx_render_report,
+                "claim_registry": claim_registry,
+                "figure_registry": figure_registry,
+                "table_registry": table_registry,
+                "references_bib": references_bib,
+                "independent_content_review": independent_review,
+            }
+        )
+    else:
+        required.update({role: path for role, path in formats.items() if path is not None})
+        if pdf is not None:
+            required["latex_compile_report"] = latex_compile_report
+        if docx is not None:
+            required["docx_render_report"] = docx_render_report
+
+    artifacts: dict[str, tuple[Path, str]] = {}
+    for role, candidate in required.items():
+        if candidate is None:
+            raise FileNotFoundError(f"{role} is required for {profile}")
+        resolved, relative = _project_path(root, candidate)
+        if not resolved.is_file() or resolved.stat().st_size == 0:
+            raise FileNotFoundError(f"{role} is missing or empty: {relative}")
+        artifacts[role] = (resolved, relative)
+    for role in ("main_pdf", "main_docx", "support_archive"):
+        if role in artifacts and artifacts[role][0].stat().st_size > MAX_DELIVERY_BYTES:
+            raise ValueError(f"{role} exceeds 20 MiB")
 
     gates = {
-        "paper_review": load_object(artifacts["paper_review_report"]).get("overall_status") == "PASS",
-        "independent_content_review": load_object(artifacts["independent_content_review"]).get("status") == "PASS",
-        "cumcm_layout": load_object(artifacts["cumcm_layout_validation"]).get("status") == "PASS",
-        "latex_compile": load_object(artifacts["latex_compile_report"]).get("status") == "PASS",
-        "docx_render": load_object(artifacts["docx_render_report"]).get("status") == "PASS",
-        "visual_layout": load_object(artifacts["visual_layout_audit"]).get("status") == "PASS",
+        "paper_review": _status_pass(artifacts["paper_review_report"][0]),
+        "cumcm_layout": _status_pass(artifacts["cumcm_layout_validation"][0]),
+        "visual_layout": _status_pass(artifacts["visual_layout_audit"][0]),
+        "clean_reproduction": _status_pass(artifacts["reproduction_report"][0]),
+        "submission_preflight": _status_pass(artifacts["submission_preflight"][0]),
     }
-    binding = {
-        "schema_version": "1.0",
-        "status": "PASS" if all(gates.values()) else "FAIL",
-        "artifacts": {
-            role: {
-                "path": str(path.relative_to(root)).replace("\\", "/"),
-                "sha256": digest(path),
-                "bytes": path.stat().st_size,
-            }
-            for role, path in artifacts.items()
-        },
-        "gates": gates,
-    }
+    if "latex_compile_report" in artifacts:
+        gates["latex_compile"] = _status_pass(artifacts["latex_compile_report"][0])
+    if "docx_render_report" in artifacts:
+        gates["docx_render"] = _status_pass(artifacts["docx_render_report"][0])
+    if profile == "audit":
+        gates["independent_content_review"] = _status_pass(artifacts["independent_content_review"][0])
+
+    binding: dict[str, Any] | None = None
+    if profile == "audit":
+        binding = {
+            "schema_version": "1.1",
+            "profile": profile,
+            "status": "PASS" if all(gates.values()) else "FAIL",
+            "artifacts": {
+                role: {
+                    "path": relative,
+                    "sha256": digest(path),
+                    "bytes": path.stat().st_size,
+                }
+                for role, (path, relative) in artifacts.items()
+            },
+            "gates": gates,
+        }
+
     readiness = {
-        "schema_version": "1.0",
-        "status": "READY_FOR_SUBMISSION" if binding["status"] == "PASS" else "BLOCKED",
-        "all_rendered_formats_present": True,
+        "schema_version": "1.1",
+        "profile": profile,
+        "status": "READY_FOR_SUBMISSION" if all(gates.values()) else "BLOCKED",
+        "paper_formats": sorted(role.removeprefix("main_") for role in formats if role in artifacts),
+        "required_formats_present": (pdf is not None and docx is not None) if profile == "audit" else any(formats.values()),
         "all_review_gates_passed": all(gates.values()),
-        "review_hash_binding_sha256": hashlib.sha256(
-            json.dumps(binding, ensure_ascii=False, sort_keys=True, separators=(",", ":")).encode("utf-8")
-        ).hexdigest(),
         "blocking_gates": sorted(name for name, passed in gates.items() if not passed),
     }
+    if binding is not None:
+        readiness["review_hash_binding_sha256"] = hashlib.sha256(
+            json.dumps(binding, ensure_ascii=False, sort_keys=True, separators=(",", ":")).encode("utf-8")
+        ).hexdigest()
     reports = root / "reports"
     reports.mkdir(parents=True, exist_ok=True)
-    (reports / "review_hash_binding.json").write_text(
-        json.dumps(binding, ensure_ascii=False, indent=2) + "\n",
-        encoding="utf-8",
-    )
+    if binding is not None:
+        (reports / "review_hash_binding.json").write_text(
+            json.dumps(binding, ensure_ascii=False, indent=2) + "\n",
+            encoding="utf-8",
+        )
     (reports / "submission_readiness.json").write_text(
         json.dumps(readiness, ensure_ascii=False, indent=2) + "\n",
         encoding="utf-8",
@@ -113,46 +177,27 @@ def finalize(
     return binding, readiness
 
 
-if __name__ == "__main__":
+def main(argv: list[str] | None = None) -> int:
     parser = argparse.ArgumentParser(description=__doc__)
     parser.add_argument("--project-root", type=Path, required=True)
-    parser.add_argument("--manuscript", type=Path, required=True)
-    parser.add_argument("--pdf", type=Path, required=True)
-    parser.add_argument("--docx", type=Path, required=True)
-    parser.add_argument("--official-problem", type=Path, required=True)
-    parser.add_argument("--decision-contract", type=Path, required=True)
-    parser.add_argument("--quality-validation", type=Path, required=True)
-    parser.add_argument("--result-object", type=Path, required=True)
-    parser.add_argument("--claim-registry", type=Path, required=True)
-    parser.add_argument("--figure-registry", type=Path, required=True)
-    parser.add_argument("--table-registry", type=Path, required=True)
-    parser.add_argument("--references-bib", type=Path, required=True)
-    parser.add_argument("--project-manifest", type=Path, required=True)
-    parser.add_argument("--layout-validation", type=Path, required=True)
-    parser.add_argument("--latex-compile-report", type=Path, required=True)
-    parser.add_argument("--docx-render-report", type=Path, required=True)
-    parser.add_argument("--visual-layout-audit", type=Path, required=True)
-    parser.add_argument("--paper-review-report", type=Path, required=True)
-    parser.add_argument("--independent-review", type=Path, required=True)
-    args = parser.parse_args()
-    finalize(
-        args.project_root,
-        manuscript=args.manuscript,
-        pdf=args.pdf,
-        docx=args.docx,
-        official_problem=args.official_problem,
-        decision_contract=args.decision_contract,
-        quality_validation=args.quality_validation,
-        result_object=args.result_object,
-        claim_registry=args.claim_registry,
-        figure_registry=args.figure_registry,
-        table_registry=args.table_registry,
-        references_bib=args.references_bib,
-        project_manifest=args.project_manifest,
-        layout_validation=args.layout_validation,
-        latex_compile_report=args.latex_compile_report,
-        docx_render_report=args.docx_render_report,
-        visual_layout_audit=args.visual_layout_audit,
-        paper_review_report=args.paper_review_report,
-        independent_review=args.independent_review,
-    )
+    parser.add_argument("--profile", choices=("competition", "audit"), default="competition")
+    for name in (
+        "manuscript", "official-problem", "decision-contract", "quality-validation", "result-object",
+        "project-manifest", "layout-validation", "visual-layout-audit", "paper-review-report",
+        "support-archive", "support-manifest", "reproduction-report", "submission-preflight",
+    ):
+        parser.add_argument(f"--{name}", type=Path, required=True)
+    for name in (
+        "pdf", "docx", "latex-compile-report", "docx-render-report", "claim-registry",
+        "figure-registry", "table-registry", "references-bib", "independent-review",
+    ):
+        parser.add_argument(f"--{name}", type=Path)
+    args = parser.parse_args(argv)
+    values = vars(args)
+    project_root = values.pop("project_root")
+    finalize(project_root, **values)
+    return 0
+
+
+if __name__ == "__main__":
+    raise SystemExit(main())

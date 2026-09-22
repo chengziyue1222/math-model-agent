@@ -14,7 +14,11 @@
 
 它适合希望减少重复劳动、保留建模判断并交付可检查结果的参赛者、课程项目团队和研究型建模使用者。它不承诺获奖；模型洞察、数据质量与问题理解仍是决定性因素。
 
-> 8 个标准 Codex Skills · 25 个算法与质量模块 · 144 个公开导出 · 56 个历史命令归档
+> 8 个标准 Codex Skills · 25 个算法与质量模块 · 149 个公开导出 · 56 个历史命令归档
+
+## 智感Nova本地比赛演示
+
+校园负荷预测模型可信诊断智能体的本地比赛演示入口与运行说明见 [README_DEMO.md](README_DEMO.md)。该演示复用现有 Nova Core 与 Nova API 服务层，无需服务器、公网、腾讯云账号或 DeepSeek Key。
 
 ## 为什么使用它？
 
@@ -29,9 +33,9 @@
 
 | 档位 | 适合什么情况 | 交付重点 |
 |---|---|---|
-| `rapid` | 选题、可行性验证、早期迭代 | 题意、基线、可复现参数/种子、结果与局限 |
-| `competition` | 数学建模竞赛与正式建议 | 逐题选型、验证、图表、论文与提交前审查 |
-| `audit` | 高风险、可复用或外部评审项目 | 完整契约、运行追踪、证据哈希与独立复核 |
+| `rapid` | 题目理解、探索与初步建模 | 题意、探索模型/基线、可复现参数、初步结果与局限 |
+| `competition` | 2026 国赛完整交付 | 完整建模、必要基线/验证、正式 PDF（或 DOCX）、完整代码与支撑材料、提交预检 |
+| `audit` | 高风险、可复用或外部评审项目 | competition 全部能力，加完整角色契约、HMAC、全量哈希/注册表、独立复核与 PDF+DOCX |
 
 ## 30 秒开始
 
@@ -62,7 +66,7 @@ ranking = topsis(decision_matrix, weights, benefit_indicators)
 
 ### 🧮 算法库 / Algorithm Library (`code/algorithms/`)
 
-144 个公开导出，25 个模块文件；核心算法按 9 大类组织，另含数据诊断、证据契约、质量、文档和生产保护模块：
+149 个公开导出，25 个模块文件；核心算法按 9 大类组织，另含数据诊断、证据契约、质量、文档和生产保护模块：
 
 **决策与评价 (23)**
 
@@ -152,6 +156,8 @@ rank = topsis(decision_matrix, weights, benefit_indicators)
 ### 📐 国赛论文排版模板 / CUMCM Paper Template (`template/`)
 
 从校赛获奖论文中提炼的国赛标准排版规范，开箱即用：
+
+2026 国赛模式不生成目录：摘要是电子版第 1 页，问题重述随后开始且页码连续；摘要页不计入正文 30 页上限，正文恰好 30 页时附录可从电子版第 32 页开始。competition 默认交付 PDF，PDF/DOCX 二选一即可；audit 才要求双格式。论文文件和支撑材料 ZIP/RAR 分别不得超过 20 MiB。附录必须列出支撑材料的完整文件清单并包含全部自有完整源程序，支撑包须在干净临时目录复现通过，并通过元数据、身份信息和绝对路径扫描。提交前还须将 `config/cumcm-identities.example.json` 复制为项目根目录的 `.cumcm-identities.json` 并填写所有身份组；该私密文件已被 Git 忽略且不得装入支撑包，缺失或不完整会直接阻止提交就绪。2026 年起还须在参考文献前加入 `AI工具使用声明`；如使用 AI，支撑材料必须包含 `AI工具使用详情.pdf`。
 
 | 排版要素 | 实现方式 |
 |---------|---------|
@@ -410,7 +416,7 @@ python scripts/install_skills.py select-model solve-model
 python scripts/install_skills.py --dry-run
 ```
 
-安装后可使用 `$select-model`、`$solve-model`、`$review-model-paper` 等名称调用。`pip install .` 仅安装可导入的 `algorithms` Python 包；Skill、论文模板和旧版命令文档是仓库配套资源，不混入 wheel。源码分发包仍保留这些资源，便于完整归档。
+安装后可使用 `$select-model`、`$solve-model`、`$review-model-paper` 等名称调用。安装器会为每个 Skill 复制私有 `_runtime`，因此执行入口不依赖本源码仓库继续保留在原路径。`pip install .` 仅安装可导入的 `algorithms` Python 包；Skill、论文模板和旧版命令文档是仓库配套资源，不混入 wheel。源码分发包仍保留这些资源，便于完整归档。
 
 ### 5. 兼容档案 / Compatibility Archive
 
@@ -442,6 +448,7 @@ python scripts/install_skills.py --dry-run
 
 ## 版本历史 / Changelog
 
+- **v7.3.0** (2026-09-23) — 新增 Nova 本地离线演示、Streamlit 界面与 2026 CUMCM 提交预检；公开导出增至 149，图表设计系统补齐调色板与中文字体回退
 - **v7.2.0** (2026-08-10) — 新增 rapid / competition / audit 三档工作流，统一标准 Skill 的可执行契约入口，并校正文档与 Windows 测试体验
 - **v6.0** (2026-07-08) — 蒸馏 zhanwen/MathModel + MathModelAgent，新增蒙特卡罗、图像处理、综合评价、竞赛工作流
 - **v5.0** (2026-06-16) — 部署 CodeBuddy 论文 Skills + 数学建模 Skills，总计 55 个 slash commands

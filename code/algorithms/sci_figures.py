@@ -34,6 +34,7 @@ from __future__ import annotations
 import math
 import json
 from dataclasses import asdict, dataclass
+from itertools import combinations
 from pathlib import Path
 from typing import Optional
 
@@ -43,6 +44,7 @@ mpl.use("Agg")
 
 import matplotlib.pyplot as plt
 import numpy as np
+from matplotlib import font_manager
 from matplotlib.colors import LinearSegmentedColormap, Normalize
 from matplotlib.gridspec import GridSpecFromSubplotSpec
 from matplotlib.lines import Line2D
@@ -61,6 +63,86 @@ MODELING_PALETTE = {
     "categorical": ("#3C6E8F", "#5B8C6A", "#B27A45", "#8A6E9C", "#A6534C", "#6E8FA8"),
     "diverging": ("#3C6E8F", "#F7F7F5", "#A6534C"),
     "sequential": ("#F7F8F5", "#D7E4E7", "#A6C4CF", "#6F9DB0", "#315D78"),
+}
+MODELING_PALETTES = {
+    "modeling-default": {
+        **MODELING_PALETTE,
+        "accent": "#A6534C",
+        "ink": "#262626",
+        "grey": "#6B6B6B",
+        "grid": "#D8D8D2",
+        "background": "#FFFFFF",
+    },
+    "nature-accessible": {
+        "categorical": ("#0072B2", "#009E73", "#E69F00", "#CC79A7", "#D55E00", "#56B4E9"),
+        "diverging": ("#2166AC", "#F7F7F7", "#B2182B"),
+        "sequential": ("#F7FBFF", "#C6DBEF", "#6BAED6", "#2171B5", "#084594"),
+        "accent": "#D55E00",
+        "ink": "#1A1A1A",
+        "grey": "#6B7280",
+        "grid": "#D7DEE6",
+        "background": "#FFFFFF",
+    },
+    "soft-academic": {
+        "categorical": ("#5FA3CB", "#A5CDE2", "#D6DFEF", "#F8B9B8", "#FFC6BC", "#C58B87"),
+        "diverging": ("#4D8DB5", "#F7F7F7", "#C66A67"),
+        "sequential": ("#F5F8FC", "#D6DFEF", "#A5CDE2", "#5FA3CB", "#326C91"),
+        "accent": "#C66A67",
+        "ink": "#252525",
+        "grey": "#737373",
+        "grid": "#DDE3EA",
+        "background": "#FFFFFF",
+    },
+    "aquifer-recovery": {
+        "categorical": ("#95AEDA", "#73C79E", "#FCD590", "#A577AD", "#F599A1", "#9FD7E9"),
+        "diverging": ("#4F78B5", "#F7F7F3", "#C96E76"),
+        "sequential": ("#F2FAFB", "#CDEBF1", "#9FD7E9", "#5DAFC8", "#28768F"),
+        "accent": "#A577AD",
+        "ink": "#233238",
+        "grey": "#6E7C82",
+        "grid": "#D8E4E7",
+        "background": "#FFFFFF",
+    },
+    "electrochemistry": {
+        "categorical": ("#509CBA", "#91BFDB", "#A4D86A", "#E26E67", "#F1B9B6", "#718EAA"),
+        "diverging": ("#397C99", "#F7F7F4", "#C6534E"),
+        "sequential": ("#F3F9FB", "#D3EAF2", "#91BFDB", "#509CBA", "#286982"),
+        "accent": "#E26E67",
+        "ink": "#20282C",
+        "grey": "#6E777B",
+        "grid": "#D9E2E6",
+        "background": "#FFFFFF",
+    },
+    "literature-clinical": {
+        "categorical": ("#477E95", "#72AE9E", "#D4B261", "#9C86B3", "#D87B67", "#88A2AD"),
+        "diverging": ("#477E95", "#F6F4EF", "#D87B67"),
+        "sequential": ("#F3F7F8", "#CFE0E5", "#9CBEC9", "#477E95", "#285264"),
+        "accent": "#D87B67",
+        "ink": "#202629",
+        "grey": "#70797D",
+        "grid": "#D9E1E4",
+        "background": "#FFFFFF",
+    },
+    "sage-methods": {
+        "categorical": ("#3B7480", "#8CB58B", "#DCA16C", "#C7859D", "#8295C0", "#8B9D93"),
+        "diverging": ("#3B7480", "#F5F5F0", "#C76F5F"),
+        "sequential": ("#F3F7F5", "#D7E5DD", "#AAC9B5", "#729C83", "#406753"),
+        "accent": "#DCA16C",
+        "ink": "#242A28",
+        "grey": "#717A76",
+        "grid": "#DCE3DF",
+        "background": "#FFFFFF",
+    },
+    "quiet-atlas": {
+        "categorical": ("#4F738C", "#7EAF9A", "#D4A48B", "#9B88B2", "#90B9C8", "#A98975"),
+        "diverging": ("#4F738C", "#F6F4F1", "#C27E69"),
+        "sequential": ("#F4F7F8", "#D7E5EA", "#90B9C8", "#5F8FA3", "#365D70"),
+        "accent": "#D4A48B",
+        "ink": "#252A2D",
+        "grey": "#71797D",
+        "grid": "#DDE3E6",
+        "background": "#FFFFFF",
+    },
 }
 MODELING_PAPER_THEME = {
     "background": "#FFFFFF",
@@ -82,6 +164,14 @@ _MODELING_FIGURE_ROLES = {
     "optimization",
     "decision",
 }
+_CJK_FONT_CANDIDATES = (
+    "Microsoft YaHei",
+    "Noto Sans SC",
+    "Noto Sans CJK SC",
+    "SimHei",
+    "PingFang SC",
+    "WenQuanYi Micro Hei",
+)
 
 
 @dataclass(frozen=True)
@@ -106,6 +196,11 @@ class FigureContract:
     statistic: str | None = None
     uncertainty: str | None = None
     review_risks: tuple[str, ...] = ()
+    panel_evidence: tuple[str, ...] = ()
+    data_transformations: tuple[str, ...] = ()
+    excluded_data: tuple[str, ...] = ()
+    theme_name: str = "modeling-default"
+    design_brief: FigureDesignBrief | None = None
 
     def __post_init__(self) -> None:
         if not isinstance(self.claim, str) or not self.claim.strip():
@@ -126,6 +221,29 @@ class FigureContract:
         if self.figure_role not in _MODELING_FIGURE_ROLES:
             choices = ", ".join(sorted(_MODELING_FIGURE_ROLES))
             raise ValueError(f"FigureContract.figure_role must be one of: {choices}")
+        for field_name in (
+            "review_risks",
+            "panel_evidence",
+            "data_transformations",
+            "excluded_data",
+        ):
+            values = getattr(self, field_name)
+            if any(not isinstance(item, str) or not item.strip() for item in values):
+                raise ValueError(f"FigureContract.{field_name} must contain non-empty strings")
+        if not isinstance(self.theme_name, str) or not self.theme_name.strip():
+            raise ValueError("FigureContract.theme_name must be non-empty")
+        if self.theme_name not in MODELING_PALETTES and not self.theme_name.startswith(
+            "custom:"
+        ):
+            choices = ", ".join(sorted(MODELING_PALETTES))
+            raise ValueError(
+                "FigureContract.theme_name must name an installed theme or use "
+                f"'custom:<name>'; installed themes: {choices}"
+            )
+        if self.design_brief is not None and not isinstance(
+            self.design_brief, FigureDesignBrief
+        ):
+            raise ValueError("FigureContract.design_brief must be a FigureDesignBrief")
 
     @property
     def width_mm(self) -> float:
@@ -146,6 +264,73 @@ class FigureAuditReport:
         return asdict(self)
 
 
+@dataclass(frozen=True)
+class FigureDesignBrief:
+    """Layout and semantic-colour decisions for a multi-panel figure."""
+
+    core_message: str
+    canvas_ratio: str = "3:2"
+    layout_recipe: str = "evidence-grid"
+    hero_panel: str | None = None
+    support_sequence: tuple[str, ...] = ()
+    color_roles: tuple[str, ...] = (
+        "baseline",
+        "comparison",
+        "emphasis",
+        "context",
+    )
+
+    def __post_init__(self) -> None:
+        if not isinstance(self.core_message, str) or not self.core_message.strip():
+            raise ValueError("FigureDesignBrief.core_message must be non-empty")
+        ratios = {"4:3", "3:2", "wide", "portrait", "custom"}
+        if self.canvas_ratio not in ratios:
+            choices = ", ".join(sorted(ratios))
+            raise ValueError(f"FigureDesignBrief.canvas_ratio must be one of: {choices}")
+        recipes = {
+            "evidence-grid",
+            "hero-plus-proof",
+            "workflow-to-result",
+            "landscape-comparison",
+            "custom",
+        }
+        if self.layout_recipe not in recipes:
+            choices = ", ".join(sorted(recipes))
+            raise ValueError(f"FigureDesignBrief.layout_recipe must be one of: {choices}")
+        for field_name in ("support_sequence", "color_roles"):
+            values = getattr(self, field_name)
+            if any(not isinstance(item, str) or not item.strip() for item in values):
+                raise ValueError(
+                    f"FigureDesignBrief.{field_name} must contain non-empty strings"
+                )
+        if self.layout_recipe != "evidence-grid" and not self.hero_panel:
+            raise ValueError(
+                "FigureDesignBrief.hero_panel is required for asymmetric layouts"
+            )
+
+
+def get_modeling_palette(name: str = "nature-accessible") -> dict[str, object]:
+    """Return an independent semantic palette mapping by theme name."""
+    try:
+        palette = MODELING_PALETTES[name]
+    except KeyError as exc:
+        choices = ", ".join(sorted(MODELING_PALETTES))
+        raise ValueError(f"unknown palette {name!r}; choose one of: {choices}") from exc
+    return {
+        key: tuple(value) if isinstance(value, tuple) else value
+        for key, value in palette.items()
+    }
+
+
+def resolve_cjk_font() -> str | None:
+    """Return the first installed sans-serif font suitable for Chinese labels."""
+    installed = {item.name.casefold(): item.name for item in font_manager.fontManager.ttflist}
+    for candidate in _CJK_FONT_CANDIDATES:
+        if candidate.casefold() in installed:
+            return installed[candidate.casefold()]
+    return None
+
+
 def mm_to_inches(value_mm: float) -> float:
     """Convert millimetres to inches, the unit expected by Matplotlib."""
     if value_mm <= 0:
@@ -161,13 +346,31 @@ def publication_size(column: str = "single", height_mm: float = 65.0) -> tuple[f
     return mm_to_inches(PUBLICATION_WIDTH_MM[column]), mm_to_inches(height_mm)
 
 
-def publication_rc_params(font_family: str = "sans-serif") -> dict[str, object]:
+def publication_rc_params(
+    font_family: str = "sans-serif",
+    *,
+    language: str = "en",
+) -> dict[str, object]:
     """Return restrained, editable publication defaults for ``mpl.rc_context``."""
     if font_family not in {"sans-serif", "serif"}:
         raise ValueError("font_family must be 'sans-serif' or 'serif'")
+    if language not in {"en", "zh"}:
+        raise ValueError("language must be 'en' or 'zh'")
+    sans_fonts = [
+        "Arial",
+        "Helvetica",
+        "Liberation Sans",
+        "DejaVu Sans",
+    ]
+    if language == "zh":
+        cjk_font = resolve_cjk_font()
+        sans_fonts = [
+            *(font for font in (cjk_font, *_CJK_FONT_CANDIDATES) if font),
+            *sans_fonts,
+        ]
     return {
         "font.family": font_family,
-        "font.sans-serif": ["Arial", "Helvetica", "Liberation Sans", "DejaVu Sans"],
+        "font.sans-serif": sans_fonts,
         "font.serif": ["Times New Roman", "Times", "Liberation Serif", "DejaVu Serif"],
         "font.size": 7.0,
         "axes.labelsize": 7.0,
@@ -180,6 +383,7 @@ def publication_rc_params(font_family: str = "sans-serif") -> dict[str, object]:
         "xtick.major.width": 0.6,
         "ytick.major.width": 0.6,
         "legend.fontsize": 6.0,
+        "axes.unicode_minus": False,
         "pdf.fonttype": 42,
         "svg.fonttype": "none",
         "savefig.dpi": 450,
@@ -187,14 +391,18 @@ def publication_rc_params(font_family: str = "sans-serif") -> dict[str, object]:
     }
 
 
-def paper_figure_rc_params(font_family: str = "sans-serif") -> dict[str, object]:
+def paper_figure_rc_params(
+    font_family: str = "sans-serif",
+    *,
+    language: str = "zh",
+) -> dict[str, object]:
     """Return the restrained A4-paper theme used by modeling-paper figures.
 
     The values are deliberately independent of individual chart scripts so a
     figure set reads as one paper rather than a sequence of dashboard panels.
     Venue-specific size constraints still belong to :func:`publication_size`.
     """
-    params = publication_rc_params(font_family)
+    params = publication_rc_params(font_family, language=language)
     params.update(
         {
             "font.size": 7.5,
@@ -249,6 +457,8 @@ def audit_publication_figure(
             f"figure width is {width_mm:.1f} mm; expected {contract.width_mm:.1f} mm "
             f"for {contract.column}-column output"
         )
+    if height_mm > 247.0:
+        errors.append(f"figure height is {height_mm:.1f} mm; maximum is 247.0 mm")
 
     visible_texts = [
         item for item in fig.findobj(match=Text)
@@ -276,6 +486,7 @@ def audit_publication_figure(
         item for item in layout_texts
         if item.get_visible() and item.get_text().strip()
     ]
+    layout_texts = list({id(item): item for item in layout_texts}.values())
 
     figure_box = fig.bbox
     for item in layout_texts:
@@ -288,7 +499,22 @@ def audit_publication_figure(
         ):
             errors.append(f"text extends outside canvas: {item.get_text()!r}")
 
+    overlap_pairs: list[str] = []
+    text_boxes = [
+        (item.get_text(), item.get_window_extent(renderer)) for item in layout_texts
+    ]
+    for (first_text, first_box), (second_text, second_box) in combinations(text_boxes, 2):
+        width = max(0.0, min(first_box.x1, second_box.x1) - max(first_box.x0, second_box.x0))
+        height = max(0.0, min(first_box.y1, second_box.y1) - max(first_box.y0, second_box.y0))
+        overlap = width * height
+        smaller = min(first_box.width * first_box.height, second_box.width * second_box.height)
+        if smaller > 4.0 and overlap / smaller >= 0.50:
+            overlap_pairs.append(f"{first_text!r} / {second_text!r}")
+    if overlap_pairs:
+        errors.append("substantial text overlap detected: " + ", ".join(overlap_pairs[:5]))
+
     risky_colormaps: set[str] = set()
+    legends_inside = 0
     for axis in fig.axes:
         if axis.get_label() != "<colorbar>" and axis.has_data():
             if not axis.get_xlabel().strip() or not axis.get_ylabel().strip():
@@ -300,6 +526,7 @@ def audit_publication_figure(
             if _intersection_fraction(
                 legend.get_window_extent(renderer), axis.get_window_extent(renderer)
             ) >= 0.98:
+                legends_inside += 1
                 warnings.append(
                     f"legend is fully inside the data region: {axis.get_title() or '<untitled>'}"
                 )
@@ -331,6 +558,10 @@ def audit_publication_figure(
         warnings.append("summary statistic is not documented in the figure contract")
     if contract.uncertainty is None:
         warnings.append("uncertainty representation is not documented in the figure contract")
+    if len(fig.axes) > 1 and contract.design_brief is None:
+        warnings.append("multi-panel figure has no recorded design brief")
+    if contract.excluded_data:
+        warnings.append("excluded rows or columns are recorded; disclose them in the figure notes")
 
     errors = list(dict.fromkeys(errors))
     warnings = list(dict.fromkeys(warnings))
@@ -345,8 +576,34 @@ def audit_publication_figure(
             "figure_role": contract.figure_role,
             "visible_text_count": len(visible_texts),
             "axes_count": len(fig.axes),
+            "legend_inside_count": legends_inside,
+            "text_overlap_count": len(overlap_pairs),
+            "theme_name": contract.theme_name,
             "minimum_font_size_pt": minimum_font_size,
         },
+    )
+
+
+def add_panel_label(
+    axis: plt.Axes,
+    label: str,
+    *,
+    x: float = -0.12,
+    y: float = 1.03,
+) -> Text:
+    """Add a consistent 8 pt bold, upright panel label to an axes."""
+    if not isinstance(label, str) or not label.strip():
+        raise ValueError("label must be non-empty")
+    return axis.text(
+        x,
+        y,
+        label,
+        transform=axis.transAxes,
+        fontsize=8,
+        fontweight="bold",
+        fontstyle="normal",
+        va="bottom",
+        ha="left",
     )
 
 
@@ -380,7 +637,7 @@ def export_publication_figure(
 
     metadata_path = stem.with_suffix(".figure.json")
     payload = {
-        "schema_version": 1,
+        "schema_version": 2,
         "contract": asdict(contract),
         "audit": report.to_dict(),
         "export": {"dpi": dpi, "formats": ["pdf", "svg", "png"]},

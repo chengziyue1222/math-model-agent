@@ -13,6 +13,11 @@ import yaml
 NAME_PATTERN = re.compile(r"^[a-z0-9]+(?:-[a-z0-9]+)*$")
 LINK_PATTERN = re.compile(r"\[[^\]]+\]\(([^)]+)\)")
 RESOURCE_PATTERN = re.compile(r"(?:references|scripts|assets)/[A-Za-z0-9_.\-/]+")
+# ``scripts/_runtime/<name>`` only exists after ``scripts/install_skills.py``
+# installs a Skill: it is copied from ``<repository>/scripts/<name>``. The
+# reference is therefore resolved against that source rather than the checkout,
+# which keeps the check meaningful instead of skipping runtime paths entirely.
+RUNTIME_REFERENCE_PATTERN = re.compile(r"^scripts/_runtime/([A-Za-z0-9_.\-]+)$")
 
 
 def _frontmatter(text: str, path: Path) -> tuple[dict, str]:
@@ -37,8 +42,24 @@ def _local_references(body: str) -> set[str]:
     return references
 
 
-def validate_skill(skill_dir: Path) -> list[str]:
+def _missing_reference(skill_dir: Path, relative_path: str, repository_root: Path) -> bool:
+    """Report whether a referenced SKILL.md resource is unavailable.
+
+    Install-time runtime references are resolved against the repository
+    ``scripts/`` directory they are generated from.
+    """
+    if (skill_dir / relative_path).exists():
+        return False
+    match = RUNTIME_REFERENCE_PATTERN.match(relative_path)
+    if match and (repository_root / "scripts" / match.group(1)).is_file():
+        return False
+    return True
+
+
+def validate_skill(skill_dir: Path, repository_root: Path | None = None) -> list[str]:
     errors: list[str] = []
+    if repository_root is None:
+        repository_root = skill_dir.parent.parent
     skill_file = skill_dir / "SKILL.md"
     if not skill_file.exists():
         return [f"{skill_dir}: missing SKILL.md"]
@@ -77,7 +98,7 @@ def validate_skill(skill_dir: Path) -> list[str]:
             errors.append(f"{metadata_file}: invalid metadata: {exc}")
 
     for relative_path in sorted(_local_references(body)):
-        if not (skill_dir / relative_path).exists():
+        if _missing_reference(skill_dir, relative_path, repository_root):
             errors.append(f"{skill_file}: referenced resource does not exist: {relative_path}")
 
     forbidden_docs = {"README.md", "CHANGELOG.md", "INSTALLATION_GUIDE.md", "QUICK_REFERENCE.md"}
@@ -100,7 +121,12 @@ def main() -> int:
         print(f"No Skill directories found under {args.root}", file=sys.stderr)
         return 2
 
-    errors = [error for skill_dir in skill_dirs for error in validate_skill(skill_dir)]
+    repository_root = args.root.resolve().parent
+    errors = [
+        error
+        for skill_dir in skill_dirs
+        for error in validate_skill(skill_dir, repository_root)
+    ]
     if errors:
         print("Skill validation failed:", file=sys.stderr)
         for error in errors:

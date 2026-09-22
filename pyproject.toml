@@ -4,7 +4,7 @@ build-backend = "setuptools.build_meta"
 
 [project]
 name = "math-model-agent"
-version = "7.2.0"
+version = "7.3.0"
 description = "Mathematical-modeling algorithm library used by the Math Model Agent repository"
 readme = "README.md"
 license = "MIT"
@@ -19,6 +19,7 @@ dependencies = [
     "networkx>=2.6",
     "fastapi>=0.115",
     "uvicorn>=0.30",
+    "rarfile>=4.5",
 ]
 
 [project.optional-dependencies]
@@ -30,12 +31,17 @@ dev = [
     # Provides the ``fitz`` module used by the PDF-layout validation tests.
     "PyMuPDF>=1.24.0",
     "ruff>=0.12",
-    "httpx>=0.27",
+    "httpx2>=2.12",
 ]
 
+# Only ``algorithms`` is distributed as an importable package, matching the
+# installation contract documented in README.md. The ``nova_*`` applications run
+# from this repository (see ``start_api.sh`` and ``demo/run_demo.py``) and depend
+# on the repository-level ``scripts`` package, so they cannot work from an
+# installed wheel.
 [tool.setuptools.packages.find]
 where = ["code"]
-include = ["algorithms*", "nova_core*", "nova_eval*", "nova_api*"]
+include = ["algorithms*"]
 
 [tool.pytest.ini_options]
 testpaths = ["code/tests"]

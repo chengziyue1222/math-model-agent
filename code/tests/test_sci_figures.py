@@ -8,14 +8,19 @@ matplotlib.use('Agg')
 import matplotlib.pyplot as plt
 from algorithms.sci_figures import (
     FigureContract,
+    FigureDesignBrief,
     MODELING_PALETTE,
+    MODELING_PALETTES,
     TaylorDiagram,
     ChordDiagram,
+    add_panel_label,
     audit_publication_figure,
     export_publication_figure,
+    get_modeling_palette,
     mm_to_inches,
     publication_rc_params,
     publication_size,
+    resolve_cjk_font,
     save_figure,
 )
 
@@ -105,12 +110,50 @@ class TestPublicationWorkflow:
         assert publication_size("single", 50) == pytest.approx((89 / 25.4, 50 / 25.4))
         assert publication_rc_params()["savefig.dpi"] == 450
         assert len(MODELING_PALETTE["categorical"]) == 6
+        assert "nature-accessible" in MODELING_PALETTES
+        assert publication_rc_params()["axes.unicode_minus"] is False
+        assert publication_rc_params(language="zh")["font.sans-serif"][0]
+
+    def test_cjk_font_resolution_is_safe(self):
+        font_name = resolve_cjk_font()
+        assert font_name is None or isinstance(font_name, str)
+        with pytest.raises(ValueError, match="language"):
+            publication_rc_params(language="fr")
+
+    def test_named_palette_returns_semantic_roles(self):
+        palette = get_modeling_palette("nature-accessible")
+
+        assert len(palette["categorical"]) == 6
+        assert palette["accent"] == "#D55E00"
+        palette["accent"] = "#000000"
+        assert MODELING_PALETTES["nature-accessible"]["accent"] == "#D55E00"
+        with pytest.raises(ValueError, match="unknown palette"):
+            get_modeling_palette("missing-theme")
+
+    def test_design_brief_validates_asymmetric_layout(self):
+        with pytest.raises(ValueError, match="hero_panel"):
+            FigureDesignBrief(
+                "Primary result is stable",
+                layout_recipe="hero-plus-proof",
+            )
+
+        brief = FigureDesignBrief(
+            "Primary result is stable",
+            layout_recipe="hero-plus-proof",
+            hero_panel="(a) primary result",
+            support_sequence=("(b) residuals",),
+        )
+        assert brief.hero_panel == "(a) primary result"
 
     def test_contract_rejects_missing_claim_and_unknown_column(self):
         with pytest.raises(ValueError, match="claim"):
             FigureContract("", ("series",))
         with pytest.raises(ValueError, match="column"):
             FigureContract("Trend increases", ("series",), column="triple")
+        with pytest.raises(ValueError, match="theme_name"):
+            FigureContract("Trend increases", ("series",), theme_name="typo")
+        with pytest.raises(ValueError, match="design_brief"):
+            FigureContract("Trend increases", ("series",), design_brief="invalid")
 
     def test_audit_detects_wrong_width_and_small_text(self):
         fig, axis = plt.subplots(figsize=(2, 2))
@@ -126,6 +169,14 @@ class TestPublicationWorkflow:
         assert any("figure width" in error for error in report.errors)
         assert any("below 5 pt" in error for error in report.errors)
 
+    def test_panel_label_helper_uses_consistent_typography(self):
+        fig, axis = plt.subplots()
+        label = add_panel_label(axis, "a")
+
+        assert label.get_fontsize() == 8
+        assert label.get_fontweight() == "bold"
+        assert label.get_fontstyle() == "normal"
+
     def test_export_writes_vector_raster_and_audit_metadata(self, tmp_path):
         with matplotlib.rc_context(publication_rc_params()):
             fig, axis = plt.subplots(
@@ -138,6 +189,10 @@ class TestPublicationWorkflow:
             )
             axis.set_xlabel("Time (day)")
             axis.set_ylabel("Response (unit)")
+            brief = FigureDesignBrief(
+                "Response increases over time",
+                layout_recipe="evidence-grid",
+            )
             contract = FigureContract(
                 "Response increases over time",
                 ("three observations", "positive slope"),
@@ -151,6 +206,10 @@ class TestPublicationWorkflow:
                 n_definition="n = 3 time points",
                 statistic="raw observations",
                 uncertainty="not applicable to deterministic example",
+                panel_evidence=("(a) three observations",),
+                data_transformations=("none",),
+                theme_name="nature-accessible",
+                design_brief=brief,
             )
             paths = export_publication_figure(fig, tmp_path / "trend", contract)
 
@@ -165,8 +224,11 @@ class TestPublicationWorkflow:
         assert metadata["audit"]["passed"] is True
         assert metadata["contract"]["claim"] == "Response increases over time"
         assert metadata["contract"]["model_name"] == "deterministic trend example v1"
+        assert metadata["contract"]["theme_name"] == "nature-accessible"
+        assert metadata["contract"]["design_brief"]["layout_recipe"] == "evidence-grid"
         assert metadata["audit"]["metrics"]["figure_role"] == "model-result"
         assert metadata["export"]["dpi"] == 450
+        assert metadata["schema_version"] == 2
 
     def test_strict_export_refuses_failed_audit(self, tmp_path):
         fig, axis = plt.subplots(figsize=(2, 2))

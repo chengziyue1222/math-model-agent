@@ -11,9 +11,9 @@ from pathlib import Path, PurePath, PureWindowsPath
 from typing import Any
 
 
-SCHEMA_VERSION = "1.0"
+SCHEMA_VERSION = "1.1"
 STAGES = ("intake", "analysis", "modeling", "validation", "writing", "review", "release")
-GATE_REQUIREMENTS = {
+COMPETITION_GATES = {
     "intake": (),
     "analysis": ("problem_source", "task_decomposition"),
     "modeling": ("data_audit", "model_selection", "decision_contract"),
@@ -23,29 +23,50 @@ GATE_REQUIREMENTS = {
         "quality_validation",
         "paper_spec",
         "evidence_index",
-        "claim_registry",
         "figure_registry",
-        "table_registry",
-        "formula_registry",
     ),
     "review": (
         "manuscript",
-        "main_pdf",
-        "main_docx",
         "decision_contract",
         "quality_validation",
         "figure_inventory",
         "cumcm_layout_validation",
-        "latex_compile_report",
-        "docx_render_report",
         "visual_layout_audit",
         "paper_review_report",
-        "independent_content_review",
         "submission_readiness",
+        "submission_preflight",
+        "support_archive",
+        "support_manifest",
+        "reproduction_report",
         "run_manifest",
     ),
     "release": ("review_report", "submission_checklist", "run_manifest"),
 }
+AUDIT_GATES = {
+    **COMPETITION_GATES,
+    "writing": COMPETITION_GATES["writing"] + ("claim_registry", "table_registry", "formula_registry"),
+    "review": COMPETITION_GATES["review"]
+    + (
+        "main_pdf",
+        "main_docx",
+        "latex_compile_report",
+        "docx_render_report",
+        "independent_content_review",
+        "review_hash_binding",
+        "producer_registry",
+        "signed_skill_trace",
+    ),
+}
+RAPID_GATES = {
+    "intake": (),
+    "analysis": ("problem_source", "task_decomposition"),
+    "modeling": ("model_selection",),
+    "validation": ("implementation", "machine_results"),
+    "writing": ("exploratory_summary",),
+    "review": ("limitations",),
+    "release": ("handoff",),
+}
+PROFILE_GATES = {"rapid": RAPID_GATES, "competition": COMPETITION_GATES, "audit": AUDIT_GATES}
 
 
 def _now() -> str:
@@ -84,8 +105,10 @@ def _read_state(root: Path) -> dict[str, Any]:
     if not path.is_file():
         raise FileNotFoundError(f"project state not found: {path}")
     state = json.loads(path.read_text(encoding="utf-8"))
-    if not isinstance(state, dict) or state.get("schema_version") != SCHEMA_VERSION:
+    if not isinstance(state, dict) or state.get("schema_version") not in {"1.0", SCHEMA_VERSION}:
         raise ValueError("unsupported or malformed project state")
+    if state.get("schema_version") == "1.0":
+        state["profile"] = "audit"
     return state
 
 
@@ -98,12 +121,14 @@ def _write_state(root: Path, state: dict[str, Any]) -> None:
     temporary.replace(path)
 
 
-def initialize(root: Path, project_id: str, manifest: str) -> dict[str, Any]:
+def initialize(root: Path, project_id: str, manifest: str, profile: str = "competition") -> dict[str, Any]:
     root = root.resolve()
     if not root.is_dir():
         raise ValueError(f"project root is not a directory: {root}")
     if not project_id.strip():
         raise ValueError("project_id must be non-empty")
+    if profile not in PROFILE_GATES:
+        raise ValueError(f"unknown workflow profile: {profile}")
     if not _safe_relative(manifest):
         raise ValueError("manifest must be a safe project-relative path")
     path = _state_path(root)
@@ -113,6 +138,7 @@ def initialize(root: Path, project_id: str, manifest: str) -> dict[str, Any]:
     state = {
         "schema_version": SCHEMA_VERSION,
         "project_id": project_id,
+        "profile": profile,
         "current_stage": "intake",
         "completed_stages": [],
         "run_manifest": manifest,
@@ -127,7 +153,12 @@ def initialize(root: Path, project_id: str, manifest: str) -> dict[str, Any]:
     return state
 
 
-def _parse_evidence(root: Path, values: list[str]) -> dict[str, dict[str, Any]]:
+def _parse_evidence(
+    root: Path,
+    values: list[str],
+    *,
+    hash_evidence: bool,
+) -> dict[str, dict[str, Any]]:
     evidence: dict[str, dict[str, Any]] = {}
     for value in values:
         if "=" not in value:
@@ -138,12 +169,14 @@ def _parse_evidence(root: Path, values: list[str]) -> dict[str, dict[str, Any]]:
         path = root / relative
         if not path.is_file():
             raise FileNotFoundError(f"evidence file not found: {relative}")
-        evidence[role] = {
+        record: dict[str, Any] = {
             "path": relative.replace("\\", "/"),
-            "sha256": _sha256(path),
             "bytes": path.stat().st_size,
             "verified_at": _now(),
         }
+        if hash_evidence:
+            record["sha256"] = _sha256(path)
+        evidence[role] = record
     return evidence
 
 
@@ -159,7 +192,7 @@ def verify_evidence(root: Path, state: dict[str, Any]) -> list[str]:
         if not path.is_file():
             errors.append(f"{role}: evidence file is missing: {relative}")
             continue
-        if _sha256(path) != record.get("sha256"):
+        if "sha256" in record and _sha256(path) != record.get("sha256"):
             errors.append(f"{role}: evidence hash changed: {relative}")
     return errors
 
@@ -177,15 +210,25 @@ def advance(root: Path, target: str, evidence_values: list[str], note: str) -> d
         raise ValueError("unknown project stage")
     if STAGES.index(target) != STAGES.index(current) + 1:
         raise ValueError(f"must advance exactly one stage from {current}")
-    evidence = _parse_evidence(root, evidence_values)
+    profile = str(state.get("profile", "audit"))
+    requirements = PROFILE_GATES[profile][target]
+    evidence = _parse_evidence(root, evidence_values, hash_evidence=profile == "audit")
     expected_manifest = state["run_manifest"].replace("\\", "/")
-    if "run_manifest" in GATE_REQUIREMENTS[target]:
+    if "run_manifest" in requirements:
         supplied = evidence.get("run_manifest")
         if supplied is None or supplied["path"] != expected_manifest:
             raise ValueError(f"run_manifest evidence must use configured path {expected_manifest}")
-    missing = [role for role in GATE_REQUIREMENTS[target] if role not in evidence]
+    missing = [role for role in requirements if role not in evidence]
     if missing:
         raise ValueError("missing gate evidence: " + ", ".join(missing))
+    if target == "review" and profile == "competition":
+        delivered = {"main_pdf", "main_docx"}.intersection(evidence)
+        if not delivered:
+            raise ValueError("competition review requires main_pdf or main_docx")
+        if "main_pdf" in delivered and "latex_compile_report" not in evidence:
+            raise ValueError("PDF delivery requires latex_compile_report")
+        if "main_docx" in delivered and "docx_render_report" not in evidence:
+            raise ValueError("DOCX delivery requires docx_render_report")
     state["evidence"].update(evidence)
     state["completed_stages"].append(current)
     state["current_stage"] = target
@@ -235,6 +278,7 @@ def handoff(state: dict[str, Any]) -> dict[str, Any]:
     next_stage = STAGES[next_index]
     return {
         "project_id": state["project_id"],
+        "profile": state.get("profile", "audit"),
         "current_stage": stage,
         "status": status,
         "completed_stages": state["completed_stages"],
@@ -243,7 +287,7 @@ def handoff(state: dict[str, Any]) -> dict[str, Any]:
             {"role": role, **record} for role, record in sorted(state["evidence"].items())
         ],
         "blocker": state.get("active_blocker"),
-        "next_gate_requires": list(GATE_REQUIREMENTS[next_stage]) if stage != "release" else [],
+        "next_gate_requires": list(PROFILE_GATES[str(state.get("profile", "audit"))][next_stage]) if stage != "release" else [],
     }
 
 
@@ -259,6 +303,7 @@ def main() -> int:
     init.add_argument("--project-root", type=Path, default=Path.cwd())
     init.add_argument("--project-id", required=True)
     init.add_argument("--manifest", default="run-manifest.json")
+    init.add_argument("--profile", choices=tuple(PROFILE_GATES), default="competition")
     advance_parser = subparsers.add_parser("advance")
     advance_parser.add_argument("--project-root", type=Path, default=Path.cwd())
     advance_parser.add_argument("--to", required=True, choices=STAGES)
@@ -271,7 +316,7 @@ def main() -> int:
     args = parser.parse_args()
     try:
         if args.action == "init":
-            result = initialize(args.project_root, args.project_id, args.manifest)
+            result = initialize(args.project_root, args.project_id, args.manifest, args.profile)
         elif args.action == "advance":
             result = advance(args.project_root, args.to, args.evidence, args.note)
         elif args.action == "block":

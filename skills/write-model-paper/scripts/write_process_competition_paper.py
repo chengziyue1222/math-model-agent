@@ -240,11 +240,10 @@ def main(root: Path) -> None:
     header = (REPOSITORY_ROOT / "template" / "cume-template.tex").read_text(encoding="utf-8").split("\\begin{document}", 1)[0]
     header = header.replace(r"\else #1\fi}", r"\else \arabic{section}\fi}")
     tex = header + "\\providecommand{\\tightlist}{\\setlength{\\itemsep}{0pt}\\setlength{\\parskip}{0pt}}\n\\newsavebox{\\pandocbox}\n\\newcommand{\\pandocbounded}[1]{\\sbox{\\pandocbox}{#1}\\ifdim\\wd\\pandocbox>\\linewidth\\resizebox{\\linewidth}{!}{#1}\\else\\usebox{\\pandocbox}\\fi}\n" + rf"""\begin{{document}}
-\thispagestyle{{empty}}\pagenumbering{{gobble}}\vspace*{{7cm}}
-\begin{{center}}{{\fontsize{{22pt}}{{33pt}}\selectfont\bfseries {TITLE}\par}}\vspace{{2cm}}{{\fontsize{{14pt}}{{21pt}}\selectfont 数学建模竞赛\par}}\vspace{{1cm}}{{\normalsize 2026年7月\par}}\end{{center}}\newpage
-\thispagestyle{{empty}}\begin{{center}}{{\fontsize{{14pt}}{{21pt}}\selectfont\bfseries 摘\quad 要}}\end{{center}}\vspace{{0.6cm}}
+\pagenumbering{{arabic}}\setcounter{{page}}{{1}}\thispagestyle{{plain}}
+\begin{{center}}{{\fontsize{{16pt}}{{24pt}}\selectfont\bfseries {TITLE}\par}}\vspace{{0.6cm}}{{\fontsize{{14pt}}{{21pt}}\selectfont\bfseries 摘\quad 要}}\end{{center}}\vspace{{0.6cm}}
 {abstract}
-\newpage\pagestyle{{plain}}\pagenumbering{{arabic}}\setcounter{{page}}{{1}}
+\newpage\pagestyle{{plain}}
 \section{{问题重述}}{before_refs}{bib}\section{{附录}}{after_appendix}
 \section{{代码附录}}\begin{{pycode}}[caption={{求解入口}}]
 python skills/solve-model/scripts/solve_process_forecast.py --root PROJECT_ROOT
@@ -256,7 +255,7 @@ python skills/solve-model/scripts/solve_process_forecast.py --root PROJECT_ROOT
     dump(root / "reports" / "cumcm_layout_validation.json", layout)
     if layout["status"] != "PASS":
         raise RuntimeError("strict layout validation failed")
-    render = {"status": "READY_TO_RENDER", "source_markdown": "paper/main.md", "source_markdown_sha256": hashlib.sha256((paper / "main.md").read_bytes()).hexdigest(), "source_tex": "paper/main.tex", "source_tex_sha256": hashlib.sha256((paper / "main.tex").read_bytes()).hexdigest(), "required_deliveries": [{"role": "main_pdf", "path": "paper/main.pdf", "producer": "compile-latex"}, {"role": "main_docx", "path": "paper/main.docx", "producer": "paper-docx"}, {"role": "latex_compile_report", "path": "reports/latex_compile_report.json", "producer": "compile-latex"}, {"role": "docx_render_report", "path": "reports/docx_render_report.json", "producer": "paper-docx"}, {"role": "visual_layout_audit", "path": "reports/visual_layout_audit.json", "producer": "paper-render-audit"}]}
+    render = {"status": "READY_TO_RENDER", "profile": "competition", "source_markdown": "paper/main.md", "source_markdown_sha256": hashlib.sha256((paper / "main.md").read_bytes()).hexdigest(), "source_tex": "paper/main.tex", "source_tex_sha256": hashlib.sha256((paper / "main.tex").read_bytes()).hexdigest(), "required_deliveries": [{"role": "main_pdf", "path": "paper/main.pdf", "producer": "compile-latex"}, {"role": "latex_compile_report", "path": "reports/latex_compile_report.json", "producer": "compile-latex"}, {"role": "visual_layout_audit", "path": "reports/visual_layout_audit.json", "producer": "paper-render-audit"}]}
     dump(paper / "render-request.json", render)
     dump(paper / "paper_generation_report.json", {"status": "FULL_DRAFT_GENERATED", "mode": "competition_paper", "layout_profile": "strict_cumcm_a4_v1", "claim_bindings": 4, "evidence_bound": True})
     dump(paper / "claim_usage_report.json", {"used_claim_ids": ["CLAIM_Q1_RMSE", "CLAIM_Q2_ACCURACY", "CLAIM_Q2_F1", "CLAIM_Q3_MAE"]})

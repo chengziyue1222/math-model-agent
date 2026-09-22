@@ -2,7 +2,7 @@
 数学建模算法工具箱
 ==================
 
-144 个公开导出，25 个算法与质量模块，覆盖数学建模竞赛全流程。
+149 个公开导出，25 个算法与质量模块，覆盖数学建模竞赛全流程。
 全部基于 numpy/scipy 实现，无深度学习框架依赖。
 
 来源:
@@ -85,8 +85,9 @@ from .sci_figures import (
     PredictionMarginal, HyperparamSurface, CorrSplitViolin,
     CircularHeatmap, ComboComparison, ChordDiagram, ShapBeeswarm,
     TaylorPoint, RocModelSpec, PredModelPanel, HeatmapTrait, HeatmapGroup,
-    ChordNode, FigureContract, FigureAuditReport, PUBLICATION_WIDTH_MM,
-    MODELING_PALETTE, MODELING_PAPER_THEME, mm_to_inches, publication_size,
+    ChordNode, FigureContract, FigureDesignBrief, FigureAuditReport, PUBLICATION_WIDTH_MM,
+    MODELING_PALETTE, MODELING_PALETTES, MODELING_PAPER_THEME,
+    get_modeling_palette, resolve_cjk_font, add_panel_label, mm_to_inches, publication_size,
     publication_rc_params, paper_figure_rc_params, audit_publication_figure,
     export_publication_figure, save_figure as save_sci_figure,
 )
@@ -153,8 +154,9 @@ __all__ = [
     'PredictionMarginal', 'HyperparamSurface', 'CorrSplitViolin',
     'CircularHeatmap', 'ComboComparison', 'ChordDiagram', 'ShapBeeswarm',
     'TaylorPoint', 'RocModelSpec', 'PredModelPanel', 'save_sci_figure',
-    'FigureContract', 'FigureAuditReport', 'PUBLICATION_WIDTH_MM',
-    'MODELING_PALETTE', 'MODELING_PAPER_THEME', 'mm_to_inches', 'publication_size',
+    'FigureContract', 'FigureDesignBrief', 'FigureAuditReport', 'PUBLICATION_WIDTH_MM',
+    'MODELING_PALETTE', 'MODELING_PALETTES', 'MODELING_PAPER_THEME',
+    'get_modeling_palette', 'resolve_cjk_font', 'add_panel_label', 'mm_to_inches', 'publication_size',
     'publication_rc_params', 'paper_figure_rc_params', 'audit_publication_figure', 'export_publication_figure',
     'FlowchartLayout', 'ERDiagramLayout', 'SystemModuleLayout',
     'AcademicTable', 'SQLParser', 'save_svg', 'save_drawio', 'save_html',

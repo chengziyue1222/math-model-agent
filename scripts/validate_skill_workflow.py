@@ -163,8 +163,10 @@ def scan_project_scripts(project_root: str | Path) -> list[dict[str, str]]:
     return findings
 
 
-def validate_producers(project_root: str | Path) -> list[str]:
+def validate_producers(project_root: str | Path, *, profile: str = "audit") -> list[str]:
     root = Path(project_root).resolve()
+    if profile != "audit":
+        return []
     registry_path = root / "manifests" / "artifact-producers.json"
     if not registry_path.is_file():
         errors = ["producer_registry_missing"]
@@ -247,16 +249,24 @@ def validate_workflow(
     *,
     require_all_skills: bool = True,
     repository_root: str | Path | None = None,
+    profile: str = "competition",
 ) -> dict[str, Any]:
     root = Path(project_root).resolve()
     repo = Path(repository_root).resolve() if repository_root else Path(__file__).resolve().parents[1]
-    trace_errors = validate_skill_run(root, project_id=project_id, required_skills=list(STANDARD_SKILLS) if require_all_skills else [])
+    required = list(STANDARD_SKILLS) if require_all_skills and profile == "audit" else []
+    trace_errors = validate_skill_run(
+        root,
+        project_id=project_id,
+        required_skills=required,
+        profile=profile,
+    )
     bypass = scan_project_scripts(root)
-    producer_errors = validate_producers(root)
-    review_binding_errors = validate_review_binding(root)
+    producer_errors = validate_producers(root, profile=profile)
+    review_binding_errors = validate_review_binding(root) if profile == "audit" else []
     adapter_findings = validate_adapter_boundaries(repo)
     return {
         "project_id": project_id,
+        "profile": profile,
         "status": "PASS" if not trace_errors and not bypass and not producer_errors and not review_binding_errors and not adapter_findings else "FAIL",
         "trace_errors": trace_errors,
         "bypass_findings": bypass,
@@ -273,12 +283,14 @@ def main(argv: list[str] | None = None) -> int:
     parser.add_argument("--allow-partial-skills", action="store_true")
     parser.add_argument("--repository-root", type=Path)
     parser.add_argument("--output", type=Path)
+    parser.add_argument("--profile", choices=("rapid", "competition", "audit"), default="competition")
     args = parser.parse_args(argv)
     result = validate_workflow(
         args.project_root,
         args.project_id,
         require_all_skills=not args.allow_partial_skills,
         repository_root=args.repository_root,
+        profile=args.profile,
     )
     if args.output:
         args.output.parent.mkdir(parents=True, exist_ok=True)
