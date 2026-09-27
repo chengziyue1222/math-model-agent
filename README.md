@@ -445,7 +445,7 @@ python scripts/install_skills.py --dry-run
 
 ## 版本历史 / Changelog
 
-- **v7.3.0** (2026-09-23) — 新增 Nova 本地离线演示、Streamlit 界面与 2026 CUMCM 提交预检；公开导出增至 149，图表设计系统补齐调色板与中文字体回退
+- **v7.3.0** (2026-09-23) — Streamlit 界面与 2026 CUMCM 提交预检；公开导出增至 149，图表设计系统补齐调色板与中文字体回退
 - **v7.2.0** (2026-08-10) — 新增 rapid / competition / audit 三档工作流，统一标准 Skill 的可执行契约入口，并校正文档与 Windows 测试体验
 - **v6.0** (2026-07-08) — 蒸馏 zhanwen/MathModel + MathModelAgent，新增蒙特卡罗、图像处理、综合评价、竞赛工作流
 - **v5.0** (2026-06-16) — 部署 CodeBuddy 论文 Skills + 数学建模 Skills，总计 55 个 slash commands
@@ -463,7 +463,7 @@ python scripts/install_skills.py --dry-run
 
 如需私下联系，请发送邮件至 [chengziyue1222@163.com](mailto:chengziyue1222@163.com)。
 
-如果这个项目对你有帮助，欢迎自愿扫码赞赏以支持维护；感谢你的支持，赞赏不附带技术支持或功能交付承诺。
+如果这个项目对你有帮助，欢迎赏脸笔者一杯咖啡；感谢你的支持，赞赏不附带技术支持或功能交付承诺。后续将继续维护升级。
 
 <p align="center">
   <img src="assets/support/wechat-support.jpg" alt="微信赞赏码" width="280">
