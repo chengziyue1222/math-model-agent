@@ -16,9 +16,6 @@
 
 > 8 个标准 Codex Skills · 25 个算法与质量模块 · 149 个公开导出 · 56 个历史命令归档
 
-## 智感Nova本地比赛演示
-
-校园负荷预测模型可信诊断智能体的本地比赛演示入口与运行说明见 [README_DEMO.md](README_DEMO.md)。该演示复用现有 Nova Core 与 Nova API 服务层，无需服务器、公网、腾讯云账号或 DeepSeek Key。
 
 ## 为什么使用它？
 
