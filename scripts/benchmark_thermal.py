@@ -5,7 +5,6 @@ validation of the new setpoints. Parameters describe effective heat transfer.
 """
 from __future__ import annotations
 
-import json
 from pathlib import Path
 
 import numpy as np
