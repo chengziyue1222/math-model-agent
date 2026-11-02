@@ -26,6 +26,11 @@ jobs:
         run: |
           sudo apt-get update
           sudo apt-get install -y fonts-noto-cjk
+          # matplotlib <3.11 on some runners fails to discover the TTC collection,
+          # so also install a single-file OTF and rebuild the fontconfig cache.
+          mkdir -p ~/.fonts
+          curl -fsSL -o ~/.fonts/NotoSansCJKsc-Regular.otf https://raw.githubusercontent.com/notofonts/noto-cjk/main/Sans/OTF/SimplifiedChinese/NotoSansCJKsc-Regular.otf
+          fc-cache -f
 
       - name: Install package and development tools
         run: |
