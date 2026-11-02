@@ -247,8 +247,12 @@ def figure(*args, **kwargs):
 def finish(fig, config):
     """Text/layout and explicit object styles; no data or axis-scale changes."""
     import matplotlib as mpl
+    from matplotlib import font_manager
     from ..sci_figures import resolve_cjk_font
-    cjk = config["chinese_font"] if config["chinese_font"] != "auto" else resolve_cjk_font()
+    configured = config["chinese_font"]
+    installed_names = {item.name.casefold() for item in font_manager.fontManager.ttflist}
+    cjk = (configured if configured != "auto" and configured.casefold() in installed_names
+           else resolve_cjk_font())
     caller = _CURRENT.get()[2] if _CURRENT.get() else {}
     for ax in fig.axes:
         for artist in [*ax.lines, *ax.collections]:
