@@ -36,6 +36,8 @@ dev = [
     "PyMuPDF>=1.24.0",
     "ruff>=0.12",
     "httpx2>=2.12",
+    # Contract-schema validation in the workflow tests.
+    "jsonschema>=4.18",
 ]
 
 # Only ``algorithms`` is distributed as an importable package, matching the
