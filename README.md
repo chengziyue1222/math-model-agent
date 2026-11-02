@@ -10,9 +10,12 @@
   <img src="https://img.shields.io/badge/Python-3.10%2B-blue.svg" alt="Python 3.10+">
 </p>
 
-**Math Model Agent** 是一个面向数学建模竞赛与建模报告的开源工具箱。它不只提供算法函数，还把题目拆解、数据诊断、模型选择、求解验证、图表、论文写作和提交前审查串成一条可复现的工作流。
+**Math Model Agent** 是一个面向数学建模竞赛与建模报告的开源工具箱：算法库、科研绘图库、标准 Skills 与国赛论文模板一体化，把题意拆解、数据诊断、模型选择、求解验证、图表、论文写作和提交前审查串成一条可复现的流程。它适合希望减少重复劳动、保留建模判断并交付可检查结果的参赛者、课程项目团队和研究型建模使用者；它不承诺获奖，模型洞察、数据质量与问题理解仍是决定性因素。
 
-它适合希望减少重复劳动、保留建模判断并交付可检查结果的参赛者、课程项目团队和研究型建模使用者。它不承诺获奖；模型洞察、数据质量与问题理解仍是决定性因素。
+- 🧮 **32 个算法与质量模块** — 9 大类核心算法加数据诊断、证据契约与质量保护，149 个公开导出，`from algorithms import *` 即用
+- 🎨 **24 个绘图模块的科研绘图库** — PNG / SVG / PDF 三格式导出，附带变量、单位与数据来源的 `.figure.json` 元数据契约
+- 🎯 **8 个标准 Codex Skills × 三档工作流** — `rapid` / `competition` / `audit` 按风险选择，阶段门、断点恢复与交接清单
+- 📐 **CUMCM 模板与提交预检** — 国赛排版模板开箱即用，身份、支撑包与元数据全量预检
 
 > 8 个标准 Codex Skills · 32 个算法与质量模块 · 149 个公开导出 · 56 个历史命令归档
 
@@ -131,6 +134,21 @@ ranking = topsis(decision_matrix, weights, benefit_indicators)
 
 内置 24 个绘图模块的科研绘图库，覆盖学术风格、时间序列、优化收敛、网络、热图、降维、分布、模型评价与竞赛实用图。每个图件同时导出 PNG、SVG、PDF 三种格式，并附带 `.figure.json` 元数据契约（变量、单位、数据来源、可追溯哈希）。
 
+**图库样例 / Gallery Preview**（800px 缩略图，完整 450 DPI 图件见下方图库）：
+
+<table>
+  <tr>
+    <td align="center"><img src="assets/gallery/pca_biplot.png" alt="PCA 双标图" width="360"><br><sub>PCA 双标图 · 样本得分与变量载荷</sub></td>
+    <td align="center"><img src="assets/gallery/taylor_diagram.png" alt="泰勒图" width="360"><br><sub>泰勒图 · 相关系数与标准差对比</sub></td>
+    <td align="center"><img src="assets/gallery/response_surface_opt.png" alt="优化响应面" width="360"><br><sub>优化响应面 · 响应分布与网格最优</sub></td>
+  </tr>
+  <tr>
+    <td align="center"><img src="assets/gallery/clustered_heatmap.png" alt="聚类热图" width="360"><br><sub>聚类热图 · 方案 × 指标层次聚类</sub></td>
+    <td align="center"><img src="assets/gallery/error_band.png" alt="误差带图" width="360"><br><sub>误差带图 · 中心趋势与情景包络</sub></td>
+    <td align="center"><img src="assets/gallery/mechanism.png" alt="机制示意图" width="360"><br><sub>机制示意图 · 数据 → 模型 → 验证 → 输出</sub></td>
+  </tr>
+</table>
+
 - 常规图库预览：[output/figure-library-gallery/index.html](output/figure-library-gallery/index.html)（clone 后本地浏览器打开）
 - 学术风格图库预览：[output/figure-library-gallery-academic/index.html](output/figure-library-gallery-academic/index.html)
 - 多轮修复、评审与能力矩阵：[docs/figure-library-capability-matrix.md](docs/figure-library-capability-matrix.md)、[docs/figure-upgrade-report.md](docs/figure-upgrade-report.md)
@@ -229,7 +247,7 @@ python scripts/check_coverage.py coverage.json
 math-model-agent/
 │
 ├── code/                            # 🔧 代码模块
-│   ├── algorithms/                  # 25 个 Python 算法与质量模块（可直接 import）
+│   ├── algorithms/                  # 32 个 Python 算法与质量模块（可直接 import）
 │   │   ├── __init__.py              # 统一导出入口，from algorithms import * 即用
 │   │   ├── ahp.py                   # 层次分析法：AHP 构造、一致性检验 CR
 │   │   ├── grey_system.py           # 灰色系统：GM(1,1) 预测、灰色关联分析
@@ -358,6 +376,14 @@ math-model-agent/
 │   ├── fig03_power_heatmap.png      # 功率热力图
 │   └── fig04_sensitivity.png        # 敏感性分析图
 ├── paper/                           # 📄 论文输出目录（空，编译产物存放处）
+│
+├── assets/                          # 🖼️ 文档资源
+│   ├── gallery/                     # README 图库缩略图（6 张 800px 样例）
+│   └── support/                     # 赞赏码等支持图片
+│
+├── output/                          # 📦 生成产物（仅图库目录入库，其余被 .gitignore 忽略）
+│   ├── figure-library-gallery/      # 常规图库预览（PNG/SVG/PDF + .figure.json 契约）
+│   └── figure-library-gallery-academic/  # 学术风格图库预览
 │
 ├── 使用说明.md                      # 📖 完整使用指南（含工作流演示）
 ├── CHANGELOG.md                     # 📋 版本历史
