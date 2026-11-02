@@ -1,0 +1,326 @@
+{
+  "schema_version": 3,
+  "contract": {
+    "claim": "boxplot 模板展示数据结构与视觉编码",
+    "evidence": [
+      "synthetic demonstration"
+    ],
+    "source_paths": [
+      "C:\\Users\\Blake\\math-model\\output\\figure-library-gallery\\synthetic_gallery_source.json"
+    ],
+    "target_venue": "mathematical-modeling paper",
+    "column": "double",
+    "figure_role": "data-overview",
+    "model_name": null,
+    "scenario": null,
+    "parameter_source": null,
+    "randomness": "deterministic formula; seed 0",
+    "n_definition": "formula-generated demonstration points; not independent measurements",
+    "statistic": "descriptive template view",
+    "uncertainty": "not estimated",
+    "review_risks": [],
+    "panel_evidence": [],
+    "data_transformations": [
+      "none; marks may be rasterized for dense views"
+    ],
+    "excluded_data": [],
+    "theme_name": "modeling-default",
+    "design_brief": null,
+    "width_mm": 150,
+    "height_mm": 121.91999999999999,
+    "question": null,
+    "units": "arbitrary unit",
+    "plotting_code": [
+      "C:\\Users\\Blake\\math-model\\scripts\\build_figure_library.py"
+    ],
+    "source_hashes": null,
+    "claim_status": "uncertain"
+  },
+  "audit": {
+    "passed": true,
+    "errors": [],
+    "warnings": [
+      "axis '<untitled>' is missing an x or y label"
+    ],
+    "metrics": {
+      "width_mm": 150.0,
+      "height_mm": 121.92,
+      "target_width_mm": 150,
+      "figure_role": "data-overview",
+      "visible_text_count": 10,
+      "axes_count": 1,
+      "data_axes_count": 1,
+      "source_files": [
+        {
+          "path": "C:\\Users\\Blake\\math-model\\output\\figure-library-gallery\\synthetic_gallery_source.json",
+          "resolved_path": "C:\\Users\\Blake\\math-model\\output\\figure-library-gallery\\synthetic_gallery_source.json",
+          "sha256": "514bd722ca7eb5e1fa991996115eb856a8f38f5d41bbe2e71b56dd514205d58d"
+        },
+        {
+          "path": "C:\\Users\\Blake\\math-model\\scripts\\build_figure_library.py",
+          "resolved_path": "C:\\Users\\Blake\\math-model\\scripts\\build_figure_library.py",
+          "sha256": "b2e58df6223c0d7a51494df83b79c21820dd9748aa55e4b50620a9834da30490"
+        }
+      ],
+      "requested_font_families": [
+        "SimHei",
+        "Times New Roman",
+        "sans-serif"
+      ],
+      "actual_minimum_text_pt": 7.0,
+      "legend_inside_count": 0,
+      "text_overlap_count": 0,
+      "theme_name": "modeling-default",
+      "minimum_font_size_pt": 6
+    }
+  },
+  "programmatic_audit": {
+    "passed": true,
+    "errors": [],
+    "warnings": [
+      "axis '<untitled>' is missing an x or y label"
+    ],
+    "metrics": {
+      "width_mm": 150.0,
+      "height_mm": 121.92,
+      "target_width_mm": 150,
+      "figure_role": "data-overview",
+      "visible_text_count": 10,
+      "axes_count": 1,
+      "data_axes_count": 1,
+      "source_files": [
+        {
+          "path": "C:\\Users\\Blake\\math-model\\output\\figure-library-gallery\\synthetic_gallery_source.json",
+          "resolved_path": "C:\\Users\\Blake\\math-model\\output\\figure-library-gallery\\synthetic_gallery_source.json",
+          "sha256": "514bd722ca7eb5e1fa991996115eb856a8f38f5d41bbe2e71b56dd514205d58d"
+        },
+        {
+          "path": "C:\\Users\\Blake\\math-model\\scripts\\build_figure_library.py",
+          "resolved_path": "C:\\Users\\Blake\\math-model\\scripts\\build_figure_library.py",
+          "sha256": "b2e58df6223c0d7a51494df83b79c21820dd9748aa55e4b50620a9834da30490"
+        }
+      ],
+      "requested_font_families": [
+        "SimHei",
+        "Times New Roman",
+        "sans-serif"
+      ],
+      "actual_minimum_text_pt": 7.0,
+      "legend_inside_count": 0,
+      "text_overlap_count": 0,
+      "theme_name": "modeling-default",
+      "minimum_font_size_pt": 6
+    }
+  },
+  "visual_review": {
+    "status": "NOT_CHECKED",
+    "png": "NOT_CHECKED",
+    "vector": "NOT_CHECKED",
+    "physical_proof": "NOT_CHECKED",
+    "grayscale": "NOT_CHECKED",
+    "source_values": "NOT_CHECKED"
+  },
+  "completion_status": "NEEDS_VISUAL_REVIEW",
+  "configuration": {
+    "width_mm": 150,
+    "height_mm": 121.91999999999999,
+    "maximum_height_mm": 247.0,
+    "minimum_text_pt": 6,
+    "text_pt": 7.5,
+    "tick_pt": 7,
+    "legend_pt": 7,
+    "title_pt": 8,
+    "panel_pt": 8,
+    "line_width": 1.1,
+    "marker_size": 4,
+    "grid": true,
+    "background": "white",
+    "theme": "modeling-default",
+    "latin_font": "Times New Roman",
+    "chinese_font": "SimHei",
+    "dpi": 450,
+    "minimum_dpi": 450,
+    "width_tolerance_mm": 0.1,
+    "formats": [
+      "pdf",
+      "svg",
+      "png"
+    ],
+    "semantic_styles": {},
+    "preferred_text_pt": [
+      7,
+      8
+    ],
+    "require_claim_and_evidence": true,
+    "sources": [
+      "builtin:algorithms.figure_config.DEFAULTS",
+      {
+        "path": "C:\\Users\\Blake\\math-model\\config\\paper_style.yaml",
+        "sha256": "f655b5d38414c93ddf6648158602205104562c14eaaa33625b17b05ba42ad4f5"
+      }
+    ]
+  },
+  "source_files": [
+    {
+      "path": "C:\\Users\\Blake\\math-model\\output\\figure-library-gallery\\synthetic_gallery_source.json",
+      "resolved_path": "C:\\Users\\Blake\\math-model\\output\\figure-library-gallery\\synthetic_gallery_source.json",
+      "sha256": "514bd722ca7eb5e1fa991996115eb856a8f38f5d41bbe2e71b56dd514205d58d"
+    },
+    {
+      "path": "C:\\Users\\Blake\\math-model\\scripts\\build_figure_library.py",
+      "resolved_path": "C:\\Users\\Blake\\math-model\\scripts\\build_figure_library.py",
+      "sha256": "b2e58df6223c0d7a51494df83b79c21820dd9748aa55e4b50620a9834da30490"
+    }
+  ],
+  "export": {
+    "dpi": 450,
+    "formats": [
+      "pdf",
+      "svg",
+      "png"
+    ],
+    "bbox_inches": null
+  },
+  "file_audit": {
+    "status": "PASS",
+    "png": {
+      "pixels": [
+        2657,
+        2160
+      ],
+      "mode": "RGB",
+      "dpi": [
+        450.0118,
+        450.0118
+      ]
+    },
+    "pdf_fonts": [
+      {
+        "name": "DABZEG+SimHei",
+        "embedded": true
+      },
+      {
+        "name": "FHXFSG+TimesNewRomanPSMT",
+        "embedded": true
+      }
+    ],
+    "svg_text": "preserved; matching fonts must be installed on the viewing machine"
+  },
+  "template": null,
+  "figure_metadata": {
+    "figure_type": "boxplot",
+    "groups": 4,
+    "data_contract": {
+      "source": "synthetic",
+      "fields": {},
+      "units": {
+        "values": "合成单位",
+        "coordinates": "合成坐标",
+        "scores": "无量纲"
+      },
+      "independent_unit": "synthetic scenario",
+      "repeated_measurement": null,
+      "split": null,
+      "random_seed": 20261011,
+      "interval_kind": null,
+      "deterministic": true,
+      "simulated": true,
+      "transformations": [
+        "chart-specific synthetic fixture"
+      ]
+    },
+    "name": "boxplot",
+    "canonical_key": "boxplot",
+    "input_data": {
+      "values": [
+        [
+          0.21276842033414392,
+          -0.4200276701964823,
+          -0.03711759921311388,
+          1.2074276578204914,
+          -0.5566231260304961,
+          0.40889781833004296,
+          0.18693548126034268,
+          0.6080827707586077,
+          0.1646005048727938,
+          -0.23425876445458052,
+          0.17837091188991241,
+          0.2682230995028207
+        ],
+        [
+          0.110069444377206,
+          1.1039789417694696,
+          -0.30148229579185554,
+          0.39639223734983553,
+          -0.4683617028865699,
+          -0.10387146669695008,
+          1.0507126729117866,
+          -0.053415682852168966,
+          -0.7612681247028119,
+          1.8663013682635752,
+          1.1994710176031922,
+          0.5786003903650204
+        ],
+        [
+          0.8694413664658907,
+          1.8718853622804152,
+          0.606139373530292,
+          1.0561728010428664,
+          1.1878562764466818,
+          1.774175596607809,
+          0.7966189185742704,
+          0.8749626430929859,
+          0.9667488762799036,
+          1.8191903451611275,
+          -0.16640436745419673,
+          0.7902508444683694
+        ],
+        [
+          1.1433856116226266,
+          0.924207728895833,
+          2.043428325901452,
+          1.182933003058986,
+          1.8085808928951868,
+          1.437975026365625,
+          1.607178757344653,
+          1.0608504976581352,
+          0.7402736621248039,
+          0.7373671840705043,
+          1.1346976566494695,
+          1.2359836991054092
+        ]
+      ]
+    },
+    "name_zh": "箱线图",
+    "mode": "preview",
+    "implementation_level": "dedicated",
+    "paper_suitable": false,
+    "source": "synthetic",
+    "simulated": true,
+    "independent_unit": "synthetic scenario",
+    "units": {
+      "values": "合成单位",
+      "coordinates": "合成坐标",
+      "scores": "无量纲"
+    },
+    "interval_kind": null
+  },
+  "environment": {
+    "python": "3.14.2",
+    "platform": "Windows-11-10.0.26200-SP0",
+    "matplotlib": "3.10.9",
+    "numpy": "2.4.3",
+    "backend": "Agg",
+    "implementation_hashes": {
+      "sci_figures.py": "5286416a562eab90a031670820a366e1021e5fa2c0a7a876a310dfef37b4f617",
+      "figure_config.py": "1ed2c7fbc04dca33d473794180e509a84fb481408baa973eb83387a03614e980",
+      "figure_templates.py": "3f3961ff0cb17415e7dfd08f629a029d2529b292f2dae10ff6c72bfa282b2ff8",
+      "figure_export.py": "0adb2514fd44e79d20966f4b0993aef33f26444513ec4b2f443273a228e695b9"
+    }
+  },
+  "output_hashes": {
+    "pdf": "153682edf0e68ce6119ba341c34e0d6957e67334a01ec532d6e486f3cefcaf06",
+    "svg": "a382c8b723274cb6b655e9eeeea005e3c2eaf27a15e6d56f150d772b9628fa76",
+    "png": "68c7e297a7ea50bb026e8c33de3bf185c76c83d14612e6b9a85a64d5d7953102"
+  }
+}

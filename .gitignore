@@ -65,7 +65,11 @@ coverage.json
 .legacy-final-temp/
 .artifacts/
 artifacts/
-output/
+output/*
+!output/figure-library-gallery/
+!output/figure-library-gallery/**/*.pdf
+!output/figure-library-gallery-academic/
+!output/figure-library-gallery-academic/**/*.pdf
 reports/
 skill_paper_archive_*/
 build/

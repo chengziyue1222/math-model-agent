@@ -1,0 +1,757 @@
+{
+  "schema_version": 3,
+  "contract": {
+    "claim": "shap_beeswarm 模板展示数据结构与视觉编码",
+    "evidence": [
+      "synthetic demonstration"
+    ],
+    "source_paths": [
+      "output\\figure-library-gallery-academic\\synthetic_gallery_source.json"
+    ],
+    "target_venue": "mathematical-modeling paper",
+    "column": "double",
+    "figure_role": "data-overview",
+    "model_name": null,
+    "scenario": null,
+    "parameter_source": null,
+    "randomness": "deterministic formula; seed 0",
+    "n_definition": "formula-generated demonstration points; not independent measurements",
+    "statistic": "descriptive template view",
+    "uncertainty": "not estimated",
+    "review_risks": [],
+    "panel_evidence": [],
+    "data_transformations": [
+      "none; marks may be rasterized for dense views"
+    ],
+    "excluded_data": [],
+    "theme_name": "modeling-default",
+    "design_brief": null,
+    "width_mm": 150,
+    "height_mm": 121.91999999999999,
+    "question": null,
+    "units": "arbitrary unit",
+    "plotting_code": [
+      "C:\\Users\\Blake\\math-model\\scripts\\build_figure_library.py"
+    ],
+    "source_hashes": null,
+    "claim_status": "uncertain"
+  },
+  "audit": {
+    "passed": true,
+    "errors": [],
+    "warnings": [
+      "axis 'SHAP蜂群图' is missing an x or y label"
+    ],
+    "metrics": {
+      "width_mm": 150.0,
+      "height_mm": 121.92,
+      "target_width_mm": 150,
+      "figure_role": "data-overview",
+      "visible_text_count": 21,
+      "axes_count": 2,
+      "data_axes_count": 1,
+      "source_files": [
+        {
+          "path": "output\\figure-library-gallery-academic\\synthetic_gallery_source.json",
+          "resolved_path": "C:\\Users\\Blake\\math-model\\output\\figure-library-gallery-academic\\synthetic_gallery_source.json",
+          "sha256": "514bd722ca7eb5e1fa991996115eb856a8f38f5d41bbe2e71b56dd514205d58d"
+        },
+        {
+          "path": "C:\\Users\\Blake\\math-model\\scripts\\build_figure_library.py",
+          "resolved_path": "C:\\Users\\Blake\\math-model\\scripts\\build_figure_library.py",
+          "sha256": "b2e58df6223c0d7a51494df83b79c21820dd9748aa55e4b50620a9834da30490"
+        }
+      ],
+      "requested_font_families": [
+        "Microsoft YaHei",
+        "SimHei",
+        "Times New Roman",
+        "sans-serif"
+      ],
+      "actual_minimum_text_pt": 7.0,
+      "legend_inside_count": 0,
+      "text_overlap_count": 0,
+      "theme_name": "modeling-default",
+      "minimum_font_size_pt": 6
+    }
+  },
+  "programmatic_audit": {
+    "passed": true,
+    "errors": [],
+    "warnings": [
+      "axis 'SHAP蜂群图' is missing an x or y label"
+    ],
+    "metrics": {
+      "width_mm": 150.0,
+      "height_mm": 121.92,
+      "target_width_mm": 150,
+      "figure_role": "data-overview",
+      "visible_text_count": 21,
+      "axes_count": 2,
+      "data_axes_count": 1,
+      "source_files": [
+        {
+          "path": "output\\figure-library-gallery-academic\\synthetic_gallery_source.json",
+          "resolved_path": "C:\\Users\\Blake\\math-model\\output\\figure-library-gallery-academic\\synthetic_gallery_source.json",
+          "sha256": "514bd722ca7eb5e1fa991996115eb856a8f38f5d41bbe2e71b56dd514205d58d"
+        },
+        {
+          "path": "C:\\Users\\Blake\\math-model\\scripts\\build_figure_library.py",
+          "resolved_path": "C:\\Users\\Blake\\math-model\\scripts\\build_figure_library.py",
+          "sha256": "b2e58df6223c0d7a51494df83b79c21820dd9748aa55e4b50620a9834da30490"
+        }
+      ],
+      "requested_font_families": [
+        "Microsoft YaHei",
+        "SimHei",
+        "Times New Roman",
+        "sans-serif"
+      ],
+      "actual_minimum_text_pt": 7.0,
+      "legend_inside_count": 0,
+      "text_overlap_count": 0,
+      "theme_name": "modeling-default",
+      "minimum_font_size_pt": 6
+    }
+  },
+  "visual_review": {
+    "status": "NOT_CHECKED",
+    "png": "NOT_CHECKED",
+    "vector": "NOT_CHECKED",
+    "physical_proof": "NOT_CHECKED",
+    "grayscale": "NOT_CHECKED",
+    "source_values": "NOT_CHECKED"
+  },
+  "completion_status": "NEEDS_VISUAL_REVIEW",
+  "configuration": {
+    "width_mm": 150,
+    "height_mm": 121.91999999999999,
+    "maximum_height_mm": 247.0,
+    "minimum_text_pt": 6,
+    "text_pt": 7.5,
+    "tick_pt": 7,
+    "legend_pt": 7,
+    "title_pt": 8,
+    "panel_pt": 8,
+    "line_width": 1.1,
+    "marker_size": 4,
+    "grid": true,
+    "background": "white",
+    "theme": "modeling-default",
+    "latin_font": "Times New Roman",
+    "chinese_font": "SimHei",
+    "dpi": 450,
+    "minimum_dpi": 450,
+    "width_tolerance_mm": 0.1,
+    "formats": [
+      "pdf",
+      "svg",
+      "png"
+    ],
+    "semantic_styles": {},
+    "preferred_text_pt": [
+      7,
+      8
+    ],
+    "require_claim_and_evidence": true,
+    "sources": [
+      "builtin:algorithms.figure_config.DEFAULTS",
+      {
+        "path": "C:\\Users\\Blake\\math-model\\config\\paper_style.yaml",
+        "sha256": "f655b5d38414c93ddf6648158602205104562c14eaaa33625b17b05ba42ad4f5"
+      }
+    ]
+  },
+  "source_files": [
+    {
+      "path": "output\\figure-library-gallery-academic\\synthetic_gallery_source.json",
+      "resolved_path": "C:\\Users\\Blake\\math-model\\output\\figure-library-gallery-academic\\synthetic_gallery_source.json",
+      "sha256": "514bd722ca7eb5e1fa991996115eb856a8f38f5d41bbe2e71b56dd514205d58d"
+    },
+    {
+      "path": "C:\\Users\\Blake\\math-model\\scripts\\build_figure_library.py",
+      "resolved_path": "C:\\Users\\Blake\\math-model\\scripts\\build_figure_library.py",
+      "sha256": "b2e58df6223c0d7a51494df83b79c21820dd9748aa55e4b50620a9834da30490"
+    }
+  ],
+  "export": {
+    "dpi": 450,
+    "formats": [
+      "pdf",
+      "svg",
+      "png"
+    ],
+    "bbox_inches": null
+  },
+  "file_audit": {
+    "status": "PASS",
+    "png": {
+      "pixels": [
+        2657,
+        2160
+      ],
+      "mode": "RGB",
+      "dpi": [
+        450.0118,
+        450.0118
+      ]
+    },
+    "pdf_fonts": [
+      {
+        "name": "DFIMHP+MicrosoftYaHei",
+        "embedded": true
+      },
+      {
+        "name": "FHXFSG+TimesNewRomanPSMT",
+        "embedded": true
+      }
+    ],
+    "svg_text": "preserved; matching fonts must be installed on the viewing machine"
+  },
+  "template": null,
+  "figure_metadata": {
+    "figure_type": "shap_beeswarm",
+    "semantic_key": "shap_beeswarm",
+    "input_fields": [
+      "attributions",
+      "features",
+      "feature_names"
+    ],
+    "calculation": {
+      "method": "exact interventional SHAP for a linear additive model",
+      "coefficients": [
+        0.5,
+        -0.3,
+        0.15,
+        0.05
+      ],
+      "baseline": [
+        0.13266251762603345,
+        0.4118042054447196,
+        0.2483557040649415,
+        0.07967371522843963
+      ]
+    },
+    "interval_kind": "none",
+    "feature_color_min": [
+      -1.9711445582851712,
+      -1.7304861541563872,
+      -1.464594177061864,
+      -1.5264531936885568
+    ],
+    "feature_color_max": [
+      1.6479992130760055,
+      3.4260845282873382,
+      2.515842060102356,
+      2.9110961452156
+    ],
+    "mean_absolute_attribution": [
+      0.39159702962847104,
+      0.27507698013789683,
+      0.12271375269550727,
+      0.04408229512972117
+    ],
+    "feature_order": [
+      0,
+      1,
+      2,
+      3
+    ],
+    "observation_count": 36,
+    "input_data": {
+      "attributions": [
+        [
+          0.24811305453946736,
+          -0.306275201124143,
+          0.17396337875206044,
+          0.023443815097357455
+        ],
+        [
+          0.757668347724986,
+          -0.5456092119835405,
+          0.21373205772276319,
+          0.14157112149935802
+        ],
+        [
+          -0.7581215221535131,
+          0.08780280993530369,
+          -0.05506649539769713,
+          -0.03930828464839027
+        ],
+        [
+          0.07410311547784194,
+          -0.015195582648071713,
+          -0.08114449294910059,
+          0.05857629508639803
+        ],
+        [
+          -0.2023671338697003,
+          0.21658494806109038,
+          -0.19499683883771304,
+          -0.046144452852131805
+        ],
+        [
+          0.5532086436471719,
+          0.3048169083069447,
+          0.09507275641506081,
+          0.02125687757326873
+        ],
+        [
+          0.7080837385928959,
+          -0.22414581289135088,
+          -0.06880160429766181,
+          -0.001186368833297925
+        ],
+        [
+          -0.023120362874332,
+          -0.9042840968527855,
+          0.2454349688493862,
+          0.06937802071112334
+        ],
+        [
+          -0.377096312210019,
+          0.29232381997010926,
+          0.11566102631399261,
+          -0.014125150075105872
+        ],
+        [
+          0.7165693309916286,
+          0.011643721878979246,
+          0.11508248702717525,
+          -0.0138857832727539
+        ],
+        [
+          -0.02085167079683166,
+          -0.11228447307032828,
+          0.04352699961440107,
+          -0.05645817509065041
+        ],
+        [
+          -0.6568779429267297,
+          -0.09766499949031059,
+          -0.152728244632941,
+          -0.017024809065666852
+        ],
+        [
+          -0.5745775521339255,
+          0.49984576122446067,
+          0.28004670962313555,
+          -0.08030634544584983
+        ],
+        [
+          0.163680937413269,
+          0.05791841919554681,
+          -0.2397048853427195,
+          0.0032711078662833516
+        ],
+        [
+          -0.012206002686142109,
+          -0.08608033826608567,
+          0.07656134058976473,
+          -0.05524247793784265
+        ],
+        [
+          -1.0519035379556023,
+          0.5752631748312664,
+          -0.22672317827102711,
+          -0.017362919827904534
+        ],
+        [
+          0.2965890323569888,
+          0.13677524675998667,
+          -0.038318643968835296,
+          0.05107705728205567
+        ],
+        [
+          -0.04980820071407764,
+          0.3051482500482697,
+          -0.12428578993370518,
+          0.028153526276525564
+        ],
+        [
+          0.3185379104622665,
+          -0.25772098536086013,
+          -0.03108108014502476,
+          0.01057439835731816
+        ],
+        [
+          0.08728230717066172,
+          0.642687107880332,
+          -0.052178395983262446,
+          0.02227553544797795
+        ],
+        [
+          -0.7515776663156246,
+          0.5853695573278527,
+          -0.2569424821690208,
+          -0.06489071900521586
+        ],
+        [
+          0.2910510542136443,
+          0.4207008314869219,
+          -0.08656916105378064,
+          0.0643641135223174
+        ],
+        [
+          -0.6351757183015846,
+          0.1440048896420352,
+          -0.12750426212414492,
+          -0.04725738626091831
+        ],
+        [
+          -0.844080366045173,
+          -0.00021146666353040187,
+          -0.1212547273397424,
+          -0.0421879932091471
+        ],
+        [
+          0.5924445752268698,
+          -0.12583073410184653,
+          -0.027980063532488893,
+          0.05242970105015661
+        ],
+        [
+          0.4729648551677069,
+          0.10001055310042417,
+          0.03631166615967,
+          -0.07842334544778035
+        ],
+        [
+          -0.4107330757276181,
+          -0.13082241401116756,
+          0.1476425837653773,
+          -0.034941331350594886
+        ],
+        [
+          0.06848134839923077,
+          -0.10477889364904945,
+          0.020353600669885483,
+          -0.0004437032292811283
+        ],
+        [
+          0.1565251030483073,
+          -0.14027424276087622,
+          -0.19003379687042488,
+          -0.0474143024935267
+        ],
+        [
+          0.6181100510777262,
+          -0.26821391471202377,
+          0.011190297584969333,
+          0.054022724481717854
+        ],
+        [
+          0.06588384316338124,
+          -0.579759310758868,
+          0.34012295340561216,
+          0.061056047551159946
+        ],
+        [
+          0.24238740172786954,
+          -0.10787230945178143,
+          0.009957690232732685,
+          -0.07212897213971296
+        ],
+        [
+          0.4944360415650668,
+          -0.13276303594102778,
+          -0.13212870818573377,
+          0.13203097053196278
+        ],
+        [
+          -0.2569029555038185,
+          0.570489642832619,
+          0.05159588475215869,
+          -0.01569406415337272
+        ],
+        [
+          -0.42334651309778737,
+          -0.4562032684973977,
+          0.2325911470409861,
+          -0.0003677058416284289
+        ],
+        [
+          0.12262584134549896,
+          -0.3553953502470982,
+          -0.0014046974841076295,
+          -0.04868702215420844
+        ]
+      ],
+      "features": [
+        [
+          0.6288886267049681,
+          1.4327215425251962,
+          1.4081115624120113,
+          0.5485500171755887
+        ],
+        [
+          1.6479992130760055,
+          2.230501578723188,
+          1.6732360888833628,
+          2.9110961452156
+        ],
+        [
+          -1.3835805266809929,
+          0.11912817232704057,
+          -0.11875426525303938,
+          -0.7064919777393657
+        ],
+        [
+          0.28086874858171734,
+          0.4624561476049586,
+          -0.2926075822623958,
+          1.2511996169564001
+        ],
+        [
+          -0.2720717501133671,
+          -0.3101456214255817,
+          -1.051623221519812,
+          -0.8432153418141963
+        ],
+        [
+          1.2390798049203773,
+          -0.6042521555784294,
+          0.8821740801653469,
+          0.5048112666938143
+        ],
+        [
+          1.5488299948118252,
+          1.1589569150825558,
+          -0.2103216579194706,
+          0.055946338562481136
+        ],
+        [
+          0.08642179187736945,
+          3.4260845282873382,
+          1.8845888297275164,
+          1.4672341294509064
+        ],
+        [
+          -0.6215301067940046,
+          -0.562608527788978,
+          1.0194292128248923,
+          -0.2028292862736778
+        ],
+        [
+          1.5658011796092905,
+          0.3729917991814554,
+          1.01557228424611,
+          -0.1980419502266383
+        ],
+        [
+          0.09095917603237014,
+          0.7860857823458138,
+          0.538535701494282,
+          -1.0494897865845685
+        ],
+        [
+          -1.181093368227426,
+          0.7373542037457549,
+          -0.7698325934879984,
+          -0.2608224660848974
+        ],
+        [
+          -1.0164925866418175,
+          -1.2543483319701494,
+          2.1153337682191786,
+          -1.5264531936885568
+        ],
+        [
+          0.4600243924525715,
+          0.2187428081262302,
+          -1.3496768648865218,
+          0.14509587255410666
+        ],
+        [
+          0.10825051225374924,
+          0.6987386663316718,
+          0.7587646413300396,
+          -1.0251758435284133
+        ],
+        [
+          -1.9711445582851712,
+          -1.5057397106595019,
+          -1.2631321510752394,
+          -0.267584681329651
+        ],
+        [
+          0.725840582340011,
+          -0.04411328375523601,
+          -0.007101922393960451,
+          1.1012148608695531
+        ],
+        [
+          0.033046116197878166,
+          -0.6053566280495127,
+          -0.5802162288264264,
+          0.642744240758951
+        ],
+        [
+          0.7697383385505664,
+          1.2708741566475867,
+          0.041148503098109766,
+          0.29116168237480283
+        ],
+        [
+          0.3072271319673569,
+          -1.7304861541563872,
+          -0.09950026915680814,
+          0.5251844241879986
+        ],
+        [
+          -1.3704928150052158,
+          -1.5394276523147896,
+          -1.464594177061864,
+          -1.2181406648758772
+        ],
+        [
+          0.714764626053322,
+          -0.9905318995116866,
+          -0.32877203629359614,
+          1.3669559856747877
+        ],
+        [
+          -1.1376889189771358,
+          -0.06821209336206448,
+          -0.6016727100960246,
+          -0.8654740099899265
+        ],
+        [
+          -1.5554982144643126,
+          0.41250909432315425,
+          -0.5600091448666744,
+          -0.7640861489545023
+        ],
+        [
+          1.317551668079773,
+          0.831239985784208,
+          0.06182194718168221,
+          1.1282677362315718
+        ],
+        [
+          1.0785922279614473,
+          0.07843569510997232,
+          0.4904334784627415,
+          -1.488793193727167
+        ],
+        [
+          -0.6888036338292027,
+          0.8478789188152781,
+          1.2326395958341236,
+          -0.619152911783458
+        ],
+        [
+          0.269625214424495,
+          0.7610671842748844,
+          0.3840463751975114,
+          0.07079965064281707
+        ],
+        [
+          0.4457127237226481,
+          0.8793850146476403,
+          -1.0185362750712244,
+          -0.8686123346420943
+        ],
+        [
+          1.3688826197814858,
+          1.3058505878181321,
+          0.32295768796473706,
+          1.1601282048627968
+        ],
+        [
+          0.26443020395279593,
+          2.344335241307613,
+          2.515842060102356,
+          1.3007946662516385
+        ],
+        [
+          0.6174373210817725,
+          0.771378570283991,
+          0.31474030561649274,
+          -1.3629057275658196
+        ],
+        [
+          1.121534600756167,
+          0.8543476585814789,
+          -0.6325023505066171,
+          2.7202931258676952
+        ],
+        [
+          -0.3811433933816035,
+          -1.4898279373306773,
+          0.5923282690793328,
+          -0.23420756783901475
+        ],
+        [
+          -0.7140305085695413,
+          1.932481767102712,
+          1.798963351004849,
+          0.07231959839587106
+        ],
+        [
+          0.3779142003170314,
+          1.5964553729350468,
+          0.23899105417089064,
+          -0.8940667278557292
+        ]
+      ],
+      "feature_names": [
+        "指标甲",
+        "指标乙",
+        "指标丙",
+        "指标丁"
+      ]
+    },
+    "data_contract": {
+      "source": "synthetic",
+      "fields": {},
+      "units": {
+        "values": "合成单位",
+        "coordinates": "合成坐标",
+        "scores": "无量纲"
+      },
+      "independent_unit": "synthetic scenario",
+      "repeated_measurement": null,
+      "split": null,
+      "random_seed": 20261011,
+      "interval_kind": "none",
+      "deterministic": true,
+      "simulated": true,
+      "transformations": [
+        "chart-specific synthetic fixture"
+      ]
+    },
+    "name": "shap_beeswarm",
+    "canonical_key": "shap_beeswarm",
+    "name_zh": "SHAP蜂群图",
+    "mode": "preview",
+    "implementation_level": "dedicated",
+    "paper_suitable": false,
+    "source": "synthetic",
+    "simulated": true,
+    "independent_unit": "synthetic scenario",
+    "units": {
+      "values": "合成单位",
+      "coordinates": "合成坐标",
+      "scores": "无量纲"
+    }
+  },
+  "environment": {
+    "python": "3.14.2",
+    "platform": "Windows-11-10.0.26200-SP0",
+    "matplotlib": "3.10.9",
+    "numpy": "2.4.3",
+    "backend": "Agg",
+    "implementation_hashes": {
+      "sci_figures.py": "5286416a562eab90a031670820a366e1021e5fa2c0a7a876a310dfef37b4f617",
+      "figure_config.py": "1ed2c7fbc04dca33d473794180e509a84fb481408baa973eb83387a03614e980",
+      "figure_templates.py": "3f3961ff0cb17415e7dfd08f629a029d2529b292f2dae10ff6c72bfa282b2ff8",
+      "figure_export.py": "0adb2514fd44e79d20966f4b0993aef33f26444513ec4b2f443273a228e695b9"
+    }
+  },
+  "output_hashes": {
+    "pdf": "279ed41d667ce89af703d4e02bdfb9a35aadb086859e1b58d2c5c319f2393c83",
+    "svg": "f636e6d1e3eec150e15e3e7ba6bc1b736d1effc6f1a06f0a25cfeb2341277e16",
+    "png": "6491d2ff341d48c9eb7bd3de1d2337ab5449910492bdfce75586925a8230f0ae"
+  }
+}

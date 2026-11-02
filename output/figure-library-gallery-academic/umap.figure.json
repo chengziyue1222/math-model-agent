@@ -1,0 +1,635 @@
+{
+  "schema_version": 3,
+  "contract": {
+    "claim": "umap 模板展示数据结构与视觉编码",
+    "evidence": [
+      "synthetic demonstration"
+    ],
+    "source_paths": [
+      "output\\figure-library-gallery-academic\\synthetic_gallery_source.json"
+    ],
+    "target_venue": "mathematical-modeling paper",
+    "column": "double",
+    "figure_role": "data-overview",
+    "model_name": null,
+    "scenario": null,
+    "parameter_source": null,
+    "randomness": "deterministic formula; seed 0",
+    "n_definition": "formula-generated demonstration points; not independent measurements",
+    "statistic": "descriptive template view",
+    "uncertainty": "not estimated",
+    "review_risks": [],
+    "panel_evidence": [],
+    "data_transformations": [
+      "none; marks may be rasterized for dense views"
+    ],
+    "excluded_data": [],
+    "theme_name": "modeling-default",
+    "design_brief": null,
+    "width_mm": 150,
+    "height_mm": 121.91999999999999,
+    "question": null,
+    "units": "arbitrary unit",
+    "plotting_code": [
+      "C:\\Users\\Blake\\math-model\\scripts\\build_figure_library.py"
+    ],
+    "source_hashes": null,
+    "claim_status": "uncertain"
+  },
+  "audit": {
+    "passed": true,
+    "errors": [],
+    "warnings": [],
+    "metrics": {
+      "width_mm": 150.0,
+      "height_mm": 121.92,
+      "target_width_mm": 150,
+      "figure_role": "data-overview",
+      "visible_text_count": 16,
+      "axes_count": 1,
+      "data_axes_count": 1,
+      "source_files": [
+        {
+          "path": "output\\figure-library-gallery-academic\\synthetic_gallery_source.json",
+          "resolved_path": "C:\\Users\\Blake\\math-model\\output\\figure-library-gallery-academic\\synthetic_gallery_source.json",
+          "sha256": "514bd722ca7eb5e1fa991996115eb856a8f38f5d41bbe2e71b56dd514205d58d"
+        },
+        {
+          "path": "C:\\Users\\Blake\\math-model\\scripts\\build_figure_library.py",
+          "resolved_path": "C:\\Users\\Blake\\math-model\\scripts\\build_figure_library.py",
+          "sha256": "b2e58df6223c0d7a51494df83b79c21820dd9748aa55e4b50620a9834da30490"
+        }
+      ],
+      "requested_font_families": [
+        "SimHei",
+        "Times New Roman",
+        "sans-serif"
+      ],
+      "actual_minimum_text_pt": 7.0,
+      "legend_inside_count": 0,
+      "text_overlap_count": 0,
+      "theme_name": "modeling-default",
+      "minimum_font_size_pt": 6
+    }
+  },
+  "programmatic_audit": {
+    "passed": true,
+    "errors": [],
+    "warnings": [],
+    "metrics": {
+      "width_mm": 150.0,
+      "height_mm": 121.92,
+      "target_width_mm": 150,
+      "figure_role": "data-overview",
+      "visible_text_count": 16,
+      "axes_count": 1,
+      "data_axes_count": 1,
+      "source_files": [
+        {
+          "path": "output\\figure-library-gallery-academic\\synthetic_gallery_source.json",
+          "resolved_path": "C:\\Users\\Blake\\math-model\\output\\figure-library-gallery-academic\\synthetic_gallery_source.json",
+          "sha256": "514bd722ca7eb5e1fa991996115eb856a8f38f5d41bbe2e71b56dd514205d58d"
+        },
+        {
+          "path": "C:\\Users\\Blake\\math-model\\scripts\\build_figure_library.py",
+          "resolved_path": "C:\\Users\\Blake\\math-model\\scripts\\build_figure_library.py",
+          "sha256": "b2e58df6223c0d7a51494df83b79c21820dd9748aa55e4b50620a9834da30490"
+        }
+      ],
+      "requested_font_families": [
+        "SimHei",
+        "Times New Roman",
+        "sans-serif"
+      ],
+      "actual_minimum_text_pt": 7.0,
+      "legend_inside_count": 0,
+      "text_overlap_count": 0,
+      "theme_name": "modeling-default",
+      "minimum_font_size_pt": 6
+    }
+  },
+  "visual_review": {
+    "status": "NOT_CHECKED",
+    "png": "NOT_CHECKED",
+    "vector": "NOT_CHECKED",
+    "physical_proof": "NOT_CHECKED",
+    "grayscale": "NOT_CHECKED",
+    "source_values": "NOT_CHECKED"
+  },
+  "completion_status": "NEEDS_VISUAL_REVIEW",
+  "configuration": {
+    "width_mm": 150,
+    "height_mm": 121.91999999999999,
+    "maximum_height_mm": 247.0,
+    "minimum_text_pt": 6,
+    "text_pt": 7.5,
+    "tick_pt": 7,
+    "legend_pt": 7,
+    "title_pt": 8,
+    "panel_pt": 8,
+    "line_width": 1.1,
+    "marker_size": 4,
+    "grid": true,
+    "background": "white",
+    "theme": "modeling-default",
+    "latin_font": "Times New Roman",
+    "chinese_font": "SimHei",
+    "dpi": 450,
+    "minimum_dpi": 450,
+    "width_tolerance_mm": 0.1,
+    "formats": [
+      "pdf",
+      "svg",
+      "png"
+    ],
+    "semantic_styles": {},
+    "preferred_text_pt": [
+      7,
+      8
+    ],
+    "require_claim_and_evidence": true,
+    "sources": [
+      "builtin:algorithms.figure_config.DEFAULTS",
+      {
+        "path": "C:\\Users\\Blake\\math-model\\config\\paper_style.yaml",
+        "sha256": "f655b5d38414c93ddf6648158602205104562c14eaaa33625b17b05ba42ad4f5"
+      }
+    ]
+  },
+  "source_files": [
+    {
+      "path": "output\\figure-library-gallery-academic\\synthetic_gallery_source.json",
+      "resolved_path": "C:\\Users\\Blake\\math-model\\output\\figure-library-gallery-academic\\synthetic_gallery_source.json",
+      "sha256": "514bd722ca7eb5e1fa991996115eb856a8f38f5d41bbe2e71b56dd514205d58d"
+    },
+    {
+      "path": "C:\\Users\\Blake\\math-model\\scripts\\build_figure_library.py",
+      "resolved_path": "C:\\Users\\Blake\\math-model\\scripts\\build_figure_library.py",
+      "sha256": "b2e58df6223c0d7a51494df83b79c21820dd9748aa55e4b50620a9834da30490"
+    }
+  ],
+  "export": {
+    "dpi": 450,
+    "formats": [
+      "pdf",
+      "svg",
+      "png"
+    ],
+    "bbox_inches": null
+  },
+  "file_audit": {
+    "status": "PASS",
+    "png": {
+      "pixels": [
+        2657,
+        2160
+      ],
+      "mode": "RGB",
+      "dpi": [
+        450.0118,
+        450.0118
+      ]
+    },
+    "pdf_fonts": [
+      {
+        "name": "FHXFSG+TimesNewRomanPSMT",
+        "embedded": true
+      }
+    ],
+    "svg_text": "preserved; matching fonts must be installed on the viewing machine"
+  },
+  "template": null,
+  "figure_metadata": {
+    "figure_type": "embedding",
+    "algorithm": "UMAP",
+    "n": 36,
+    "data_contract": {
+      "source": "synthetic",
+      "fields": {},
+      "units": {
+        "values": "合成单位",
+        "coordinates": "合成坐标",
+        "scores": "无量纲"
+      },
+      "independent_unit": "synthetic scenario",
+      "repeated_measurement": null,
+      "split": null,
+      "random_seed": 20261011,
+      "interval_kind": null,
+      "deterministic": true,
+      "simulated": true,
+      "transformations": [
+        "chart-specific synthetic fixture"
+      ]
+    },
+    "name": "umap",
+    "canonical_key": "umap",
+    "input_data": {
+      "embedding": [
+        [
+          2.5122385025024414,
+          11.534402847290039
+        ],
+        [
+          4.343926429748535,
+          9.473529815673828
+        ],
+        [
+          3.095839023590088,
+          11.81911849975586
+        ],
+        [
+          3.4814260005950928,
+          10.124573707580566
+        ],
+        [
+          3.115525245666504,
+          10.337916374206543
+        ],
+        [
+          5.183002948760986,
+          8.900590896606445
+        ],
+        [
+          2.1553375720977783,
+          10.604355812072754
+        ],
+        [
+          3.6597137451171875,
+          9.549870491027832
+        ],
+        [
+          5.580548286437988,
+          10.397590637207031
+        ],
+        [
+          3.6642656326293945,
+          10.62600326538086
+        ],
+        [
+          2.2721943855285645,
+          11.105217933654785
+        ],
+        [
+          2.8362057209014893,
+          11.124454498291016
+        ],
+        [
+          4.269829273223877,
+          8.754134178161621
+        ],
+        [
+          4.984808921813965,
+          10.358823776245117
+        ],
+        [
+          6.239173889160156,
+          10.874144554138184
+        ],
+        [
+          5.834745407104492,
+          10.766371726989746
+        ],
+        [
+          2.485873222351074,
+          10.011100769042969
+        ],
+        [
+          5.80279541015625,
+          10.566666603088379
+        ],
+        [
+          3.3273351192474365,
+          11.374553680419922
+        ],
+        [
+          6.151998996734619,
+          10.329110145568848
+        ],
+        [
+          4.323273181915283,
+          10.425759315490723
+        ],
+        [
+          4.279897689819336,
+          11.099438667297363
+        ],
+        [
+          4.618468284606934,
+          8.714411735534668
+        ],
+        [
+          3.4919557571411133,
+          12.390958786010742
+        ],
+        [
+          3.808072090148926,
+          11.215279579162598
+        ],
+        [
+          5.965886116027832,
+          9.458791732788086
+        ],
+        [
+          6.254236221313477,
+          9.17219066619873
+        ],
+        [
+          2.6922082901000977,
+          10.34752368927002
+        ],
+        [
+          3.8299496173858643,
+          11.75089168548584
+        ],
+        [
+          3.6651530265808105,
+          8.680517196655273
+        ],
+        [
+          5.690491676330566,
+          9.1187744140625
+        ],
+        [
+          3.3260200023651123,
+          12.131843566894531
+        ],
+        [
+          6.351019859313965,
+          9.574392318725586
+        ],
+        [
+          3.3521296977996826,
+          8.988821029663086
+        ],
+        [
+          5.20260763168335,
+          9.569929122924805
+        ],
+        [
+          5.6347856521606445,
+          11.011320114135742
+        ]
+      ]
+    },
+    "calculation": {
+      "method": "umap",
+      "seed": 20261010,
+      "parameters": {
+        "n_neighbors": 12
+      },
+      "library": "umap-learn",
+      "version": "0.5.12",
+      "input_matrix": [
+        [
+          0.4774306202402335,
+          -0.9750820003575056,
+          -0.7480322196298143,
+          -0.01303450367431288
+        ],
+        [
+          -1.1073026019568153,
+          0.7216769224838745,
+          0.12676892873055612,
+          -0.29719405047461095
+        ],
+        [
+          0.9321463476715239,
+          -0.23598066601394393,
+          -0.4006202896221148,
+          -0.25587952816324966
+        ],
+        [
+          -0.4254622800591274,
+          1.2248285224362823,
+          0.1984044762941167,
+          -1.0894462821140563
+        ],
+        [
+          0.22801098336347578,
+          0.7222245946734251,
+          -0.3495418355025326,
+          -2.1845795998171678
+        ],
+        [
+          -1.3574892757936194,
+          1.125855880410967,
+          -0.3463718130618296,
+          0.5048182723293639
+        ],
+        [
+          -1.152390870234844,
+          -2.587376569955864,
+          0.8979289273448579,
+          -0.56597591271178
+        ],
+        [
+          -0.7877059908520946,
+          -0.04595811764620397,
+          -0.2394837163794111,
+          -0.21719201321937764
+        ],
+        [
+          0.18606276347938558,
+          0.7118145249051709,
+          -1.3787491496782884,
+          1.7976270662115803
+        ],
+        [
+          -0.0222563610317011,
+          0.5049992258085818,
+          -0.2854079841155399,
+          -0.832309697374563
+        ],
+        [
+          0.22946159543041095,
+          -1.2914032903868702,
+          -0.2244608765618985,
+          -0.6984992548191326
+        ],
+        [
+          0.10666473490741707,
+          -0.6309273530149504,
+          0.10896672591730448,
+          0.1125353733322188
+        ],
+        [
+          -1.2853681746896095,
+          -0.4245645381363458,
+          -1.2186545352930145,
+          1.082502386205436
+        ],
+        [
+          0.20978092080153116,
+          0.4220138399006582,
+          -0.2968685012611788,
+          0.7154766075326622
+        ],
+        [
+          -0.06458600892929232,
+          1.294266123160217,
+          -0.8380766586819806,
+          1.1178398982823758
+        ],
+        [
+          0.5098842109800132,
+          1.3902219127368949,
+          0.10524422868239415,
+          0.5092268403212438
+        ],
+        [
+          -0.8704809375666149,
+          -0.4605224136728987,
+          0.4288376711867186,
+          -1.3243293688724136
+        ],
+        [
+          0.9954169987016912,
+          1.2214962248039631,
+          0.3712945509446646,
+          0.8346476121962172
+        ],
+        [
+          0.8041111742233493,
+          -0.1338855112633893,
+          -0.04499930417017195,
+          -0.08471762045939388
+        ],
+        [
+          0.26889840870153225,
+          1.5200054656404012,
+          -0.044252326153917644,
+          0.8251805750921882
+        ],
+        [
+          -0.0658002146932839,
+          0.42563896630688525,
+          0.5363396896706213,
+          0.019336161790772015
+        ],
+        [
+          0.737971603721922,
+          0.6071050350795315,
+          0.19620266534143643,
+          -0.21138767083779503
+        ],
+        [
+          -2.036163490438861,
+          0.6158071022766518,
+          -1.0683513826686133,
+          0.4548942215901405
+        ],
+        [
+          2.7429832140815473,
+          -0.07267750459476859,
+          -1.6465326696881324,
+          0.11156464836350151
+        ],
+        [
+          0.6913130098044491,
+          0.3308012242283447,
+          -0.1072201710829097,
+          -0.35082852637331363
+        ],
+        [
+          -0.7002149743987737,
+          1.6122521945624153,
+          0.32821675854615256,
+          0.9608631957242713
+        ],
+        [
+          -1.4548108724957745,
+          2.0568408151851028,
+          1.368903956541466,
+          0.1695886075056945
+        ],
+        [
+          -0.3599463256759291,
+          -0.46820272143996117,
+          0.32212971183901323,
+          -1.4942793293790622
+        ],
+        [
+          0.7588394800101356,
+          0.3460139508047313,
+          -1.491731015161957,
+          -0.4648165052500652
+        ],
+        [
+          -1.2880010286870092,
+          -0.8352068680568463,
+          -1.8676203112340524,
+          -0.44997273062522936
+        ],
+        [
+          -1.2037181119474314,
+          1.4693305334874092,
+          -0.1677591029119982,
+          1.3729703381567626
+        ],
+        [
+          1.3492198535779436,
+          -0.05266793041531051,
+          -0.32487542645371004,
+          -0.5101324855911152
+        ],
+        [
+          -0.22301803648856242,
+          1.5321022554145447,
+          1.2518383869719505,
+          0.3775385245772204
+        ],
+        [
+          -0.226925113716888,
+          0.4575467948928495,
+          -2.157815209968225,
+          -0.3651949978317788
+        ],
+        [
+          -0.8169224587018581,
+          -0.14439793316535263,
+          0.406783001384062,
+          1.8561850593281348
+        ],
+        [
+          0.5117635591004983,
+          1.3524246945834864,
+          -1.0632531529928593,
+          0.18943687564714404
+        ]
+      ],
+      "resource": "resources/umap_example.json"
+    },
+    "name_zh": "UMAP图",
+    "mode": "preview",
+    "implementation_level": "dedicated",
+    "paper_suitable": false,
+    "source": "synthetic",
+    "simulated": true,
+    "independent_unit": "synthetic scenario",
+    "units": {
+      "values": "合成单位",
+      "coordinates": "合成坐标",
+      "scores": "无量纲"
+    },
+    "interval_kind": null
+  },
+  "environment": {
+    "python": "3.14.2",
+    "platform": "Windows-11-10.0.26200-SP0",
+    "matplotlib": "3.10.9",
+    "numpy": "2.4.3",
+    "backend": "Agg",
+    "implementation_hashes": {
+      "sci_figures.py": "5286416a562eab90a031670820a366e1021e5fa2c0a7a876a310dfef37b4f617",
+      "figure_config.py": "1ed2c7fbc04dca33d473794180e509a84fb481408baa973eb83387a03614e980",
+      "figure_templates.py": "3f3961ff0cb17415e7dfd08f629a029d2529b292f2dae10ff6c72bfa282b2ff8",
+      "figure_export.py": "0adb2514fd44e79d20966f4b0993aef33f26444513ec4b2f443273a228e695b9"
+    }
+  },
+  "output_hashes": {
+    "pdf": "aba0fb510911c1759ef612f7519af5a0aad5fc08b21dc4e368a9ec187c2841d2",
+    "svg": "dd16a7f26040675886dadda285359f39db534431759fc2a6335264960fd48914",
+    "png": "d90f17fea885cf8a587c18f15b71cd66e1c885fcef373f0b99f403f1038d855a"
+  }
+}

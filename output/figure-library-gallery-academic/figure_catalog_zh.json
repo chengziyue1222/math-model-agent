@@ -1,0 +1,3494 @@
+{
+  "schema_version": 1,
+  "description": "中文图表语义目录；英文 name 是稳定代码键，name_zh 是可直接传给 get_figure/get_spec 的中文名称。",
+  "figures": [
+    {
+      "name": "adjacency",
+      "category": "网络、流量与空间关系",
+      "question": "网络、流量与空间关系: adjacency",
+      "required_fields": [
+        "nodes",
+        "edges"
+      ],
+      "independent_unit": "observation",
+      "status": "dedicated semantic renderer; visual QA pending",
+      "implementation_level": "dedicated",
+      "paper_suitable": false,
+      "simulate": false,
+      "qa_status": "not_checked",
+      "name_zh": "邻接关系图",
+      "question_zh": "网络、流量与空间关系中的邻接关系图",
+      "aliases": [
+        "邻接关系图"
+      ],
+      "alias_of": null,
+      "formal_supported": true
+    },
+    {
+      "name": "adjacency_matrix",
+      "category": "热图与矩阵",
+      "question": "热图与矩阵: adjacency_matrix",
+      "required_fields": [
+        "matrix",
+        "row_labels",
+        "column_labels"
+      ],
+      "independent_unit": "observation",
+      "status": "dedicated semantic renderer; visual QA pending",
+      "implementation_level": "dedicated",
+      "paper_suitable": false,
+      "simulate": false,
+      "qa_status": "not_checked",
+      "name_zh": "邻接矩阵",
+      "question_zh": "热图与矩阵中的邻接矩阵",
+      "aliases": [
+        "邻接矩阵"
+      ],
+      "alias_of": null,
+      "formal_supported": true
+    },
+    {
+      "name": "ahp_weights",
+      "category": "多指标与综合评价",
+      "question": "多指标与综合评价: ahp_weights",
+      "required_fields": [
+        "categories",
+        "values",
+        "method"
+      ],
+      "independent_unit": "observation",
+      "status": "dedicated semantic renderer; visual QA pending",
+      "implementation_level": "dedicated",
+      "paper_suitable": false,
+      "simulate": false,
+      "qa_status": "not_checked",
+      "name_zh": "AHP权重图",
+      "question_zh": "多指标与综合评价中的AHP权重图",
+      "aliases": [
+        "AHP权重图"
+      ],
+      "alias_of": null,
+      "formal_supported": true
+    },
+    {
+      "name": "algorithm_flow",
+      "category": "数学建模专用图",
+      "question": "数学建模专用图: algorithm_flow",
+      "required_fields": [
+        "nodes",
+        "edges",
+        "node_types",
+        "edge_labels"
+      ],
+      "independent_unit": "observation",
+      "status": "dedicated semantic renderer; visual QA pending",
+      "implementation_level": "dedicated",
+      "paper_suitable": false,
+      "simulate": false,
+      "qa_status": "not_checked",
+      "name_zh": "算法流程图",
+      "question_zh": "数学建模专用图中的算法流程图",
+      "aliases": [
+        "算法流程图"
+      ],
+      "alias_of": null,
+      "formal_supported": true
+    },
+    {
+      "name": "alluvial",
+      "category": "网络、流量与空间关系",
+      "question": "网络、流量与空间关系: alluvial",
+      "required_fields": [
+        "source",
+        "target",
+        "value",
+        "source_stage",
+        "target_stage"
+      ],
+      "independent_unit": "observation",
+      "status": "dedicated statistical renderer; visual QA pending",
+      "implementation_level": "dedicated",
+      "paper_suitable": false,
+      "simulate": false,
+      "qa_status": "not_checked",
+      "name_zh": "冲积图",
+      "question_zh": "网络、流量与空间关系中的冲积图",
+      "aliases": [
+        "冲积图"
+      ],
+      "alias_of": null,
+      "formal_supported": true
+    },
+    {
+      "name": "area",
+      "category": "时间序列与动态过程",
+      "question": "时间序列与动态过程: area",
+      "required_fields": [
+        "time",
+        "values"
+      ],
+      "independent_unit": "observation",
+      "status": "dedicated semantic renderer; visual QA pending",
+      "implementation_level": "dedicated",
+      "paper_suitable": false,
+      "simulate": false,
+      "qa_status": "not_checked",
+      "name_zh": "面积图",
+      "question_zh": "时间序列与动态过程中的面积图",
+      "aliases": [
+        "面积图"
+      ],
+      "alias_of": null,
+      "formal_supported": true
+    },
+    {
+      "name": "autocorrelation",
+      "category": "时间序列与动态过程",
+      "question": "时间序列与动态过程: autocorrelation",
+      "required_fields": [
+        "lag",
+        "correlation"
+      ],
+      "independent_unit": "observation",
+      "status": "dedicated semantic renderer; visual QA pending",
+      "implementation_level": "dedicated",
+      "paper_suitable": false,
+      "simulate": false,
+      "qa_status": "not_checked",
+      "name_zh": "自相关图",
+      "question_zh": "时间序列与动态过程中的自相关图",
+      "aliases": [
+        "自相关图"
+      ],
+      "alias_of": null,
+      "formal_supported": true
+    },
+    {
+      "name": "bar",
+      "category": "类别比较",
+      "question": "类别比较: bar",
+      "required_fields": [
+        "categories",
+        "values"
+      ],
+      "independent_unit": "observation",
+      "status": "dedicated statistical renderer; visual QA pending",
+      "implementation_level": "dedicated",
+      "paper_suitable": false,
+      "simulate": false,
+      "qa_status": "not_checked",
+      "name_zh": "柱状图",
+      "question_zh": "类别比较中的柱状图",
+      "aliases": [
+        "柱状图"
+      ],
+      "alias_of": null,
+      "formal_supported": true
+    },
+    {
+      "name": "beeswarm",
+      "category": "单变量与分布",
+      "question": "单变量与分布: beeswarm",
+      "required_fields": [
+        "categories",
+        "samples"
+      ],
+      "independent_unit": "observation",
+      "status": "dedicated semantic renderer; visual QA pending",
+      "implementation_level": "dedicated",
+      "paper_suitable": false,
+      "simulate": false,
+      "qa_status": "not_checked",
+      "name_zh": "蜂群图",
+      "question_zh": "单变量与分布中的蜂群图",
+      "aliases": [
+        "蜂群图"
+      ],
+      "alias_of": null,
+      "formal_supported": true
+    },
+    {
+      "name": "bland_altman",
+      "category": "关系与相关",
+      "question": "关系与相关: bland_altman",
+      "required_fields": [
+        "reference",
+        "comparison"
+      ],
+      "independent_unit": "observation",
+      "status": "dedicated statistical renderer; visual QA pending",
+      "implementation_level": "dedicated",
+      "paper_suitable": false,
+      "simulate": false,
+      "qa_status": "not_checked",
+      "name_zh": "Bland-Altman一致性图",
+      "question_zh": "关系与相关中的Bland-Altman一致性图",
+      "aliases": [
+        "Bland-Altman一致性图"
+      ],
+      "alias_of": null,
+      "formal_supported": true
+    },
+    {
+      "name": "boxplot",
+      "category": "单变量与分布",
+      "question": "单变量与分布: boxplot",
+      "required_fields": [
+        "values"
+      ],
+      "independent_unit": "observation",
+      "status": "dedicated statistical renderer; visual QA pending",
+      "implementation_level": "dedicated",
+      "paper_suitable": false,
+      "simulate": false,
+      "qa_status": "not_checked",
+      "name_zh": "箱线图",
+      "question_zh": "单变量与分布中的箱线图",
+      "aliases": [
+        "箱线图"
+      ],
+      "alias_of": null,
+      "formal_supported": true
+    },
+    {
+      "name": "bubble",
+      "category": "关系与相关",
+      "question": "关系与相关: bubble",
+      "required_fields": [
+        "x",
+        "y",
+        "size"
+      ],
+      "independent_unit": "observation",
+      "status": "dedicated statistical renderer; visual QA pending",
+      "implementation_level": "dedicated",
+      "paper_suitable": false,
+      "simulate": false,
+      "qa_status": "not_checked",
+      "name_zh": "气泡图",
+      "question_zh": "关系与相关中的气泡图",
+      "aliases": [
+        "气泡图"
+      ],
+      "alias_of": null,
+      "formal_supported": true
+    },
+    {
+      "name": "calendar_heatmap",
+      "category": "时间序列与动态过程",
+      "question": "时间序列与动态过程: calendar_heatmap",
+      "required_fields": [
+        "dates",
+        "values"
+      ],
+      "independent_unit": "observation",
+      "status": "dedicated semantic renderer; visual QA pending",
+      "implementation_level": "dedicated",
+      "paper_suitable": false,
+      "simulate": false,
+      "qa_status": "not_checked",
+      "name_zh": "日历热图",
+      "question_zh": "时间序列与动态过程中的日历热图",
+      "aliases": [
+        "日历热图"
+      ],
+      "alias_of": null,
+      "formal_supported": true
+    },
+    {
+      "name": "calibration_curve",
+      "category": "模型评估",
+      "question": "模型评估: calibration_curve",
+      "required_fields": [
+        "probability",
+        "observed_rate"
+      ],
+      "independent_unit": "observation",
+      "status": "dedicated semantic renderer; visual QA pending",
+      "implementation_level": "dedicated",
+      "paper_suitable": false,
+      "simulate": false,
+      "qa_status": "not_checked",
+      "name_zh": "校准曲线",
+      "question_zh": "模型评估中的校准曲线",
+      "aliases": [
+        "校准曲线"
+      ],
+      "alias_of": null,
+      "formal_supported": true
+    },
+    {
+      "name": "chord",
+      "category": "网络、流量与空间关系",
+      "question": "网络、流量与空间关系: chord",
+      "required_fields": [
+        "nodes",
+        "flows"
+      ],
+      "independent_unit": "observation",
+      "status": "dedicated statistical renderer; visual QA pending",
+      "implementation_level": "dedicated",
+      "paper_suitable": false,
+      "simulate": false,
+      "qa_status": "not_checked",
+      "name_zh": "弦图",
+      "question_zh": "网络、流量与空间关系中的弦图",
+      "aliases": [
+        "弦图"
+      ],
+      "alias_of": null,
+      "formal_supported": true
+    },
+    {
+      "name": "circular_heatmap",
+      "category": "热图与矩阵",
+      "question": "热图与矩阵: circular_heatmap",
+      "required_fields": [
+        "matrix",
+        "row_labels",
+        "column_labels"
+      ],
+      "independent_unit": "observation",
+      "status": "dedicated semantic renderer; visual QA pending",
+      "implementation_level": "dedicated",
+      "paper_suitable": false,
+      "simulate": false,
+      "qa_status": "not_checked",
+      "name_zh": "环形热图",
+      "question_zh": "热图与矩阵中的环形热图",
+      "aliases": [
+        "环形热图"
+      ],
+      "alias_of": null,
+      "formal_supported": true
+    },
+    {
+      "name": "cleveland_dot",
+      "category": "类别比较",
+      "question": "类别比较: cleveland_dot",
+      "required_fields": [
+        "categories",
+        "values"
+      ],
+      "independent_unit": "observation",
+      "status": "dedicated semantic renderer; visual QA pending",
+      "implementation_level": "dedicated",
+      "paper_suitable": false,
+      "simulate": false,
+      "qa_status": "not_checked",
+      "name_zh": "克利夫兰点图",
+      "question_zh": "类别比较中的克利夫兰点图",
+      "aliases": [
+        "克利夫兰点图"
+      ],
+      "alias_of": null,
+      "formal_supported": true
+    },
+    {
+      "name": "cluster_scatter",
+      "category": "降维、聚类与高维结构",
+      "question": "降维、聚类与高维结构: cluster_scatter",
+      "required_fields": [
+        "embedding",
+        "groups"
+      ],
+      "independent_unit": "observation",
+      "status": "dedicated statistical renderer; visual QA pending",
+      "implementation_level": "dedicated",
+      "paper_suitable": false,
+      "simulate": false,
+      "qa_status": "not_checked",
+      "name_zh": "聚类散点图",
+      "question_zh": "降维、聚类与高维结构中的聚类散点图",
+      "aliases": [
+        "聚类散点图"
+      ],
+      "alias_of": null,
+      "formal_supported": true
+    },
+    {
+      "name": "cluster_stability",
+      "category": "降维、聚类与高维结构",
+      "question": "降维、聚类与高维结构: cluster_stability",
+      "required_fields": [
+        "settings",
+        "scores",
+        "runs",
+        "metric"
+      ],
+      "independent_unit": "observation",
+      "status": "dedicated semantic renderer; visual QA pending",
+      "implementation_level": "dedicated",
+      "paper_suitable": false,
+      "simulate": false,
+      "qa_status": "not_checked",
+      "name_zh": "聚类稳定性图",
+      "question_zh": "降维、聚类与高维结构中的聚类稳定性图",
+      "aliases": [
+        "聚类稳定性图"
+      ],
+      "alias_of": null,
+      "formal_supported": true
+    },
+    {
+      "name": "clustered_heatmap",
+      "category": "关系与相关",
+      "question": "关系与相关: clustered_heatmap",
+      "required_fields": [
+        "matrix",
+        "row_labels",
+        "column_labels",
+        "row_linkage",
+        "column_linkage"
+      ],
+      "independent_unit": "observation",
+      "status": "dedicated semantic renderer; visual QA pending",
+      "implementation_level": "dedicated",
+      "paper_suitable": false,
+      "simulate": false,
+      "qa_status": "not_checked",
+      "name_zh": "聚类热图",
+      "question_zh": "关系与相关中的聚类热图",
+      "aliases": [
+        "聚类热图"
+      ],
+      "alias_of": null,
+      "formal_supported": true
+    },
+    {
+      "name": "clustered_heatmap_matrix",
+      "category": "热图与矩阵",
+      "question": "热图与矩阵: clustered_heatmap_matrix",
+      "required_fields": [
+        "matrix",
+        "row_labels",
+        "column_labels",
+        "row_linkage",
+        "column_linkage"
+      ],
+      "independent_unit": "observation",
+      "status": "alias of clustered_heatmap",
+      "implementation_level": "alias",
+      "paper_suitable": false,
+      "simulate": false,
+      "qa_status": "not_checked",
+      "name_zh": "聚类矩阵热图",
+      "question_zh": "热图与矩阵中的聚类矩阵热图",
+      "aliases": [
+        "聚类矩阵热图"
+      ],
+      "alias_of": "clustered_heatmap",
+      "formal_supported": true
+    },
+    {
+      "name": "community_network",
+      "category": "网络、流量与空间关系",
+      "question": "网络、流量与空间关系: community_network",
+      "required_fields": [
+        "nodes",
+        "edges",
+        "community"
+      ],
+      "independent_unit": "observation",
+      "status": "dedicated statistical renderer; visual QA pending",
+      "implementation_level": "dedicated",
+      "paper_suitable": false,
+      "simulate": false,
+      "qa_status": "not_checked",
+      "name_zh": "社区网络图",
+      "question_zh": "网络、流量与空间关系中的社区网络图",
+      "aliases": [
+        "社区网络图"
+      ],
+      "alias_of": null,
+      "formal_supported": true
+    },
+    {
+      "name": "confusion_matrix",
+      "category": "热图与矩阵",
+      "question": "热图与矩阵: confusion_matrix",
+      "required_fields": [
+        "matrix"
+      ],
+      "independent_unit": "observation",
+      "status": "dedicated statistical renderer; visual QA pending",
+      "implementation_level": "dedicated",
+      "paper_suitable": false,
+      "simulate": false,
+      "qa_status": "not_checked",
+      "name_zh": "混淆矩阵",
+      "question_zh": "热图与矩阵中的混淆矩阵",
+      "aliases": [
+        "混淆矩阵"
+      ],
+      "alias_of": null,
+      "formal_supported": true
+    },
+    {
+      "name": "confusion_matrix_eval",
+      "category": "模型评估",
+      "question": "模型评估: confusion_matrix_eval",
+      "required_fields": [
+        "matrix"
+      ],
+      "independent_unit": "observation",
+      "status": "alias of confusion_matrix",
+      "implementation_level": "alias",
+      "paper_suitable": false,
+      "simulate": false,
+      "qa_status": "not_checked",
+      "name_zh": "模型混淆矩阵",
+      "question_zh": "模型评估中的模型混淆矩阵",
+      "aliases": [
+        "模型混淆矩阵"
+      ],
+      "alias_of": "confusion_matrix",
+      "formal_supported": true
+    },
+    {
+      "name": "constraint_boundary",
+      "category": "数学建模专用图",
+      "question": "数学建模专用图: constraint_boundary",
+      "required_fields": [
+        "x_grid",
+        "y_grid",
+        "constraint",
+        "limit"
+      ],
+      "independent_unit": "observation",
+      "status": "dedicated semantic renderer; visual QA pending",
+      "implementation_level": "dedicated",
+      "paper_suitable": false,
+      "simulate": false,
+      "qa_status": "not_checked",
+      "name_zh": "约束边界图",
+      "question_zh": "数学建模专用图中的约束边界图",
+      "aliases": [
+        "约束边界图"
+      ],
+      "alias_of": null,
+      "formal_supported": true
+    },
+    {
+      "name": "constraint_slack",
+      "category": "优化、灵敏度与稳健性",
+      "question": "优化、灵敏度与稳健性: constraint_slack",
+      "required_fields": [
+        "constraints",
+        "slack"
+      ],
+      "independent_unit": "observation",
+      "status": "dedicated semantic renderer; visual QA pending",
+      "implementation_level": "dedicated",
+      "paper_suitable": false,
+      "simulate": false,
+      "qa_status": "not_checked",
+      "name_zh": "约束松弛图",
+      "question_zh": "优化、灵敏度与稳健性中的约束松弛图",
+      "aliases": [
+        "约束松弛图"
+      ],
+      "alias_of": null,
+      "formal_supported": true
+    },
+    {
+      "name": "contour",
+      "category": "网络、流量与空间关系",
+      "question": "网络、流量与空间关系: contour",
+      "required_fields": [
+        "x_grid",
+        "y_grid",
+        "z"
+      ],
+      "independent_unit": "observation",
+      "status": "dedicated semantic renderer; visual QA pending",
+      "implementation_level": "dedicated",
+      "paper_suitable": false,
+      "simulate": false,
+      "qa_status": "not_checked",
+      "name_zh": "空间等高线图",
+      "question_zh": "网络、流量与空间关系中的空间等高线图",
+      "aliases": [
+        "空间等高线图"
+      ],
+      "alias_of": null,
+      "formal_supported": true
+    },
+    {
+      "name": "contour_density",
+      "category": "关系与相关",
+      "question": "关系与相关: contour_density",
+      "required_fields": [
+        "x",
+        "y"
+      ],
+      "independent_unit": "observation",
+      "status": "dedicated semantic renderer; visual QA pending",
+      "implementation_level": "dedicated",
+      "paper_suitable": false,
+      "simulate": false,
+      "qa_status": "not_checked",
+      "name_zh": "等高线密度图",
+      "question_zh": "关系与相关中的等高线密度图",
+      "aliases": [
+        "等高线密度图"
+      ],
+      "alias_of": null,
+      "formal_supported": true
+    },
+    {
+      "name": "contribution_decomposition",
+      "category": "多指标与综合评价",
+      "question": "多指标与综合评价: contribution_decomposition",
+      "required_fields": [
+        "components",
+        "values",
+        "baseline"
+      ],
+      "independent_unit": "observation",
+      "status": "dedicated semantic renderer; visual QA pending",
+      "implementation_level": "dedicated",
+      "paper_suitable": false,
+      "simulate": false,
+      "qa_status": "not_checked",
+      "name_zh": "贡献分解图",
+      "question_zh": "多指标与综合评价中的贡献分解图",
+      "aliases": [
+        "贡献分解图"
+      ],
+      "alias_of": null,
+      "formal_supported": true
+    },
+    {
+      "name": "control_chart",
+      "category": "单变量与分布",
+      "question": "单变量与分布: control_chart",
+      "required_fields": [
+        "time",
+        "values",
+        "center",
+        "lower",
+        "upper",
+        "interval_kind"
+      ],
+      "independent_unit": "observation",
+      "status": "dedicated semantic renderer; visual QA pending",
+      "implementation_level": "dedicated",
+      "paper_suitable": false,
+      "simulate": false,
+      "qa_status": "not_checked",
+      "name_zh": "控制图",
+      "question_zh": "单变量与分布中的控制图",
+      "aliases": [
+        "控制图"
+      ],
+      "alias_of": null,
+      "formal_supported": true
+    },
+    {
+      "name": "convergence",
+      "category": "优化、灵敏度与稳健性",
+      "question": "优化、灵敏度与稳健性: convergence",
+      "required_fields": [
+        "iterations",
+        "objective"
+      ],
+      "independent_unit": "observation",
+      "status": "dedicated statistical renderer; visual QA pending",
+      "implementation_level": "dedicated",
+      "paper_suitable": false,
+      "simulate": false,
+      "qa_status": "not_checked",
+      "name_zh": "收敛曲线",
+      "question_zh": "优化、灵敏度与稳健性中的收敛曲线",
+      "aliases": [
+        "收敛曲线"
+      ],
+      "alias_of": null,
+      "formal_supported": true
+    },
+    {
+      "name": "coordinate_system",
+      "category": "数学建模专用图",
+      "question": "数学建模专用图: coordinate_system",
+      "required_fields": [
+        "origin",
+        "basis"
+      ],
+      "independent_unit": "observation",
+      "status": "dedicated semantic renderer; visual QA pending",
+      "implementation_level": "dedicated",
+      "paper_suitable": false,
+      "simulate": false,
+      "qa_status": "not_checked",
+      "name_zh": "坐标系图",
+      "question_zh": "数学建模专用图中的坐标系图",
+      "aliases": [
+        "坐标系图"
+      ],
+      "alias_of": null,
+      "formal_supported": true
+    },
+    {
+      "name": "correlation_bubble",
+      "category": "关系与相关",
+      "question": "关系与相关: correlation_bubble",
+      "required_fields": [
+        "data"
+      ],
+      "independent_unit": "observation",
+      "status": "dedicated statistical renderer; visual QA pending",
+      "implementation_level": "dedicated",
+      "paper_suitable": false,
+      "simulate": false,
+      "qa_status": "not_checked",
+      "name_zh": "相关气泡图",
+      "question_zh": "关系与相关中的相关气泡图",
+      "aliases": [
+        "相关气泡图"
+      ],
+      "alias_of": null,
+      "formal_supported": true
+    },
+    {
+      "name": "correlation_matrix",
+      "category": "关系与相关",
+      "question": "关系与相关: correlation_matrix",
+      "required_fields": [
+        "data"
+      ],
+      "independent_unit": "observation",
+      "status": "dedicated statistical renderer; visual QA pending",
+      "implementation_level": "dedicated",
+      "paper_suitable": false,
+      "simulate": false,
+      "qa_status": "not_checked",
+      "name_zh": "相关矩阵",
+      "question_zh": "关系与相关中的相关矩阵",
+      "aliases": [
+        "相关矩阵"
+      ],
+      "alias_of": null,
+      "formal_supported": true
+    },
+    {
+      "name": "correlation_network",
+      "category": "网络、流量与空间关系",
+      "question": "网络、流量与空间关系: correlation_network",
+      "required_fields": [
+        "nodes",
+        "edges"
+      ],
+      "independent_unit": "observation",
+      "status": "dedicated statistical renderer; visual QA pending",
+      "implementation_level": "dedicated",
+      "paper_suitable": false,
+      "simulate": false,
+      "qa_status": "not_checked",
+      "name_zh": "相关网络图",
+      "question_zh": "网络、流量与空间关系中的相关网络图",
+      "aliases": [
+        "相关网络图"
+      ],
+      "alias_of": null,
+      "formal_supported": true
+    },
+    {
+      "name": "coverage",
+      "category": "模型评估",
+      "question": "模型评估: coverage",
+      "required_fields": [
+        "nominal",
+        "empirical"
+      ],
+      "independent_unit": "observation",
+      "status": "dedicated semantic renderer; visual QA pending",
+      "implementation_level": "dedicated",
+      "paper_suitable": false,
+      "simulate": false,
+      "qa_status": "not_checked",
+      "name_zh": "覆盖率图",
+      "question_zh": "模型评估中的覆盖率图",
+      "aliases": [
+        "覆盖率图"
+      ],
+      "alias_of": null,
+      "formal_supported": true
+    },
+    {
+      "name": "cross_validation",
+      "category": "模型评估",
+      "question": "模型评估: cross_validation",
+      "required_fields": [
+        "fold",
+        "score"
+      ],
+      "independent_unit": "observation",
+      "status": "dedicated semantic renderer; visual QA pending",
+      "implementation_level": "dedicated",
+      "paper_suitable": false,
+      "simulate": false,
+      "qa_status": "not_checked",
+      "name_zh": "交叉验证图",
+      "question_zh": "模型评估中的交叉验证图",
+      "aliases": [
+        "交叉验证图"
+      ],
+      "alias_of": null,
+      "formal_supported": true
+    },
+    {
+      "name": "decision_tree",
+      "category": "数学建模专用图",
+      "question": "数学建模专用图: decision_tree",
+      "required_fields": [
+        "nodes",
+        "edges",
+        "edge_labels"
+      ],
+      "independent_unit": "observation",
+      "status": "dedicated semantic renderer; visual QA pending",
+      "implementation_level": "dedicated",
+      "paper_suitable": false,
+      "simulate": false,
+      "qa_status": "not_checked",
+      "name_zh": "决策树图",
+      "question_zh": "数学建模专用图中的决策树图",
+      "aliases": [
+        "决策树图"
+      ],
+      "alias_of": null,
+      "formal_supported": true
+    },
+    {
+      "name": "decomposition",
+      "category": "时间序列与动态过程",
+      "question": "时间序列与动态过程: decomposition",
+      "required_fields": [
+        "time",
+        "values",
+        "trend",
+        "seasonal",
+        "residual",
+        "period"
+      ],
+      "independent_unit": "observation",
+      "status": "dedicated semantic renderer; visual QA pending",
+      "implementation_level": "dedicated",
+      "paper_suitable": false,
+      "simulate": false,
+      "qa_status": "not_checked",
+      "name_zh": "时间序列分解图",
+      "question_zh": "时间序列与动态过程中的时间序列分解图",
+      "aliases": [
+        "时间序列分解图"
+      ],
+      "alias_of": null,
+      "formal_supported": true
+    },
+    {
+      "name": "dendrogram",
+      "category": "降维、聚类与高维结构",
+      "question": "降维、聚类与高维结构: dendrogram",
+      "required_fields": [
+        "linkage",
+        "labels"
+      ],
+      "independent_unit": "observation",
+      "status": "dedicated semantic renderer; visual QA pending",
+      "implementation_level": "dedicated",
+      "paper_suitable": false,
+      "simulate": false,
+      "qa_status": "not_checked",
+      "name_zh": "树状图",
+      "question_zh": "降维、聚类与高维结构中的树状图",
+      "aliases": [
+        "树状图"
+      ],
+      "alias_of": null,
+      "formal_supported": true
+    },
+    {
+      "name": "dependency_graph",
+      "category": "网络、流量与空间关系",
+      "question": "网络、流量与空间关系: dependency_graph",
+      "required_fields": [
+        "nodes",
+        "edges"
+      ],
+      "independent_unit": "observation",
+      "status": "dedicated semantic renderer; visual QA pending",
+      "implementation_level": "dedicated",
+      "paper_suitable": false,
+      "simulate": false,
+      "qa_status": "not_checked",
+      "name_zh": "依赖关系图",
+      "question_zh": "网络、流量与空间关系中的依赖关系图",
+      "aliases": [
+        "依赖关系图"
+      ],
+      "alias_of": null,
+      "formal_supported": true
+    },
+    {
+      "name": "diverging_bar",
+      "category": "类别比较",
+      "question": "类别比较: diverging_bar",
+      "required_fields": [
+        "categories",
+        "values"
+      ],
+      "independent_unit": "observation",
+      "status": "dedicated semantic renderer; visual QA pending",
+      "implementation_level": "dedicated",
+      "paper_suitable": false,
+      "simulate": false,
+      "qa_status": "not_checked",
+      "name_zh": "发散条形图",
+      "question_zh": "类别比较中的发散条形图",
+      "aliases": [
+        "发散条形图"
+      ],
+      "alias_of": null,
+      "formal_supported": true
+    },
+    {
+      "name": "diverging_heatmap",
+      "category": "热图与矩阵",
+      "question": "热图与矩阵: diverging_heatmap",
+      "required_fields": [
+        "matrix",
+        "row_labels",
+        "column_labels"
+      ],
+      "independent_unit": "observation",
+      "status": "dedicated semantic renderer; visual QA pending",
+      "implementation_level": "dedicated",
+      "paper_suitable": false,
+      "simulate": false,
+      "qa_status": "not_checked",
+      "name_zh": "发散色热图",
+      "question_zh": "热图与矩阵中的发散色热图",
+      "aliases": [
+        "发散色热图"
+      ],
+      "alias_of": null,
+      "formal_supported": true
+    },
+    {
+      "name": "dot_plot",
+      "category": "类别比较",
+      "question": "类别比较: dot_plot",
+      "required_fields": [
+        "categories",
+        "values"
+      ],
+      "independent_unit": "observation",
+      "status": "dedicated statistical renderer; visual QA pending",
+      "implementation_level": "dedicated",
+      "paper_suitable": false,
+      "simulate": false,
+      "qa_status": "not_checked",
+      "name_zh": "点图",
+      "question_zh": "类别比较中的点图",
+      "aliases": [
+        "点图"
+      ],
+      "alias_of": null,
+      "formal_supported": true
+    },
+    {
+      "name": "ecdf",
+      "category": "单变量与分布",
+      "question": "单变量与分布: ecdf",
+      "required_fields": [
+        "values"
+      ],
+      "independent_unit": "observation",
+      "status": "dedicated statistical renderer; visual QA pending",
+      "implementation_level": "dedicated",
+      "paper_suitable": false,
+      "simulate": false,
+      "qa_status": "not_checked",
+      "name_zh": "经验累积分布图",
+      "question_zh": "单变量与分布中的经验累积分布图",
+      "aliases": [
+        "经验累积分布图"
+      ],
+      "alias_of": null,
+      "formal_supported": true
+    },
+    {
+      "name": "effect_size",
+      "category": "类别比较",
+      "question": "类别比较: effect_size",
+      "required_fields": [
+        "categories",
+        "estimate",
+        "lower",
+        "upper",
+        "interval_kind",
+        "effect_kind"
+      ],
+      "independent_unit": "observation",
+      "status": "dedicated semantic renderer; visual QA pending",
+      "implementation_level": "dedicated",
+      "paper_suitable": false,
+      "simulate": false,
+      "qa_status": "not_checked",
+      "name_zh": "效应量图",
+      "question_zh": "类别比较中的效应量图",
+      "aliases": [
+        "效应量图"
+      ],
+      "alias_of": null,
+      "formal_supported": true
+    },
+    {
+      "name": "embedding_trajectory",
+      "category": "降维、聚类与高维结构",
+      "question": "降维、聚类与高维结构: embedding_trajectory",
+      "required_fields": [
+        "embedding",
+        "time"
+      ],
+      "independent_unit": "observation",
+      "status": "dedicated statistical renderer; visual QA pending",
+      "implementation_level": "dedicated",
+      "paper_suitable": false,
+      "simulate": false,
+      "qa_status": "not_checked",
+      "name_zh": "嵌入轨迹图",
+      "question_zh": "降维、聚类与高维结构中的嵌入轨迹图",
+      "aliases": [
+        "嵌入轨迹图"
+      ],
+      "alias_of": null,
+      "formal_supported": true
+    },
+    {
+      "name": "error_band",
+      "category": "时间序列与动态过程",
+      "question": "时间序列与动态过程: error_band",
+      "required_fields": [
+        "time",
+        "center",
+        "lower",
+        "upper",
+        "interval_kind"
+      ],
+      "independent_unit": "observation",
+      "status": "dedicated statistical renderer; visual QA pending",
+      "implementation_level": "dedicated",
+      "paper_suitable": false,
+      "simulate": false,
+      "qa_status": "not_checked",
+      "name_zh": "误差带图",
+      "question_zh": "时间序列与动态过程中的误差带图",
+      "aliases": [
+        "误差带图"
+      ],
+      "alias_of": null,
+      "formal_supported": true
+    },
+    {
+      "name": "error_by_time",
+      "category": "模型评估",
+      "question": "模型评估: error_by_time",
+      "required_fields": [
+        "time",
+        "observed",
+        "predicted"
+      ],
+      "independent_unit": "observation",
+      "status": "dedicated semantic renderer; visual QA pending",
+      "implementation_level": "dedicated",
+      "paper_suitable": false,
+      "simulate": false,
+      "qa_status": "not_checked",
+      "name_zh": "随时间误差图",
+      "question_zh": "模型评估中的随时间误差图",
+      "aliases": [
+        "随时间误差图"
+      ],
+      "alias_of": null,
+      "formal_supported": true
+    },
+    {
+      "name": "errorbar",
+      "category": "类别比较",
+      "question": "类别比较: errorbar",
+      "required_fields": [
+        "categories",
+        "values",
+        "lower",
+        "upper",
+        "interval_kind"
+      ],
+      "independent_unit": "observation",
+      "status": "dedicated statistical renderer; visual QA pending",
+      "implementation_level": "dedicated",
+      "paper_suitable": false,
+      "simulate": false,
+      "qa_status": "not_checked",
+      "name_zh": "误差棒图",
+      "question_zh": "类别比较中的误差棒图",
+      "aliases": [
+        "误差棒图"
+      ],
+      "alias_of": null,
+      "formal_supported": true
+    },
+    {
+      "name": "event_timeline",
+      "category": "时间序列与动态过程",
+      "question": "时间序列与动态过程: event_timeline",
+      "required_fields": [
+        "time",
+        "events"
+      ],
+      "independent_unit": "observation",
+      "status": "dedicated semantic renderer; visual QA pending",
+      "implementation_level": "dedicated",
+      "paper_suitable": false,
+      "simulate": false,
+      "qa_status": "not_checked",
+      "name_zh": "事件时间线",
+      "question_zh": "时间序列与动态过程中的事件时间线",
+      "aliases": [
+        "事件时间线"
+      ],
+      "alias_of": null,
+      "formal_supported": true
+    },
+    {
+      "name": "faceted_heatmap",
+      "category": "热图与矩阵",
+      "question": "热图与矩阵: faceted_heatmap",
+      "required_fields": [
+        "matrices",
+        "facets",
+        "row_labels",
+        "column_labels"
+      ],
+      "independent_unit": "observation",
+      "status": "dedicated semantic renderer; visual QA pending",
+      "implementation_level": "dedicated",
+      "paper_suitable": false,
+      "simulate": false,
+      "qa_status": "not_checked",
+      "name_zh": "分面热图",
+      "question_zh": "热图与矩阵中的分面热图",
+      "aliases": [
+        "分面热图"
+      ],
+      "alias_of": null,
+      "formal_supported": true
+    },
+    {
+      "name": "feasible_heatmap",
+      "category": "热图与矩阵",
+      "question": "热图与矩阵: feasible_heatmap",
+      "required_fields": [
+        "x_grid",
+        "y_grid",
+        "feasible"
+      ],
+      "independent_unit": "observation",
+      "status": "dedicated semantic renderer; visual QA pending",
+      "implementation_level": "dedicated",
+      "paper_suitable": false,
+      "simulate": false,
+      "qa_status": "not_checked",
+      "name_zh": "可行域热图",
+      "question_zh": "热图与矩阵中的可行域热图",
+      "aliases": [
+        "可行域热图"
+      ],
+      "alias_of": null,
+      "formal_supported": true
+    },
+    {
+      "name": "feasible_region",
+      "category": "优化、灵敏度与稳健性",
+      "question": "优化、灵敏度与稳健性: feasible_region",
+      "required_fields": [
+        "x_grid",
+        "y_grid",
+        "feasible"
+      ],
+      "independent_unit": "observation",
+      "status": "dedicated semantic renderer; visual QA pending",
+      "implementation_level": "dedicated",
+      "paper_suitable": false,
+      "simulate": false,
+      "qa_status": "not_checked",
+      "name_zh": "可行域图",
+      "question_zh": "优化、灵敏度与稳健性中的可行域图",
+      "aliases": [
+        "可行域图"
+      ],
+      "alias_of": null,
+      "formal_supported": true
+    },
+    {
+      "name": "feature_importance",
+      "category": "模型评估",
+      "question": "模型评估: feature_importance",
+      "required_fields": [
+        "categories",
+        "values",
+        "method"
+      ],
+      "independent_unit": "observation",
+      "status": "dedicated semantic renderer; visual QA pending",
+      "implementation_level": "dedicated",
+      "paper_suitable": false,
+      "simulate": false,
+      "qa_status": "not_checked",
+      "name_zh": "特征重要性图",
+      "question_zh": "模型评估中的特征重要性图",
+      "aliases": [
+        "特征重要性图"
+      ],
+      "alias_of": null,
+      "formal_supported": true
+    },
+    {
+      "name": "flowchart",
+      "category": "网络、流量与空间关系",
+      "question": "网络、流量与空间关系: flowchart",
+      "required_fields": [
+        "nodes",
+        "edges"
+      ],
+      "independent_unit": "observation",
+      "status": "dedicated semantic renderer; visual QA pending",
+      "implementation_level": "dedicated",
+      "paper_suitable": false,
+      "simulate": false,
+      "qa_status": "not_checked",
+      "name_zh": "流程图",
+      "question_zh": "网络、流量与空间关系中的流程图",
+      "aliases": [
+        "流程图"
+      ],
+      "alias_of": null,
+      "formal_supported": true
+    },
+    {
+      "name": "forecast_interval",
+      "category": "时间序列与动态过程",
+      "question": "时间序列与动态过程: forecast_interval",
+      "required_fields": [
+        "time",
+        "observed",
+        "predicted",
+        "lower",
+        "upper",
+        "interval_kind"
+      ],
+      "independent_unit": "observation",
+      "status": "dedicated statistical renderer; visual QA pending",
+      "implementation_level": "dedicated",
+      "paper_suitable": false,
+      "simulate": false,
+      "qa_status": "not_checked",
+      "name_zh": "预测区间图",
+      "question_zh": "时间序列与动态过程中的预测区间图",
+      "aliases": [
+        "预测区间图"
+      ],
+      "alias_of": null,
+      "formal_supported": true
+    },
+    {
+      "name": "forest",
+      "category": "类别比较",
+      "question": "类别比较: forest",
+      "required_fields": [
+        "categories",
+        "estimate",
+        "lower",
+        "upper",
+        "interval_kind"
+      ],
+      "independent_unit": "observation",
+      "status": "dedicated statistical renderer; visual QA pending",
+      "implementation_level": "dedicated",
+      "paper_suitable": false,
+      "simulate": false,
+      "qa_status": "not_checked",
+      "name_zh": "森林图",
+      "question_zh": "类别比较中的森林图",
+      "aliases": [
+        "森林图"
+      ],
+      "alias_of": null,
+      "formal_supported": true
+    },
+    {
+      "name": "gantt",
+      "category": "时间序列与动态过程",
+      "question": "时间序列与动态过程: gantt",
+      "required_fields": [
+        "tasks",
+        "start",
+        "end"
+      ],
+      "independent_unit": "observation",
+      "status": "dedicated semantic renderer; visual QA pending",
+      "implementation_level": "dedicated",
+      "paper_suitable": false,
+      "simulate": false,
+      "qa_status": "not_checked",
+      "name_zh": "甘特图",
+      "question_zh": "时间序列与动态过程中的甘特图",
+      "aliases": [
+        "甘特图"
+      ],
+      "alias_of": null,
+      "formal_supported": true
+    },
+    {
+      "name": "geometry",
+      "category": "数学建模专用图",
+      "question": "数学建模专用图: geometry",
+      "required_fields": [
+        "points",
+        "segments",
+        "polygons"
+      ],
+      "independent_unit": "observation",
+      "status": "dedicated semantic renderer; visual QA pending",
+      "implementation_level": "dedicated",
+      "paper_suitable": false,
+      "simulate": false,
+      "qa_status": "not_checked",
+      "name_zh": "几何结构图",
+      "question_zh": "数学建模专用图中的几何结构图",
+      "aliases": [
+        "几何结构图"
+      ],
+      "alias_of": null,
+      "formal_supported": true
+    },
+    {
+      "name": "global_local",
+      "category": "优化、灵敏度与稳健性",
+      "question": "优化、灵敏度与稳健性: global_local",
+      "required_fields": [
+        "parameters",
+        "local",
+        "global_values",
+        "method"
+      ],
+      "independent_unit": "observation",
+      "status": "dedicated semantic renderer; visual QA pending",
+      "implementation_level": "dedicated",
+      "paper_suitable": false,
+      "simulate": false,
+      "qa_status": "not_checked",
+      "name_zh": "全局-局部敏感性图",
+      "question_zh": "优化、灵敏度与稳健性中的全局-局部敏感性图",
+      "aliases": [
+        "全局-局部敏感性图"
+      ],
+      "alias_of": null,
+      "formal_supported": true
+    },
+    {
+      "name": "grouped_bar",
+      "category": "类别比较",
+      "question": "类别比较: grouped_bar",
+      "required_fields": [
+        "categories",
+        "values",
+        "groups"
+      ],
+      "independent_unit": "observation",
+      "status": "dedicated statistical renderer; visual QA pending",
+      "implementation_level": "dedicated",
+      "paper_suitable": false,
+      "simulate": false,
+      "qa_status": "not_checked",
+      "name_zh": "分组柱状图",
+      "question_zh": "类别比较中的分组柱状图",
+      "aliases": [
+        "分组柱状图"
+      ],
+      "alias_of": null,
+      "formal_supported": true
+    },
+    {
+      "name": "heatmap",
+      "category": "热图与矩阵",
+      "question": "热图与矩阵: heatmap",
+      "required_fields": [
+        "matrix"
+      ],
+      "independent_unit": "observation",
+      "status": "dedicated statistical renderer; visual QA pending",
+      "implementation_level": "dedicated",
+      "paper_suitable": false,
+      "simulate": false,
+      "qa_status": "not_checked",
+      "name_zh": "热图",
+      "question_zh": "热图与矩阵中的热图",
+      "aliases": [
+        "热图"
+      ],
+      "alias_of": null,
+      "formal_supported": true
+    },
+    {
+      "name": "hexbin",
+      "category": "关系与相关",
+      "question": "关系与相关: hexbin",
+      "required_fields": [
+        "x",
+        "y"
+      ],
+      "independent_unit": "observation",
+      "status": "dedicated semantic renderer; visual QA pending",
+      "implementation_level": "dedicated",
+      "paper_suitable": false,
+      "simulate": false,
+      "qa_status": "not_checked",
+      "name_zh": "六边形分箱图",
+      "question_zh": "关系与相关中的六边形分箱图",
+      "aliases": [
+        "六边形分箱图"
+      ],
+      "alias_of": null,
+      "formal_supported": true
+    },
+    {
+      "name": "high_dim_density",
+      "category": "降维、聚类与高维结构",
+      "question": "降维、聚类与高维结构: high_dim_density",
+      "required_fields": [
+        "data",
+        "features"
+      ],
+      "independent_unit": "observation",
+      "status": "dedicated semantic renderer; visual QA pending",
+      "implementation_level": "dedicated",
+      "paper_suitable": false,
+      "simulate": false,
+      "qa_status": "not_checked",
+      "name_zh": "高维密度图",
+      "question_zh": "降维、聚类与高维结构中的高维密度图",
+      "aliases": [
+        "高维密度图"
+      ],
+      "alias_of": null,
+      "formal_supported": true
+    },
+    {
+      "name": "histogram",
+      "category": "单变量与分布",
+      "question": "单变量与分布: histogram",
+      "required_fields": [
+        "values"
+      ],
+      "independent_unit": "observation",
+      "status": "dedicated statistical renderer; visual QA pending",
+      "implementation_level": "dedicated",
+      "paper_suitable": false,
+      "simulate": false,
+      "qa_status": "not_checked",
+      "name_zh": "直方图",
+      "question_zh": "单变量与分布中的直方图",
+      "aliases": [
+        "直方图"
+      ],
+      "alias_of": null,
+      "formal_supported": true
+    },
+    {
+      "name": "horizontal_bar",
+      "category": "类别比较",
+      "question": "类别比较: horizontal_bar",
+      "required_fields": [
+        "categories",
+        "values"
+      ],
+      "independent_unit": "observation",
+      "status": "dedicated statistical renderer; visual QA pending",
+      "implementation_level": "dedicated",
+      "paper_suitable": false,
+      "simulate": false,
+      "qa_status": "not_checked",
+      "name_zh": "横向柱状图",
+      "question_zh": "类别比较中的横向柱状图",
+      "aliases": [
+        "横向柱状图"
+      ],
+      "alias_of": null,
+      "formal_supported": true
+    },
+    {
+      "name": "ice",
+      "category": "模型评估",
+      "question": "模型评估: ice",
+      "required_fields": [
+        "grid",
+        "curves",
+        "feature_name"
+      ],
+      "independent_unit": "observation",
+      "status": "dedicated semantic renderer; visual QA pending",
+      "implementation_level": "dedicated",
+      "paper_suitable": false,
+      "simulate": false,
+      "qa_status": "not_checked",
+      "name_zh": "个体条件期望图",
+      "question_zh": "模型评估中的个体条件期望图",
+      "aliases": [
+        "个体条件期望图"
+      ],
+      "alias_of": null,
+      "formal_supported": true
+    },
+    {
+      "name": "indicator_correlation",
+      "category": "多指标与综合评价",
+      "question": "多指标与综合评价: indicator_correlation",
+      "required_fields": [
+        "data"
+      ],
+      "independent_unit": "observation",
+      "status": "alias of correlation_matrix",
+      "implementation_level": "alias",
+      "paper_suitable": false,
+      "simulate": false,
+      "qa_status": "not_checked",
+      "name_zh": "指标相关图",
+      "question_zh": "多指标与综合评价中的指标相关图",
+      "aliases": [
+        "指标相关图"
+      ],
+      "alias_of": "correlation_matrix",
+      "formal_supported": true
+    },
+    {
+      "name": "input_model_validation_output",
+      "category": "数学建模专用图",
+      "question": "数学建模专用图: input_model_validation_output",
+      "required_fields": [
+        "nodes",
+        "edges",
+        "stages"
+      ],
+      "independent_unit": "observation",
+      "status": "dedicated semantic renderer; visual QA pending",
+      "implementation_level": "dedicated",
+      "paper_suitable": false,
+      "simulate": false,
+      "qa_status": "not_checked",
+      "name_zh": "输入-模型-验证-输出图",
+      "question_zh": "数学建模专用图中的输入-模型-验证-输出图",
+      "aliases": [
+        "输入-模型-验证-输出图"
+      ],
+      "alias_of": null,
+      "formal_supported": true
+    },
+    {
+      "name": "jitter",
+      "category": "单变量与分布",
+      "question": "单变量与分布: jitter",
+      "required_fields": [
+        "categories",
+        "samples"
+      ],
+      "independent_unit": "observation",
+      "status": "dedicated semantic renderer; visual QA pending",
+      "implementation_level": "dedicated",
+      "paper_suitable": false,
+      "simulate": false,
+      "qa_status": "not_checked",
+      "name_zh": "抖动散点图",
+      "question_zh": "单变量与分布中的抖动散点图",
+      "aliases": [
+        "抖动散点图"
+      ],
+      "alias_of": null,
+      "formal_supported": true
+    },
+    {
+      "name": "joint_density",
+      "category": "关系与相关",
+      "question": "关系与相关: joint_density",
+      "required_fields": [
+        "x",
+        "y"
+      ],
+      "independent_unit": "observation",
+      "status": "dedicated semantic renderer; visual QA pending",
+      "implementation_level": "dedicated",
+      "paper_suitable": false,
+      "simulate": false,
+      "qa_status": "not_checked",
+      "name_zh": "联合密度图",
+      "question_zh": "关系与相关中的联合密度图",
+      "aliases": [
+        "联合密度图"
+      ],
+      "alias_of": null,
+      "formal_supported": true
+    },
+    {
+      "name": "kde",
+      "category": "单变量与分布",
+      "question": "单变量与分布: kde",
+      "required_fields": [
+        "values"
+      ],
+      "independent_unit": "observation",
+      "status": "dedicated statistical renderer; visual QA pending",
+      "implementation_level": "dedicated",
+      "paper_suitable": false,
+      "simulate": false,
+      "qa_status": "not_checked",
+      "name_zh": "核密度图",
+      "question_zh": "单变量与分布中的核密度图",
+      "aliases": [
+        "核密度图"
+      ],
+      "alias_of": null,
+      "formal_supported": true
+    },
+    {
+      "name": "learning_curve",
+      "category": "模型评估",
+      "question": "模型评估: learning_curve",
+      "required_fields": [
+        "train_size",
+        "mean_score",
+        "lower",
+        "upper",
+        "interval_kind"
+      ],
+      "independent_unit": "observation",
+      "status": "dedicated statistical renderer; visual QA pending",
+      "implementation_level": "dedicated",
+      "paper_suitable": false,
+      "simulate": false,
+      "qa_status": "not_checked",
+      "name_zh": "学习曲线",
+      "question_zh": "模型评估中的学习曲线",
+      "aliases": [
+        "学习曲线"
+      ],
+      "alias_of": null,
+      "formal_supported": true
+    },
+    {
+      "name": "lift_gain",
+      "category": "模型评估",
+      "question": "模型评估: lift_gain",
+      "required_fields": [
+        "population_fraction",
+        "gain",
+        "lift"
+      ],
+      "independent_unit": "observation",
+      "status": "dedicated semantic renderer; visual QA pending",
+      "implementation_level": "dedicated",
+      "paper_suitable": false,
+      "simulate": false,
+      "qa_status": "not_checked",
+      "name_zh": "提升-增益曲线",
+      "question_zh": "模型评估中的提升-增益曲线",
+      "aliases": [
+        "提升-增益曲线"
+      ],
+      "alias_of": null,
+      "formal_supported": true
+    },
+    {
+      "name": "lollipop",
+      "category": "类别比较",
+      "question": "类别比较: lollipop",
+      "required_fields": [
+        "categories",
+        "values"
+      ],
+      "independent_unit": "observation",
+      "status": "dedicated semantic renderer; visual QA pending",
+      "implementation_level": "dedicated",
+      "paper_suitable": false,
+      "simulate": false,
+      "qa_status": "not_checked",
+      "name_zh": "棒棒糖图",
+      "question_zh": "类别比较中的棒棒糖图",
+      "aliases": [
+        "棒棒糖图"
+      ],
+      "alias_of": null,
+      "formal_supported": true
+    },
+    {
+      "name": "mantel",
+      "category": "关系与相关",
+      "question": "关系与相关: mantel",
+      "required_fields": [
+        "distance_a",
+        "distance_b",
+        "r",
+        "p",
+        "permutations",
+        "seed"
+      ],
+      "independent_unit": "observation",
+      "status": "dedicated semantic renderer; visual QA pending",
+      "implementation_level": "dedicated",
+      "paper_suitable": false,
+      "simulate": false,
+      "qa_status": "not_checked",
+      "name_zh": "Mantel关联图",
+      "question_zh": "关系与相关中的Mantel关联图",
+      "aliases": [
+        "Mantel关联图"
+      ],
+      "alias_of": null,
+      "formal_supported": true
+    },
+    {
+      "name": "mechanism",
+      "category": "数学建模专用图",
+      "question": "数学建模专用图: mechanism",
+      "required_fields": [
+        "nodes",
+        "edges",
+        "edge_labels"
+      ],
+      "independent_unit": "observation",
+      "status": "dedicated semantic renderer; visual QA pending",
+      "implementation_level": "dedicated",
+      "paper_suitable": false,
+      "simulate": false,
+      "qa_status": "not_checked",
+      "name_zh": "机制示意图",
+      "question_zh": "数学建模专用图中的机制示意图",
+      "aliases": [
+        "机制示意图"
+      ],
+      "alias_of": null,
+      "formal_supported": true
+    },
+    {
+      "name": "model_interval",
+      "category": "模型评估",
+      "question": "模型评估: model_interval",
+      "required_fields": [
+        "center",
+        "lower",
+        "upper",
+        "interval_kind"
+      ],
+      "independent_unit": "observation",
+      "status": "dedicated semantic renderer; visual QA pending",
+      "implementation_level": "dedicated",
+      "paper_suitable": false,
+      "simulate": false,
+      "qa_status": "not_checked",
+      "name_zh": "模型区间图",
+      "question_zh": "模型评估中的模型区间图",
+      "aliases": [
+        "模型区间图"
+      ],
+      "alias_of": null,
+      "formal_supported": true
+    },
+    {
+      "name": "multi_metric_comparison",
+      "category": "类别比较",
+      "question": "类别比较: multi_metric_comparison",
+      "required_fields": [
+        "categories",
+        "metrics",
+        "values"
+      ],
+      "independent_unit": "observation",
+      "status": "dedicated semantic renderer; visual QA pending",
+      "implementation_level": "dedicated",
+      "paper_suitable": false,
+      "simulate": false,
+      "qa_status": "not_checked",
+      "name_zh": "多指标比较图",
+      "question_zh": "类别比较中的多指标比较图",
+      "aliases": [
+        "多指标比较图"
+      ],
+      "alias_of": null,
+      "formal_supported": true
+    },
+    {
+      "name": "multi_metric_points",
+      "category": "多指标与综合评价",
+      "question": "多指标与综合评价: multi_metric_points",
+      "required_fields": [
+        "categories",
+        "metrics",
+        "values"
+      ],
+      "independent_unit": "observation",
+      "status": "alias of multi_metric_comparison",
+      "implementation_level": "alias",
+      "paper_suitable": false,
+      "simulate": false,
+      "qa_status": "not_checked",
+      "name_zh": "多指标点图",
+      "question_zh": "多指标与综合评价中的多指标点图",
+      "aliases": [
+        "多指标点图"
+      ],
+      "alias_of": "multi_metric_comparison",
+      "formal_supported": true
+    },
+    {
+      "name": "multi_series",
+      "category": "时间序列与动态过程",
+      "question": "时间序列与动态过程: multi_series",
+      "required_fields": [
+        "time",
+        "values",
+        "groups"
+      ],
+      "independent_unit": "observation",
+      "status": "dedicated semantic renderer; visual QA pending",
+      "implementation_level": "dedicated",
+      "paper_suitable": false,
+      "simulate": false,
+      "qa_status": "not_checked",
+      "name_zh": "多序列折线图",
+      "question_zh": "时间序列与动态过程中的多序列折线图",
+      "aliases": [
+        "多序列折线图"
+      ],
+      "alias_of": null,
+      "formal_supported": true
+    },
+    {
+      "name": "observed_predicted",
+      "category": "时间序列与动态过程",
+      "question": "时间序列与动态过程: observed_predicted",
+      "required_fields": [
+        "observed",
+        "predicted"
+      ],
+      "independent_unit": "observation",
+      "status": "dedicated statistical renderer; visual QA pending",
+      "implementation_level": "dedicated",
+      "paper_suitable": false,
+      "simulate": false,
+      "qa_status": "not_checked",
+      "name_zh": "观测值-预测值图",
+      "question_zh": "时间序列与动态过程中的观测值-预测值图",
+      "aliases": [
+        "观测值-预测值图"
+      ],
+      "alias_of": null,
+      "formal_supported": true
+    },
+    {
+      "name": "optimum_distribution",
+      "category": "优化、灵敏度与稳健性",
+      "question": "优化、灵敏度与稳健性: optimum_distribution",
+      "required_fields": [
+        "runs",
+        "values"
+      ],
+      "independent_unit": "observation",
+      "status": "dedicated semantic renderer; visual QA pending",
+      "implementation_level": "dedicated",
+      "paper_suitable": false,
+      "simulate": false,
+      "qa_status": "not_checked",
+      "name_zh": "最优值分布图",
+      "question_zh": "优化、灵敏度与稳健性中的最优值分布图",
+      "aliases": [
+        "最优值分布图"
+      ],
+      "alias_of": null,
+      "formal_supported": true
+    },
+    {
+      "name": "pairgrid",
+      "category": "关系与相关",
+      "question": "关系与相关: pairgrid",
+      "required_fields": [
+        "data"
+      ],
+      "independent_unit": "observation",
+      "status": "dedicated statistical renderer; visual QA pending",
+      "implementation_level": "dedicated",
+      "paper_suitable": false,
+      "simulate": false,
+      "qa_status": "not_checked",
+      "name_zh": "成对关系图",
+      "question_zh": "关系与相关中的成对关系图",
+      "aliases": [
+        "成对关系图"
+      ],
+      "alias_of": null,
+      "formal_supported": true
+    },
+    {
+      "name": "parallel_coordinates",
+      "category": "降维、聚类与高维结构",
+      "question": "降维、聚类与高维结构: parallel_coordinates",
+      "required_fields": [
+        "data",
+        "features"
+      ],
+      "independent_unit": "observation",
+      "status": "dedicated semantic renderer; visual QA pending",
+      "implementation_level": "dedicated",
+      "paper_suitable": false,
+      "simulate": false,
+      "qa_status": "not_checked",
+      "name_zh": "平行坐标图",
+      "question_zh": "降维、聚类与高维结构中的平行坐标图",
+      "aliases": [
+        "平行坐标图"
+      ],
+      "alias_of": null,
+      "formal_supported": true
+    },
+    {
+      "name": "parameter_response",
+      "category": "数学建模专用图",
+      "question": "数学建模专用图: parameter_response",
+      "required_fields": [
+        "x_grid",
+        "y_grid",
+        "z",
+        "parameters"
+      ],
+      "independent_unit": "observation",
+      "status": "dedicated semantic renderer; visual QA pending",
+      "implementation_level": "dedicated",
+      "paper_suitable": false,
+      "simulate": false,
+      "qa_status": "not_checked",
+      "name_zh": "参数响应图",
+      "question_zh": "数学建模专用图中的参数响应图",
+      "aliases": [
+        "参数响应图"
+      ],
+      "alias_of": null,
+      "formal_supported": true
+    },
+    {
+      "name": "pareto",
+      "category": "优化、灵敏度与稳健性",
+      "question": "优化、灵敏度与稳健性: pareto",
+      "required_fields": [
+        "x",
+        "y"
+      ],
+      "independent_unit": "observation",
+      "status": "dedicated statistical renderer; visual QA pending",
+      "implementation_level": "dedicated",
+      "paper_suitable": false,
+      "simulate": false,
+      "qa_status": "not_checked",
+      "name_zh": "帕累托前沿图",
+      "question_zh": "优化、灵敏度与稳健性中的帕累托前沿图",
+      "aliases": [
+        "帕累托前沿图"
+      ],
+      "alias_of": null,
+      "formal_supported": true
+    },
+    {
+      "name": "pareto_distribution",
+      "category": "单变量与分布",
+      "question": "单变量与分布: pareto_distribution",
+      "required_fields": [
+        "values"
+      ],
+      "independent_unit": "observation",
+      "status": "dedicated semantic renderer; visual QA pending",
+      "implementation_level": "dedicated",
+      "paper_suitable": false,
+      "simulate": false,
+      "qa_status": "not_checked",
+      "name_zh": "帕累托分布图",
+      "question_zh": "单变量与分布中的帕累托分布图",
+      "aliases": [
+        "帕累托分布图"
+      ],
+      "alias_of": null,
+      "formal_supported": true
+    },
+    {
+      "name": "partial_autocorrelation",
+      "category": "时间序列与动态过程",
+      "question": "时间序列与动态过程: partial_autocorrelation",
+      "required_fields": [
+        "lag",
+        "correlation"
+      ],
+      "independent_unit": "observation",
+      "status": "dedicated semantic renderer; visual QA pending",
+      "implementation_level": "dedicated",
+      "paper_suitable": false,
+      "simulate": false,
+      "qa_status": "not_checked",
+      "name_zh": "偏自相关图",
+      "question_zh": "时间序列与动态过程中的偏自相关图",
+      "aliases": [
+        "偏自相关图"
+      ],
+      "alias_of": null,
+      "formal_supported": true
+    },
+    {
+      "name": "partial_correlation",
+      "category": "关系与相关",
+      "question": "关系与相关: partial_correlation",
+      "required_fields": [
+        "matrix",
+        "labels",
+        "control_labels"
+      ],
+      "independent_unit": "observation",
+      "status": "dedicated semantic renderer; visual QA pending",
+      "implementation_level": "dedicated",
+      "paper_suitable": false,
+      "simulate": false,
+      "qa_status": "not_checked",
+      "name_zh": "偏相关图",
+      "question_zh": "关系与相关中的偏相关图",
+      "aliases": [
+        "偏相关图"
+      ],
+      "alias_of": null,
+      "formal_supported": true
+    },
+    {
+      "name": "partial_dependence",
+      "category": "关系与相关",
+      "question": "关系与相关: partial_dependence",
+      "required_fields": [
+        "grid",
+        "response",
+        "feature_name"
+      ],
+      "independent_unit": "observation",
+      "status": "dedicated semantic renderer; visual QA pending",
+      "implementation_level": "dedicated",
+      "paper_suitable": false,
+      "simulate": false,
+      "qa_status": "not_checked",
+      "name_zh": "部分依赖图",
+      "question_zh": "关系与相关中的部分依赖图",
+      "aliases": [
+        "部分依赖图"
+      ],
+      "alias_of": null,
+      "formal_supported": true
+    },
+    {
+      "name": "pca_biplot",
+      "category": "降维、聚类与高维结构",
+      "question": "降维、聚类与高维结构: pca_biplot",
+      "required_fields": [
+        "scores",
+        "loadings",
+        "explained_variance"
+      ],
+      "independent_unit": "observation",
+      "status": "dedicated statistical renderer; visual QA pending",
+      "implementation_level": "dedicated",
+      "paper_suitable": false,
+      "simulate": false,
+      "qa_status": "not_checked",
+      "name_zh": "主成分双标图",
+      "question_zh": "降维、聚类与高维结构中的主成分双标图",
+      "aliases": [
+        "主成分双标图"
+      ],
+      "alias_of": null,
+      "formal_supported": true
+    },
+    {
+      "name": "pca_loadings",
+      "category": "降维、聚类与高维结构",
+      "question": "降维、聚类与高维结构: pca_loadings",
+      "required_fields": [
+        "loadings"
+      ],
+      "independent_unit": "observation",
+      "status": "dedicated statistical renderer; visual QA pending",
+      "implementation_level": "dedicated",
+      "paper_suitable": false,
+      "simulate": false,
+      "qa_status": "not_checked",
+      "name_zh": "主成分载荷图",
+      "question_zh": "降维、聚类与高维结构中的主成分载荷图",
+      "aliases": [
+        "主成分载荷图"
+      ],
+      "alias_of": null,
+      "formal_supported": true
+    },
+    {
+      "name": "pca_scores",
+      "category": "降维、聚类与高维结构",
+      "question": "降维、聚类与高维结构: pca_scores",
+      "required_fields": [
+        "scores"
+      ],
+      "independent_unit": "observation",
+      "status": "dedicated statistical renderer; visual QA pending",
+      "implementation_level": "dedicated",
+      "paper_suitable": false,
+      "simulate": false,
+      "qa_status": "not_checked",
+      "name_zh": "主成分得分图",
+      "question_zh": "降维、聚类与高维结构中的主成分得分图",
+      "aliases": [
+        "主成分得分图"
+      ],
+      "alias_of": null,
+      "formal_supported": true
+    },
+    {
+      "name": "percent_stacked_bar",
+      "category": "类别比较",
+      "question": "类别比较: percent_stacked_bar",
+      "required_fields": [
+        "categories",
+        "values",
+        "groups"
+      ],
+      "independent_unit": "observation",
+      "status": "dedicated semantic renderer; visual QA pending",
+      "implementation_level": "dedicated",
+      "paper_suitable": false,
+      "simulate": false,
+      "qa_status": "not_checked",
+      "name_zh": "百分比堆叠柱状图",
+      "question_zh": "类别比较中的百分比堆叠柱状图",
+      "aliases": [
+        "百分比堆叠柱状图"
+      ],
+      "alias_of": null,
+      "formal_supported": true
+    },
+    {
+      "name": "perturbation",
+      "category": "优化、灵敏度与稳健性",
+      "question": "优化、灵敏度与稳健性: perturbation",
+      "required_fields": [
+        "x",
+        "response",
+        "parameter"
+      ],
+      "independent_unit": "observation",
+      "status": "dedicated semantic renderer; visual QA pending",
+      "implementation_level": "dedicated",
+      "paper_suitable": false,
+      "simulate": false,
+      "qa_status": "not_checked",
+      "name_zh": "扰动分析图",
+      "question_zh": "优化、灵敏度与稳健性中的扰动分析图",
+      "aliases": [
+        "扰动分析图"
+      ],
+      "alias_of": null,
+      "formal_supported": true
+    },
+    {
+      "name": "pr_curve",
+      "category": "模型评估",
+      "question": "模型评估: pr_curve",
+      "required_fields": [
+        "y_true",
+        "y_score"
+      ],
+      "independent_unit": "observation",
+      "status": "dedicated statistical renderer; visual QA pending",
+      "implementation_level": "dedicated",
+      "paper_suitable": false,
+      "simulate": false,
+      "qa_status": "not_checked",
+      "name_zh": "PR曲线",
+      "question_zh": "模型评估中的PR曲线",
+      "aliases": [
+        "PR曲线"
+      ],
+      "alias_of": null,
+      "formal_supported": true
+    },
+    {
+      "name": "probability_plot",
+      "category": "单变量与分布",
+      "question": "单变量与分布: probability_plot",
+      "required_fields": [
+        "theoretical",
+        "observed",
+        "distribution"
+      ],
+      "independent_unit": "observation",
+      "status": "dedicated semantic renderer; visual QA pending",
+      "implementation_level": "dedicated",
+      "paper_suitable": false,
+      "simulate": false,
+      "qa_status": "not_checked",
+      "name_zh": "概率图",
+      "question_zh": "单变量与分布中的概率图",
+      "aliases": [
+        "概率图"
+      ],
+      "alias_of": null,
+      "formal_supported": true
+    },
+    {
+      "name": "qq_plot",
+      "category": "单变量与分布",
+      "question": "单变量与分布: qq_plot",
+      "required_fields": [
+        "values"
+      ],
+      "independent_unit": "observation",
+      "status": "dedicated statistical renderer; visual QA pending",
+      "implementation_level": "dedicated",
+      "paper_suitable": false,
+      "simulate": false,
+      "qa_status": "not_checked",
+      "name_zh": "QQ图",
+      "question_zh": "单变量与分布中的QQ图",
+      "aliases": [
+        "QQ图"
+      ],
+      "alias_of": null,
+      "formal_supported": true
+    },
+    {
+      "name": "radar",
+      "category": "多指标与综合评价",
+      "question": "多指标与综合评价: radar",
+      "required_fields": [
+        "metrics",
+        "values"
+      ],
+      "independent_unit": "observation",
+      "status": "dedicated statistical renderer; visual QA pending",
+      "implementation_level": "dedicated",
+      "paper_suitable": false,
+      "simulate": false,
+      "qa_status": "not_checked",
+      "name_zh": "雷达图",
+      "question_zh": "多指标与综合评价中的雷达图",
+      "aliases": [
+        "雷达图"
+      ],
+      "alias_of": null,
+      "formal_supported": true
+    },
+    {
+      "name": "raincloud",
+      "category": "单变量与分布",
+      "question": "单变量与分布: raincloud",
+      "required_fields": [
+        "values"
+      ],
+      "independent_unit": "observation",
+      "status": "dedicated statistical renderer; visual QA pending",
+      "implementation_level": "dedicated",
+      "paper_suitable": false,
+      "simulate": false,
+      "qa_status": "not_checked",
+      "name_zh": "雨云图",
+      "question_zh": "单变量与分布中的雨云图",
+      "aliases": [
+        "雨云图"
+      ],
+      "alias_of": null,
+      "formal_supported": true
+    },
+    {
+      "name": "ranking",
+      "category": "多指标与综合评价",
+      "question": "多指标与综合评价: ranking",
+      "required_fields": [
+        "categories",
+        "values",
+        "direction"
+      ],
+      "independent_unit": "observation",
+      "status": "dedicated semantic renderer; visual QA pending",
+      "implementation_level": "dedicated",
+      "paper_suitable": false,
+      "simulate": false,
+      "qa_status": "not_checked",
+      "name_zh": "排名图",
+      "question_zh": "多指标与综合评价中的排名图",
+      "aliases": [
+        "排名图"
+      ],
+      "alias_of": null,
+      "formal_supported": true
+    },
+    {
+      "name": "raw_points",
+      "category": "类别比较",
+      "question": "类别比较: raw_points",
+      "required_fields": [
+        "categories",
+        "samples"
+      ],
+      "independent_unit": "observation",
+      "status": "dedicated semantic renderer; visual QA pending",
+      "implementation_level": "dedicated",
+      "paper_suitable": false,
+      "simulate": false,
+      "qa_status": "not_checked",
+      "name_zh": "原始点图",
+      "question_zh": "类别比较中的原始点图",
+      "aliases": [
+        "原始点图"
+      ],
+      "alias_of": null,
+      "formal_supported": true
+    },
+    {
+      "name": "repeated_convergence",
+      "category": "优化、灵敏度与稳健性",
+      "question": "优化、灵敏度与稳健性: repeated_convergence",
+      "required_fields": [
+        "iterations",
+        "objectives",
+        "runs"
+      ],
+      "independent_unit": "observation",
+      "status": "dedicated semantic renderer; visual QA pending",
+      "implementation_level": "dedicated",
+      "paper_suitable": false,
+      "simulate": false,
+      "qa_status": "not_checked",
+      "name_zh": "重复收敛曲线",
+      "question_zh": "优化、灵敏度与稳健性中的重复收敛曲线",
+      "aliases": [
+        "重复收敛曲线"
+      ],
+      "alias_of": null,
+      "formal_supported": true
+    },
+    {
+      "name": "residual_distribution",
+      "category": "模型评估",
+      "question": "模型评估: residual_distribution",
+      "required_fields": [
+        "observed",
+        "predicted"
+      ],
+      "independent_unit": "observation",
+      "status": "dedicated semantic renderer; visual QA pending",
+      "implementation_level": "dedicated",
+      "paper_suitable": false,
+      "simulate": false,
+      "qa_status": "not_checked",
+      "name_zh": "残差分布图",
+      "question_zh": "模型评估中的残差分布图",
+      "aliases": [
+        "残差分布图"
+      ],
+      "alias_of": null,
+      "formal_supported": true
+    },
+    {
+      "name": "residuals",
+      "category": "模型评估",
+      "question": "模型评估: residuals",
+      "required_fields": [
+        "observed",
+        "predicted"
+      ],
+      "independent_unit": "observation",
+      "status": "dedicated statistical renderer; visual QA pending",
+      "implementation_level": "dedicated",
+      "paper_suitable": false,
+      "simulate": false,
+      "qa_status": "not_checked",
+      "name_zh": "残差图",
+      "question_zh": "模型评估中的残差图",
+      "aliases": [
+        "残差图"
+      ],
+      "alias_of": null,
+      "formal_supported": true
+    },
+    {
+      "name": "response_1d",
+      "category": "优化、灵敏度与稳健性",
+      "question": "优化、灵敏度与稳健性: response_1d",
+      "required_fields": [
+        "x",
+        "response",
+        "parameter"
+      ],
+      "independent_unit": "observation",
+      "status": "dedicated semantic renderer; visual QA pending",
+      "implementation_level": "dedicated",
+      "paper_suitable": false,
+      "simulate": false,
+      "qa_status": "not_checked",
+      "name_zh": "一维响应曲线",
+      "question_zh": "优化、灵敏度与稳健性中的一维响应曲线",
+      "aliases": [
+        "一维响应曲线"
+      ],
+      "alias_of": null,
+      "formal_supported": true
+    },
+    {
+      "name": "response_surface",
+      "category": "热图与矩阵",
+      "question": "热图与矩阵: response_surface",
+      "required_fields": [
+        "x_grid",
+        "y_grid",
+        "z"
+      ],
+      "independent_unit": "observation",
+      "status": "dedicated statistical renderer; visual QA pending",
+      "implementation_level": "dedicated",
+      "paper_suitable": false,
+      "simulate": false,
+      "qa_status": "not_checked",
+      "name_zh": "响应面图",
+      "question_zh": "热图与矩阵中的响应面图",
+      "aliases": [
+        "响应面图"
+      ],
+      "alias_of": null,
+      "formal_supported": true
+    },
+    {
+      "name": "response_surface_opt",
+      "category": "优化、灵敏度与稳健性",
+      "question": "优化、灵敏度与稳健性: response_surface_opt",
+      "required_fields": [
+        "x_grid",
+        "y_grid",
+        "z",
+        "direction"
+      ],
+      "independent_unit": "observation",
+      "status": "dedicated semantic renderer; visual QA pending",
+      "implementation_level": "dedicated",
+      "paper_suitable": false,
+      "simulate": false,
+      "qa_status": "not_checked",
+      "name_zh": "优化响应面图",
+      "question_zh": "优化、灵敏度与稳健性中的优化响应面图",
+      "aliases": [
+        "优化响应面图"
+      ],
+      "alias_of": null,
+      "formal_supported": true
+    },
+    {
+      "name": "ridgeline",
+      "category": "单变量与分布",
+      "question": "单变量与分布: ridgeline",
+      "required_fields": [
+        "groups"
+      ],
+      "independent_unit": "observation",
+      "status": "dedicated statistical renderer; visual QA pending",
+      "implementation_level": "dedicated",
+      "paper_suitable": false,
+      "simulate": false,
+      "qa_status": "not_checked",
+      "name_zh": "山脊图",
+      "question_zh": "单变量与分布中的山脊图",
+      "aliases": [
+        "山脊图"
+      ],
+      "alias_of": null,
+      "formal_supported": true
+    },
+    {
+      "name": "risk_return",
+      "category": "优化、灵敏度与稳健性",
+      "question": "优化、灵敏度与稳健性: risk_return",
+      "required_fields": [
+        "risk",
+        "returns",
+        "labels"
+      ],
+      "independent_unit": "observation",
+      "status": "dedicated semantic renderer; visual QA pending",
+      "implementation_level": "dedicated",
+      "paper_suitable": false,
+      "simulate": false,
+      "qa_status": "not_checked",
+      "name_zh": "风险-收益图",
+      "question_zh": "优化、灵敏度与稳健性中的风险-收益图",
+      "aliases": [
+        "风险-收益图"
+      ],
+      "alias_of": null,
+      "formal_supported": true
+    },
+    {
+      "name": "robustness_envelope",
+      "category": "优化、灵敏度与稳健性",
+      "question": "优化、灵敏度与稳健性: robustness_envelope",
+      "required_fields": [
+        "x",
+        "center",
+        "lower",
+        "upper",
+        "interval_kind"
+      ],
+      "independent_unit": "observation",
+      "status": "dedicated statistical renderer; visual QA pending",
+      "implementation_level": "dedicated",
+      "paper_suitable": false,
+      "simulate": false,
+      "qa_status": "not_checked",
+      "name_zh": "稳健性包络图",
+      "question_zh": "优化、灵敏度与稳健性中的稳健性包络图",
+      "aliases": [
+        "稳健性包络图"
+      ],
+      "alias_of": null,
+      "formal_supported": true
+    },
+    {
+      "name": "roc_curve",
+      "category": "模型评估",
+      "question": "模型评估: roc_curve",
+      "required_fields": [
+        "y_true",
+        "y_score"
+      ],
+      "independent_unit": "observation",
+      "status": "dedicated statistical renderer; visual QA pending",
+      "implementation_level": "dedicated",
+      "paper_suitable": false,
+      "simulate": false,
+      "qa_status": "not_checked",
+      "name_zh": "ROC曲线",
+      "question_zh": "模型评估中的ROC曲线",
+      "aliases": [
+        "ROC曲线"
+      ],
+      "alias_of": null,
+      "formal_supported": true
+    },
+    {
+      "name": "rolling_mean",
+      "category": "时间序列与动态过程",
+      "question": "时间序列与动态过程: rolling_mean",
+      "required_fields": [
+        "time",
+        "center",
+        "window"
+      ],
+      "independent_unit": "observation",
+      "status": "dedicated semantic renderer; visual QA pending",
+      "implementation_level": "dedicated",
+      "paper_suitable": false,
+      "simulate": false,
+      "qa_status": "not_checked",
+      "name_zh": "滚动均值图",
+      "question_zh": "时间序列与动态过程中的滚动均值图",
+      "aliases": [
+        "滚动均值图"
+      ],
+      "alias_of": null,
+      "formal_supported": true
+    },
+    {
+      "name": "sankey",
+      "category": "网络、流量与空间关系",
+      "question": "网络、流量与空间关系: sankey",
+      "required_fields": [
+        "source",
+        "target",
+        "value"
+      ],
+      "independent_unit": "observation",
+      "status": "dedicated statistical renderer; visual QA pending",
+      "implementation_level": "dedicated",
+      "paper_suitable": false,
+      "simulate": false,
+      "qa_status": "not_checked",
+      "name_zh": "桑基图",
+      "question_zh": "网络、流量与空间关系中的桑基图",
+      "aliases": [
+        "桑基图"
+      ],
+      "alias_of": null,
+      "formal_supported": true
+    },
+    {
+      "name": "scatter",
+      "category": "关系与相关",
+      "question": "关系与相关: scatter",
+      "required_fields": [
+        "x",
+        "y"
+      ],
+      "independent_unit": "observation",
+      "status": "dedicated statistical renderer; visual QA pending",
+      "implementation_level": "dedicated",
+      "paper_suitable": false,
+      "simulate": false,
+      "qa_status": "not_checked",
+      "name_zh": "散点图",
+      "question_zh": "关系与相关中的散点图",
+      "aliases": [
+        "散点图"
+      ],
+      "alias_of": null,
+      "formal_supported": true
+    },
+    {
+      "name": "scatter_trend",
+      "category": "关系与相关",
+      "question": "关系与相关: scatter_trend",
+      "required_fields": [
+        "x",
+        "y",
+        "trend"
+      ],
+      "independent_unit": "observation",
+      "status": "dedicated statistical renderer; visual QA pending",
+      "implementation_level": "dedicated",
+      "paper_suitable": false,
+      "simulate": false,
+      "qa_status": "not_checked",
+      "name_zh": "趋势散点图",
+      "question_zh": "关系与相关中的趋势散点图",
+      "aliases": [
+        "趋势散点图"
+      ],
+      "alias_of": null,
+      "formal_supported": true
+    },
+    {
+      "name": "scenario",
+      "category": "优化、灵敏度与稳健性",
+      "question": "优化、灵敏度与稳健性: scenario",
+      "required_fields": [
+        "x",
+        "responses",
+        "scenarios"
+      ],
+      "independent_unit": "observation",
+      "status": "dedicated semantic renderer; visual QA pending",
+      "implementation_level": "dedicated",
+      "paper_suitable": false,
+      "simulate": false,
+      "qa_status": "not_checked",
+      "name_zh": "情景分析图",
+      "question_zh": "优化、灵敏度与稳健性中的情景分析图",
+      "aliases": [
+        "情景分析图"
+      ],
+      "alias_of": null,
+      "formal_supported": true
+    },
+    {
+      "name": "scenario_ranking",
+      "category": "优化、灵敏度与稳健性",
+      "question": "优化、灵敏度与稳健性: scenario_ranking",
+      "required_fields": [
+        "categories",
+        "values",
+        "direction"
+      ],
+      "independent_unit": "observation",
+      "status": "dedicated semantic renderer; visual QA pending",
+      "implementation_level": "dedicated",
+      "paper_suitable": false,
+      "simulate": false,
+      "qa_status": "not_checked",
+      "name_zh": "情景排序图",
+      "question_zh": "优化、灵敏度与稳健性中的情景排序图",
+      "aliases": [
+        "情景排序图"
+      ],
+      "alias_of": null,
+      "formal_supported": true
+    },
+    {
+      "name": "scheme_indicator_matrix",
+      "category": "多指标与综合评价",
+      "question": "多指标与综合评价: scheme_indicator_matrix",
+      "required_fields": [
+        "matrix"
+      ],
+      "independent_unit": "observation",
+      "status": "alias of heatmap",
+      "implementation_level": "alias",
+      "paper_suitable": false,
+      "simulate": false,
+      "qa_status": "not_checked",
+      "name_zh": "方案-指标矩阵",
+      "question_zh": "多指标与综合评价中的方案-指标矩阵",
+      "aliases": [
+        "方案-指标矩阵"
+      ],
+      "alias_of": "heatmap",
+      "formal_supported": true
+    },
+    {
+      "name": "score_bar",
+      "category": "多指标与综合评价",
+      "question": "多指标与综合评价: score_bar",
+      "required_fields": [
+        "categories",
+        "values",
+        "score_kind"
+      ],
+      "independent_unit": "observation",
+      "status": "dedicated semantic renderer; visual QA pending",
+      "implementation_level": "dedicated",
+      "paper_suitable": false,
+      "simulate": false,
+      "qa_status": "not_checked",
+      "name_zh": "综合得分柱状图",
+      "question_zh": "多指标与综合评价中的综合得分柱状图",
+      "aliases": [
+        "综合得分柱状图"
+      ],
+      "alias_of": null,
+      "formal_supported": true
+    },
+    {
+      "name": "scree_plot",
+      "category": "降维、聚类与高维结构",
+      "question": "降维、聚类与高维结构: scree_plot",
+      "required_fields": [
+        "explained_variance"
+      ],
+      "independent_unit": "observation",
+      "status": "dedicated statistical renderer; visual QA pending",
+      "implementation_level": "dedicated",
+      "paper_suitable": false,
+      "simulate": false,
+      "qa_status": "not_checked",
+      "name_zh": "碎石图",
+      "question_zh": "降维、聚类与高维结构中的碎石图",
+      "aliases": [
+        "碎石图"
+      ],
+      "alias_of": null,
+      "formal_supported": true
+    },
+    {
+      "name": "sensitivity",
+      "category": "优化、灵敏度与稳健性",
+      "question": "优化、灵敏度与稳健性: sensitivity",
+      "required_fields": [
+        "x",
+        "response"
+      ],
+      "independent_unit": "observation",
+      "status": "dedicated statistical renderer; visual QA pending",
+      "implementation_level": "dedicated",
+      "paper_suitable": false,
+      "simulate": false,
+      "qa_status": "not_checked",
+      "name_zh": "灵敏度曲线",
+      "question_zh": "优化、灵敏度与稳健性中的灵敏度曲线",
+      "aliases": [
+        "灵敏度曲线"
+      ],
+      "alias_of": null,
+      "formal_supported": true
+    },
+    {
+      "name": "separation_loadings",
+      "category": "降维、聚类与高维结构",
+      "question": "降维、聚类与高维结构: separation_loadings",
+      "required_fields": [
+        "loadings",
+        "labels",
+        "components",
+        "method"
+      ],
+      "independent_unit": "observation",
+      "status": "dedicated semantic renderer; visual QA pending",
+      "implementation_level": "dedicated",
+      "paper_suitable": false,
+      "simulate": false,
+      "qa_status": "not_checked",
+      "name_zh": "分离载荷图",
+      "question_zh": "降维、聚类与高维结构中的分离载荷图",
+      "aliases": [
+        "分离载荷图"
+      ],
+      "alias_of": null,
+      "formal_supported": true
+    },
+    {
+      "name": "shap_beeswarm",
+      "category": "模型评估",
+      "question": "模型评估: shap_beeswarm",
+      "required_fields": [
+        "attributions",
+        "features",
+        "feature_names"
+      ],
+      "independent_unit": "observation",
+      "status": "dedicated semantic renderer; visual QA pending",
+      "implementation_level": "dedicated",
+      "paper_suitable": false,
+      "simulate": false,
+      "qa_status": "not_checked",
+      "name_zh": "SHAP蜂群图",
+      "question_zh": "模型评估中的SHAP蜂群图",
+      "aliases": [
+        "SHAP蜂群图"
+      ],
+      "alias_of": null,
+      "formal_supported": true
+    },
+    {
+      "name": "shap_summary",
+      "category": "模型评估",
+      "question": "模型评估: shap_summary",
+      "required_fields": [
+        "attributions",
+        "feature_names"
+      ],
+      "independent_unit": "observation",
+      "status": "dedicated semantic renderer; visual QA pending",
+      "implementation_level": "dedicated",
+      "paper_suitable": false,
+      "simulate": false,
+      "qa_status": "not_checked",
+      "name_zh": "SHAP汇总图",
+      "question_zh": "模型评估中的SHAP汇总图",
+      "aliases": [
+        "SHAP汇总图"
+      ],
+      "alias_of": null,
+      "formal_supported": true
+    },
+    {
+      "name": "spatial_3d",
+      "category": "网络、流量与空间关系",
+      "question": "网络、流量与空间关系: spatial_3d",
+      "required_fields": [
+        "x",
+        "y",
+        "z"
+      ],
+      "independent_unit": "observation",
+      "status": "dedicated semantic renderer; visual QA pending",
+      "implementation_level": "dedicated",
+      "paper_suitable": false,
+      "simulate": false,
+      "qa_status": "not_checked",
+      "name_zh": "三维空间图",
+      "question_zh": "网络、流量与空间关系中的三维空间图",
+      "aliases": [
+        "三维空间图"
+      ],
+      "alias_of": null,
+      "formal_supported": true
+    },
+    {
+      "name": "spatial_heatmap",
+      "category": "网络、流量与空间关系",
+      "question": "网络、流量与空间关系: spatial_heatmap",
+      "required_fields": [
+        "x_grid",
+        "y_grid",
+        "z"
+      ],
+      "independent_unit": "observation",
+      "status": "dedicated semantic renderer; visual QA pending",
+      "implementation_level": "dedicated",
+      "paper_suitable": false,
+      "simulate": false,
+      "qa_status": "not_checked",
+      "name_zh": "空间热图",
+      "question_zh": "网络、流量与空间关系中的空间热图",
+      "aliases": [
+        "空间热图"
+      ],
+      "alias_of": null,
+      "formal_supported": true
+    },
+    {
+      "name": "spatial_scatter",
+      "category": "网络、流量与空间关系",
+      "question": "网络、流量与空间关系: spatial_scatter",
+      "required_fields": [
+        "longitude",
+        "latitude",
+        "size",
+        "group"
+      ],
+      "independent_unit": "observation",
+      "status": "dedicated semantic renderer; visual QA pending",
+      "implementation_level": "dedicated",
+      "paper_suitable": false,
+      "simulate": false,
+      "qa_status": "not_checked",
+      "name_zh": "空间散点图",
+      "question_zh": "网络、流量与空间关系中的空间散点图",
+      "aliases": [
+        "空间散点图"
+      ],
+      "alias_of": null,
+      "formal_supported": true
+    },
+    {
+      "name": "stacked_area",
+      "category": "时间序列与动态过程",
+      "question": "时间序列与动态过程: stacked_area",
+      "required_fields": [
+        "time",
+        "values",
+        "groups"
+      ],
+      "independent_unit": "observation",
+      "status": "dedicated semantic renderer; visual QA pending",
+      "implementation_level": "dedicated",
+      "paper_suitable": false,
+      "simulate": false,
+      "qa_status": "not_checked",
+      "name_zh": "堆叠面积图",
+      "question_zh": "时间序列与动态过程中的堆叠面积图",
+      "aliases": [
+        "堆叠面积图"
+      ],
+      "alias_of": null,
+      "formal_supported": true
+    },
+    {
+      "name": "stacked_bar",
+      "category": "类别比较",
+      "question": "类别比较: stacked_bar",
+      "required_fields": [
+        "categories",
+        "values",
+        "groups"
+      ],
+      "independent_unit": "observation",
+      "status": "dedicated statistical renderer; visual QA pending",
+      "implementation_level": "dedicated",
+      "paper_suitable": false,
+      "simulate": false,
+      "qa_status": "not_checked",
+      "name_zh": "堆叠柱状图",
+      "question_zh": "类别比较中的堆叠柱状图",
+      "aliases": [
+        "堆叠柱状图"
+      ],
+      "alias_of": null,
+      "formal_supported": true
+    },
+    {
+      "name": "state_machine",
+      "category": "数学建模专用图",
+      "question": "数学建模专用图: state_machine",
+      "required_fields": [
+        "nodes",
+        "edges",
+        "events"
+      ],
+      "independent_unit": "observation",
+      "status": "dedicated semantic renderer; visual QA pending",
+      "implementation_level": "dedicated",
+      "paper_suitable": false,
+      "simulate": false,
+      "qa_status": "not_checked",
+      "name_zh": "状态机图",
+      "question_zh": "数学建模专用图中的状态机图",
+      "aliases": [
+        "状态机图"
+      ],
+      "alias_of": null,
+      "formal_supported": true
+    },
+    {
+      "name": "state_trajectory",
+      "category": "时间序列与动态过程",
+      "question": "时间序列与动态过程: state_trajectory",
+      "required_fields": [
+        "time",
+        "states",
+        "dimensions"
+      ],
+      "independent_unit": "observation",
+      "status": "dedicated semantic renderer; visual QA pending",
+      "implementation_level": "dedicated",
+      "paper_suitable": false,
+      "simulate": false,
+      "qa_status": "not_checked",
+      "name_zh": "状态轨迹图",
+      "question_zh": "时间序列与动态过程中的状态轨迹图",
+      "aliases": [
+        "状态轨迹图"
+      ],
+      "alias_of": null,
+      "formal_supported": true
+    },
+    {
+      "name": "state_transition",
+      "category": "网络、流量与空间关系",
+      "question": "网络、流量与空间关系: state_transition",
+      "required_fields": [
+        "nodes",
+        "edges",
+        "probabilities"
+      ],
+      "independent_unit": "observation",
+      "status": "dedicated semantic renderer; visual QA pending",
+      "implementation_level": "dedicated",
+      "paper_suitable": false,
+      "simulate": false,
+      "qa_status": "not_checked",
+      "name_zh": "状态转移图",
+      "question_zh": "网络、流量与空间关系中的状态转移图",
+      "aliases": [
+        "状态转移图"
+      ],
+      "alias_of": null,
+      "formal_supported": true
+    },
+    {
+      "name": "step",
+      "category": "时间序列与动态过程",
+      "question": "时间序列与动态过程: step",
+      "required_fields": [
+        "time",
+        "values"
+      ],
+      "independent_unit": "observation",
+      "status": "dedicated semantic renderer; visual QA pending",
+      "implementation_level": "dedicated",
+      "paper_suitable": false,
+      "simulate": false,
+      "qa_status": "not_checked",
+      "name_zh": "阶梯图",
+      "question_zh": "时间序列与动态过程中的阶梯图",
+      "aliases": [
+        "阶梯图"
+      ],
+      "alias_of": null,
+      "formal_supported": true
+    },
+    {
+      "name": "task_decomposition",
+      "category": "数学建模专用图",
+      "question": "数学建模专用图: task_decomposition",
+      "required_fields": [
+        "nodes",
+        "edges"
+      ],
+      "independent_unit": "observation",
+      "status": "dedicated semantic renderer; visual QA pending",
+      "implementation_level": "dedicated",
+      "paper_suitable": false,
+      "simulate": false,
+      "qa_status": "not_checked",
+      "name_zh": "任务分解图",
+      "question_zh": "数学建模专用图中的任务分解图",
+      "aliases": [
+        "任务分解图"
+      ],
+      "alias_of": null,
+      "formal_supported": true
+    },
+    {
+      "name": "taylor_diagram",
+      "category": "模型评估",
+      "question": "模型评估: taylor_diagram",
+      "required_fields": [
+        "reference_std",
+        "std",
+        "correlation",
+        "labels"
+      ],
+      "independent_unit": "observation",
+      "status": "dedicated semantic renderer; visual QA pending",
+      "implementation_level": "dedicated",
+      "paper_suitable": false,
+      "simulate": false,
+      "qa_status": "not_checked",
+      "name_zh": "泰勒图",
+      "question_zh": "模型评估中的泰勒图",
+      "aliases": [
+        "泰勒图"
+      ],
+      "alias_of": null,
+      "formal_supported": true
+    },
+    {
+      "name": "technical_route",
+      "category": "数学建模专用图",
+      "question": "数学建模专用图: technical_route",
+      "required_fields": [
+        "nodes",
+        "edges",
+        "stages"
+      ],
+      "independent_unit": "observation",
+      "status": "dedicated semantic renderer; visual QA pending",
+      "implementation_level": "dedicated",
+      "paper_suitable": false,
+      "simulate": false,
+      "qa_status": "not_checked",
+      "name_zh": "技术路线图",
+      "question_zh": "数学建模专用图中的技术路线图",
+      "aliases": [
+        "技术路线图"
+      ],
+      "alias_of": null,
+      "formal_supported": true
+    },
+    {
+      "name": "threshold_crossing",
+      "category": "优化、灵敏度与稳健性",
+      "question": "优化、灵敏度与稳健性: threshold_crossing",
+      "required_fields": [
+        "time",
+        "values",
+        "threshold"
+      ],
+      "independent_unit": "observation",
+      "status": "dedicated semantic renderer; visual QA pending",
+      "implementation_level": "dedicated",
+      "paper_suitable": false,
+      "simulate": false,
+      "qa_status": "not_checked",
+      "name_zh": "阈值穿越图",
+      "question_zh": "优化、灵敏度与稳健性中的阈值穿越图",
+      "aliases": [
+        "阈值穿越图"
+      ],
+      "alias_of": null,
+      "formal_supported": true
+    },
+    {
+      "name": "threshold_heatmap",
+      "category": "热图与矩阵",
+      "question": "热图与矩阵: threshold_heatmap",
+      "required_fields": [
+        "matrix",
+        "row_labels",
+        "column_labels",
+        "threshold"
+      ],
+      "independent_unit": "observation",
+      "status": "dedicated semantic renderer; visual QA pending",
+      "implementation_level": "dedicated",
+      "paper_suitable": false,
+      "simulate": false,
+      "qa_status": "not_checked",
+      "name_zh": "阈值热图",
+      "question_zh": "热图与矩阵中的阈值热图",
+      "aliases": [
+        "阈值热图"
+      ],
+      "alias_of": null,
+      "formal_supported": true
+    },
+    {
+      "name": "time_heatmap",
+      "category": "时间序列与动态过程",
+      "question": "时间序列与动态过程: time_heatmap",
+      "required_fields": [
+        "time",
+        "matrix",
+        "row_labels"
+      ],
+      "independent_unit": "observation",
+      "status": "dedicated semantic renderer; visual QA pending",
+      "implementation_level": "dedicated",
+      "paper_suitable": false,
+      "simulate": false,
+      "qa_status": "not_checked",
+      "name_zh": "时间热图",
+      "question_zh": "时间序列与动态过程中的时间热图",
+      "aliases": [
+        "时间热图"
+      ],
+      "alias_of": null,
+      "formal_supported": true
+    },
+    {
+      "name": "time_series",
+      "category": "时间序列与动态过程",
+      "question": "时间序列与动态过程: time_series",
+      "required_fields": [
+        "time",
+        "values"
+      ],
+      "independent_unit": "observation",
+      "status": "dedicated statistical renderer; visual QA pending",
+      "implementation_level": "dedicated",
+      "paper_suitable": false,
+      "simulate": false,
+      "qa_status": "not_checked",
+      "name_zh": "时间序列图",
+      "question_zh": "时间序列与动态过程中的时间序列图",
+      "aliases": [
+        "时间序列图"
+      ],
+      "alias_of": null,
+      "formal_supported": true
+    },
+    {
+      "name": "topsis_weights",
+      "category": "多指标与综合评价",
+      "question": "多指标与综合评价: topsis_weights",
+      "required_fields": [
+        "categories",
+        "values",
+        "method"
+      ],
+      "independent_unit": "observation",
+      "status": "dedicated semantic renderer; visual QA pending",
+      "implementation_level": "dedicated",
+      "paper_suitable": false,
+      "simulate": false,
+      "qa_status": "not_checked",
+      "name_zh": "TOPSIS权重图",
+      "question_zh": "多指标与综合评价中的TOPSIS权重图",
+      "aliases": [
+        "TOPSIS权重图"
+      ],
+      "alias_of": null,
+      "formal_supported": true
+    },
+    {
+      "name": "tornado",
+      "category": "优化、灵敏度与稳健性",
+      "question": "优化、灵敏度与稳健性: tornado",
+      "required_fields": [
+        "parameters",
+        "low",
+        "high"
+      ],
+      "independent_unit": "observation",
+      "status": "dedicated semantic renderer; visual QA pending",
+      "implementation_level": "dedicated",
+      "paper_suitable": false,
+      "simulate": false,
+      "qa_status": "not_checked",
+      "name_zh": "龙卷风图",
+      "question_zh": "优化、灵敏度与稳健性中的龙卷风图",
+      "aliases": [
+        "龙卷风图"
+      ],
+      "alias_of": null,
+      "formal_supported": true
+    },
+    {
+      "name": "transition_matrix",
+      "category": "热图与矩阵",
+      "question": "热图与矩阵: transition_matrix",
+      "required_fields": [
+        "matrix"
+      ],
+      "independent_unit": "observation",
+      "status": "dedicated statistical renderer; visual QA pending",
+      "implementation_level": "dedicated",
+      "paper_suitable": false,
+      "simulate": false,
+      "qa_status": "not_checked",
+      "name_zh": "转移矩阵",
+      "question_zh": "热图与矩阵中的转移矩阵",
+      "aliases": [
+        "转移矩阵"
+      ],
+      "alias_of": null,
+      "formal_supported": true
+    },
+    {
+      "name": "tsne",
+      "category": "降维、聚类与高维结构",
+      "question": "降维、聚类与高维结构: tsne",
+      "required_fields": [
+        "embedding"
+      ],
+      "independent_unit": "observation",
+      "status": "dedicated statistical renderer; visual QA pending",
+      "implementation_level": "dedicated",
+      "paper_suitable": false,
+      "simulate": false,
+      "qa_status": "not_checked",
+      "name_zh": "t-SNE图",
+      "question_zh": "降维、聚类与高维结构中的t-SNE图",
+      "aliases": [
+        "t-SNE图"
+      ],
+      "alias_of": null,
+      "formal_supported": true
+    },
+    {
+      "name": "umap",
+      "category": "降维、聚类与高维结构",
+      "question": "降维、聚类与高维结构: umap",
+      "required_fields": [
+        "embedding"
+      ],
+      "independent_unit": "observation",
+      "status": "dedicated statistical renderer; visual QA pending",
+      "implementation_level": "dedicated",
+      "paper_suitable": false,
+      "simulate": false,
+      "qa_status": "not_checked",
+      "name_zh": "UMAP图",
+      "question_zh": "降维、聚类与高维结构中的UMAP图",
+      "aliases": [
+        "UMAP图"
+      ],
+      "alias_of": null,
+      "formal_supported": true
+    },
+    {
+      "name": "variable_dependency",
+      "category": "数学建模专用图",
+      "question": "数学建模专用图: variable_dependency",
+      "required_fields": [
+        "nodes",
+        "edges"
+      ],
+      "independent_unit": "observation",
+      "status": "dedicated semantic renderer; visual QA pending",
+      "implementation_level": "dedicated",
+      "paper_suitable": false,
+      "simulate": false,
+      "qa_status": "not_checked",
+      "name_zh": "变量依赖图",
+      "question_zh": "数学建模专用图中的变量依赖图",
+      "aliases": [
+        "变量依赖图"
+      ],
+      "alias_of": null,
+      "formal_supported": true
+    },
+    {
+      "name": "violin",
+      "category": "单变量与分布",
+      "question": "单变量与分布: violin",
+      "required_fields": [
+        "values"
+      ],
+      "independent_unit": "observation",
+      "status": "dedicated statistical renderer; visual QA pending",
+      "implementation_level": "dedicated",
+      "paper_suitable": false,
+      "simulate": false,
+      "qa_status": "not_checked",
+      "name_zh": "小提琴图",
+      "question_zh": "单变量与分布中的小提琴图",
+      "aliases": [
+        "小提琴图"
+      ],
+      "alias_of": null,
+      "formal_supported": true
+    },
+    {
+      "name": "volcano",
+      "category": "关系与相关",
+      "question": "关系与相关: volcano",
+      "required_fields": [
+        "x",
+        "y"
+      ],
+      "independent_unit": "observation",
+      "status": "dedicated semantic renderer; visual QA pending",
+      "implementation_level": "dedicated",
+      "paper_suitable": false,
+      "simulate": false,
+      "qa_status": "not_checked",
+      "name_zh": "火山图",
+      "question_zh": "关系与相关中的火山图",
+      "aliases": [
+        "火山图"
+      ],
+      "alias_of": null,
+      "formal_supported": true
+    },
+    {
+      "name": "waterfall",
+      "category": "类别比较",
+      "question": "类别比较: waterfall",
+      "required_fields": [
+        "values",
+        "labels"
+      ],
+      "independent_unit": "observation",
+      "status": "dedicated statistical renderer; visual QA pending",
+      "implementation_level": "dedicated",
+      "paper_suitable": false,
+      "simulate": false,
+      "qa_status": "not_checked",
+      "name_zh": "瀑布图",
+      "question_zh": "类别比较中的瀑布图",
+      "aliases": [
+        "瀑布图"
+      ],
+      "alias_of": null,
+      "formal_supported": true
+    },
+    {
+      "name": "weight_sensitivity",
+      "category": "多指标与综合评价",
+      "question": "多指标与综合评价: weight_sensitivity",
+      "required_fields": [
+        "weights",
+        "scores",
+        "schemes"
+      ],
+      "independent_unit": "observation",
+      "status": "dedicated semantic renderer; visual QA pending",
+      "implementation_level": "dedicated",
+      "paper_suitable": false,
+      "simulate": false,
+      "qa_status": "not_checked",
+      "name_zh": "权重敏感性图",
+      "question_zh": "多指标与综合评价中的权重敏感性图",
+      "aliases": [
+        "权重敏感性图"
+      ],
+      "alias_of": null,
+      "formal_supported": true
+    },
+    {
+      "name": "weighted_network",
+      "category": "网络、流量与空间关系",
+      "question": "网络、流量与空间关系: weighted_network",
+      "required_fields": [
+        "nodes",
+        "edges",
+        "weights"
+      ],
+      "independent_unit": "observation",
+      "status": "dedicated statistical renderer; visual QA pending",
+      "implementation_level": "dedicated",
+      "paper_suitable": false,
+      "simulate": false,
+      "qa_status": "not_checked",
+      "name_zh": "加权网络图",
+      "question_zh": "网络、流量与空间关系中的加权网络图",
+      "aliases": [
+        "加权网络图"
+      ],
+      "alias_of": null,
+      "formal_supported": true
+    }
+  ]
+}

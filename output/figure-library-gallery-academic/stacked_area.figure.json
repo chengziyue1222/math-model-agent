@@ -1,0 +1,501 @@
+{
+  "schema_version": 3,
+  "contract": {
+    "claim": "stacked_area 模板展示数据结构与视觉编码",
+    "evidence": [
+      "synthetic demonstration"
+    ],
+    "source_paths": [
+      "output\\figure-library-gallery-academic\\synthetic_gallery_source.json"
+    ],
+    "target_venue": "mathematical-modeling paper",
+    "column": "double",
+    "figure_role": "data-overview",
+    "model_name": null,
+    "scenario": null,
+    "parameter_source": null,
+    "randomness": "deterministic formula; seed 0",
+    "n_definition": "formula-generated demonstration points; not independent measurements",
+    "statistic": "descriptive template view",
+    "uncertainty": "not estimated",
+    "review_risks": [],
+    "panel_evidence": [],
+    "data_transformations": [
+      "none; marks may be rasterized for dense views"
+    ],
+    "excluded_data": [],
+    "theme_name": "modeling-default",
+    "design_brief": null,
+    "width_mm": 150,
+    "height_mm": 121.91999999999999,
+    "question": null,
+    "units": "arbitrary unit",
+    "plotting_code": [
+      "C:\\Users\\Blake\\math-model\\scripts\\build_figure_library.py"
+    ],
+    "source_hashes": null,
+    "claim_status": "uncertain"
+  },
+  "audit": {
+    "passed": true,
+    "errors": [],
+    "warnings": [
+      "legend is fully inside the data region: 堆叠面积图"
+    ],
+    "metrics": {
+      "width_mm": 150.0,
+      "height_mm": 121.92,
+      "target_width_mm": 150,
+      "figure_role": "data-overview",
+      "visible_text_count": 19,
+      "axes_count": 1,
+      "data_axes_count": 1,
+      "source_files": [
+        {
+          "path": "output\\figure-library-gallery-academic\\synthetic_gallery_source.json",
+          "resolved_path": "C:\\Users\\Blake\\math-model\\output\\figure-library-gallery-academic\\synthetic_gallery_source.json",
+          "sha256": "514bd722ca7eb5e1fa991996115eb856a8f38f5d41bbe2e71b56dd514205d58d"
+        },
+        {
+          "path": "C:\\Users\\Blake\\math-model\\scripts\\build_figure_library.py",
+          "resolved_path": "C:\\Users\\Blake\\math-model\\scripts\\build_figure_library.py",
+          "sha256": "b2e58df6223c0d7a51494df83b79c21820dd9748aa55e4b50620a9834da30490"
+        }
+      ],
+      "requested_font_families": [
+        "Microsoft YaHei",
+        "SimHei",
+        "Times New Roman",
+        "sans-serif"
+      ],
+      "actual_minimum_text_pt": 7.0,
+      "legend_inside_count": 1,
+      "text_overlap_count": 0,
+      "theme_name": "modeling-default",
+      "minimum_font_size_pt": 6
+    }
+  },
+  "programmatic_audit": {
+    "passed": true,
+    "errors": [],
+    "warnings": [
+      "legend is fully inside the data region: 堆叠面积图"
+    ],
+    "metrics": {
+      "width_mm": 150.0,
+      "height_mm": 121.92,
+      "target_width_mm": 150,
+      "figure_role": "data-overview",
+      "visible_text_count": 19,
+      "axes_count": 1,
+      "data_axes_count": 1,
+      "source_files": [
+        {
+          "path": "output\\figure-library-gallery-academic\\synthetic_gallery_source.json",
+          "resolved_path": "C:\\Users\\Blake\\math-model\\output\\figure-library-gallery-academic\\synthetic_gallery_source.json",
+          "sha256": "514bd722ca7eb5e1fa991996115eb856a8f38f5d41bbe2e71b56dd514205d58d"
+        },
+        {
+          "path": "C:\\Users\\Blake\\math-model\\scripts\\build_figure_library.py",
+          "resolved_path": "C:\\Users\\Blake\\math-model\\scripts\\build_figure_library.py",
+          "sha256": "b2e58df6223c0d7a51494df83b79c21820dd9748aa55e4b50620a9834da30490"
+        }
+      ],
+      "requested_font_families": [
+        "Microsoft YaHei",
+        "SimHei",
+        "Times New Roman",
+        "sans-serif"
+      ],
+      "actual_minimum_text_pt": 7.0,
+      "legend_inside_count": 1,
+      "text_overlap_count": 0,
+      "theme_name": "modeling-default",
+      "minimum_font_size_pt": 6
+    }
+  },
+  "visual_review": {
+    "status": "NOT_CHECKED",
+    "png": "NOT_CHECKED",
+    "vector": "NOT_CHECKED",
+    "physical_proof": "NOT_CHECKED",
+    "grayscale": "NOT_CHECKED",
+    "source_values": "NOT_CHECKED"
+  },
+  "completion_status": "NEEDS_VISUAL_REVIEW",
+  "configuration": {
+    "width_mm": 150,
+    "height_mm": 121.91999999999999,
+    "maximum_height_mm": 247.0,
+    "minimum_text_pt": 6,
+    "text_pt": 7.5,
+    "tick_pt": 7,
+    "legend_pt": 7,
+    "title_pt": 8,
+    "panel_pt": 8,
+    "line_width": 1.1,
+    "marker_size": 4,
+    "grid": true,
+    "background": "white",
+    "theme": "modeling-default",
+    "latin_font": "Times New Roman",
+    "chinese_font": "SimHei",
+    "dpi": 450,
+    "minimum_dpi": 450,
+    "width_tolerance_mm": 0.1,
+    "formats": [
+      "pdf",
+      "svg",
+      "png"
+    ],
+    "semantic_styles": {},
+    "preferred_text_pt": [
+      7,
+      8
+    ],
+    "require_claim_and_evidence": true,
+    "sources": [
+      "builtin:algorithms.figure_config.DEFAULTS",
+      {
+        "path": "C:\\Users\\Blake\\math-model\\config\\paper_style.yaml",
+        "sha256": "f655b5d38414c93ddf6648158602205104562c14eaaa33625b17b05ba42ad4f5"
+      }
+    ]
+  },
+  "source_files": [
+    {
+      "path": "output\\figure-library-gallery-academic\\synthetic_gallery_source.json",
+      "resolved_path": "C:\\Users\\Blake\\math-model\\output\\figure-library-gallery-academic\\synthetic_gallery_source.json",
+      "sha256": "514bd722ca7eb5e1fa991996115eb856a8f38f5d41bbe2e71b56dd514205d58d"
+    },
+    {
+      "path": "C:\\Users\\Blake\\math-model\\scripts\\build_figure_library.py",
+      "resolved_path": "C:\\Users\\Blake\\math-model\\scripts\\build_figure_library.py",
+      "sha256": "b2e58df6223c0d7a51494df83b79c21820dd9748aa55e4b50620a9834da30490"
+    }
+  ],
+  "export": {
+    "dpi": 450,
+    "formats": [
+      "pdf",
+      "svg",
+      "png"
+    ],
+    "bbox_inches": null
+  },
+  "file_audit": {
+    "status": "PASS",
+    "png": {
+      "pixels": [
+        2657,
+        2160
+      ],
+      "mode": "RGB",
+      "dpi": [
+        450.0118,
+        450.0118
+      ]
+    },
+    "pdf_fonts": [
+      {
+        "name": "DFIMHP+MicrosoftYaHei",
+        "embedded": true
+      },
+      {
+        "name": "FHXFSG+TimesNewRomanPSMT",
+        "embedded": true
+      }
+    ],
+    "svg_text": "preserved; matching fonts must be installed on the viewing machine"
+  },
+  "template": null,
+  "figure_metadata": {
+    "figure_type": "stacked_area",
+    "semantic_key": "stacked_area",
+    "input_fields": [
+      "time",
+      "values",
+      "groups"
+    ],
+    "calculation": {},
+    "interval_kind": "none",
+    "input_data": {
+      "time": [
+        0.0,
+        0.34285714285714286,
+        0.6857142857142857,
+        1.0285714285714285,
+        1.3714285714285714,
+        1.7142857142857144,
+        2.057142857142857,
+        2.4,
+        2.742857142857143,
+        3.085714285714286,
+        3.428571428571429,
+        3.7714285714285714,
+        4.114285714285714,
+        4.457142857142857,
+        4.8,
+        5.142857142857143,
+        5.485714285714286,
+        5.828571428571428,
+        6.171428571428572,
+        6.514285714285714,
+        6.857142857142858,
+        7.2,
+        7.542857142857143,
+        7.885714285714286,
+        8.228571428571428,
+        8.571428571428571,
+        8.914285714285715,
+        9.257142857142858,
+        9.6,
+        9.942857142857143,
+        10.285714285714286,
+        10.628571428571428,
+        10.971428571428572,
+        11.314285714285715,
+        11.657142857142857,
+        12.0
+      ],
+      "values": [
+        [
+          1.0,
+          0.8975706514840069,
+          0.8207486400970122
+        ],
+        [
+          1.1777516547994948,
+          1.0042216443637038,
+          0.8740741365368606
+        ],
+        [
+          1.5482113159406259,
+          1.2264974410483824,
+          0.9852120348792
+        ],
+        [
+          1.944542782147556,
+          1.4642963207725406,
+          1.104111474741279
+        ],
+        [
+          2.2232217615534067,
+          1.6315037084160509,
+          1.187715168563034
+        ],
+        [
+          2.159074107616399,
+          1.5930151160538462,
+          1.1684708723819317
+        ],
+        [
+          2.564743585862776,
+          1.8364168030016728,
+          1.290171715855845
+        ],
+        [
+          2.303646101830184,
+          1.6797583125821172,
+          1.2118424706460673
+        ],
+        [
+          2.3443915328780722,
+          1.7042055712108501,
+          1.2240660999604338
+        ],
+        [
+          1.9577579753867935,
+          1.472225436716083,
+          1.10807603271305
+        ],
+        [
+          1.458911491497777,
+          1.172917546382673,
+          0.9584220875463453
+        ],
+        [
+          1.5648172772109363,
+          1.2364610178105688,
+          0.9901938232602931
+        ],
+        [
+          1.2236605675692407,
+          1.0317669920255514,
+          0.8878468103677843
+        ],
+        [
+          1.1332763641836199,
+          0.9775364699941789,
+          0.8607315493520982
+        ],
+        [
+          1.5785234319189414,
+          1.2446847106353718,
+          0.9943056696726946
+        ],
+        [
+          1.57138959563585,
+          1.2404044088655168,
+          0.9921655187877672
+        ],
+        [
+          1.7958465263142604,
+          1.3750785672725632,
+          1.0595025979912904
+        ],
+        [
+          1.9491276923670835,
+          1.467047266904257,
+          1.1054869478071372
+        ],
+        [
+          2.747341914035574,
+          1.9459757999053513,
+          1.3449512143076843
+        ],
+        [
+          3.1308426565579652,
+          2.176076245418786,
+          1.4600014370644017
+        ],
+        [
+          4.161756387419937,
+          2.7946244839359693,
+          1.7692755563229934
+        ],
+        [
+          3.827870320508515,
+          2.594292843789116,
+          1.6691097362495666
+        ],
+        [
+          4.230236041371944,
+          2.835712276307173,
+          1.7898194525085953
+        ],
+        [
+          4.295182474311707,
+          2.8746801360710306,
+          1.809303382390524
+        ],
+        [
+          4.424490417026837,
+          2.9522649017001092,
+          1.8480957652050634
+        ],
+        [
+          4.676754877622166,
+          3.1036235780573063,
+          1.9237751033836619
+        ],
+        [
+          4.3074961871750155,
+          2.882068363789016,
+          1.8129974962495168
+        ],
+        [
+          4.251197760018195,
+          2.848289307494924,
+          1.7961079681024708
+        ],
+        [
+          4.106263270951903,
+          2.7613286140551483,
+          1.7526276213825829
+        ],
+        [
+          3.4492503006241795,
+          2.3671208318585144,
+          1.555523730284266
+        ],
+        [
+          3.5701487252631905,
+          2.4396598866419215,
+          1.5917932576759692
+        ],
+        [
+          3.572223995175256,
+          2.4409050485891606,
+          1.592415838649589
+        ],
+        [
+          3.5254356838747807,
+          2.412832061808875,
+          1.5783793452594463
+        ],
+        [
+          3.9641713859616847,
+          2.6760734830610176,
+          1.7100000558855175
+        ],
+        [
+          4.069610691438654,
+          2.739337066347199,
+          1.7416318475286083
+        ],
+        [
+          4.362925041733531,
+          2.9153256765241253,
+          1.8296261526170714
+        ]
+      ],
+      "groups": [
+        "方案甲",
+        "方案乙",
+        "方案丙"
+      ]
+    },
+    "data_contract": {
+      "source": "synthetic",
+      "fields": {},
+      "units": {
+        "values": "合成单位",
+        "coordinates": "合成坐标",
+        "scores": "无量纲"
+      },
+      "independent_unit": "synthetic scenario",
+      "repeated_measurement": null,
+      "split": null,
+      "random_seed": 20261011,
+      "interval_kind": "none",
+      "deterministic": true,
+      "simulated": true,
+      "transformations": [
+        "chart-specific synthetic fixture"
+      ]
+    },
+    "name": "stacked_area",
+    "canonical_key": "stacked_area",
+    "name_zh": "堆叠面积图",
+    "mode": "preview",
+    "implementation_level": "dedicated",
+    "paper_suitable": false,
+    "source": "synthetic",
+    "simulated": true,
+    "independent_unit": "synthetic scenario",
+    "units": {
+      "values": "合成单位",
+      "coordinates": "合成坐标",
+      "scores": "无量纲"
+    }
+  },
+  "environment": {
+    "python": "3.14.2",
+    "platform": "Windows-11-10.0.26200-SP0",
+    "matplotlib": "3.10.9",
+    "numpy": "2.4.3",
+    "backend": "Agg",
+    "implementation_hashes": {
+      "sci_figures.py": "5286416a562eab90a031670820a366e1021e5fa2c0a7a876a310dfef37b4f617",
+      "figure_config.py": "1ed2c7fbc04dca33d473794180e509a84fb481408baa973eb83387a03614e980",
+      "figure_templates.py": "3f3961ff0cb17415e7dfd08f629a029d2529b292f2dae10ff6c72bfa282b2ff8",
+      "figure_export.py": "0adb2514fd44e79d20966f4b0993aef33f26444513ec4b2f443273a228e695b9"
+    }
+  },
+  "output_hashes": {
+    "pdf": "483ff813bb195106eebe33c12b46b013cfe83cbc4b6164b8bc42307ae2491606",
+    "svg": "b6108d362ef9d6832b4fbfc10534991f86da2506206c02f3ed34b35086d26107",
+    "png": "eea3e28eb078d8d327b027c5562bb73dda555b710ae9b508572de9dd761e2c2b"
+  }
+}

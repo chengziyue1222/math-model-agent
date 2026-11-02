@@ -1,0 +1,477 @@
+{
+  "schema_version": 3,
+  "contract": {
+    "claim": "control_chart 模板展示数据结构与视觉编码",
+    "evidence": [
+      "synthetic demonstration"
+    ],
+    "source_paths": [
+      "C:\\Users\\Blake\\math-model\\output\\figure-library-gallery\\synthetic_gallery_source.json"
+    ],
+    "target_venue": "mathematical-modeling paper",
+    "column": "double",
+    "figure_role": "data-overview",
+    "model_name": null,
+    "scenario": null,
+    "parameter_source": null,
+    "randomness": "deterministic formula; seed 0",
+    "n_definition": "formula-generated demonstration points; not independent measurements",
+    "statistic": "descriptive template view",
+    "uncertainty": "not estimated",
+    "review_risks": [],
+    "panel_evidence": [],
+    "data_transformations": [
+      "none; marks may be rasterized for dense views"
+    ],
+    "excluded_data": [],
+    "theme_name": "modeling-default",
+    "design_brief": null,
+    "width_mm": 150,
+    "height_mm": 121.91999999999999,
+    "question": null,
+    "units": "arbitrary unit",
+    "plotting_code": [
+      "C:\\Users\\Blake\\math-model\\scripts\\build_figure_library.py"
+    ],
+    "source_hashes": null,
+    "claim_status": "uncertain"
+  },
+  "audit": {
+    "passed": true,
+    "errors": [],
+    "warnings": [
+      "legend is fully inside the data region: 控制图"
+    ],
+    "metrics": {
+      "width_mm": 150.0,
+      "height_mm": 121.92,
+      "target_width_mm": 150,
+      "figure_role": "data-overview",
+      "visible_text_count": 19,
+      "axes_count": 1,
+      "data_axes_count": 1,
+      "source_files": [
+        {
+          "path": "C:\\Users\\Blake\\math-model\\output\\figure-library-gallery\\synthetic_gallery_source.json",
+          "resolved_path": "C:\\Users\\Blake\\math-model\\output\\figure-library-gallery\\synthetic_gallery_source.json",
+          "sha256": "514bd722ca7eb5e1fa991996115eb856a8f38f5d41bbe2e71b56dd514205d58d"
+        },
+        {
+          "path": "C:\\Users\\Blake\\math-model\\scripts\\build_figure_library.py",
+          "resolved_path": "C:\\Users\\Blake\\math-model\\scripts\\build_figure_library.py",
+          "sha256": "b2e58df6223c0d7a51494df83b79c21820dd9748aa55e4b50620a9834da30490"
+        }
+      ],
+      "requested_font_families": [
+        "Microsoft YaHei",
+        "SimHei",
+        "Times New Roman",
+        "sans-serif"
+      ],
+      "actual_minimum_text_pt": 7.0,
+      "legend_inside_count": 1,
+      "text_overlap_count": 0,
+      "theme_name": "modeling-default",
+      "minimum_font_size_pt": 6
+    }
+  },
+  "programmatic_audit": {
+    "passed": true,
+    "errors": [],
+    "warnings": [
+      "legend is fully inside the data region: 控制图"
+    ],
+    "metrics": {
+      "width_mm": 150.0,
+      "height_mm": 121.92,
+      "target_width_mm": 150,
+      "figure_role": "data-overview",
+      "visible_text_count": 19,
+      "axes_count": 1,
+      "data_axes_count": 1,
+      "source_files": [
+        {
+          "path": "C:\\Users\\Blake\\math-model\\output\\figure-library-gallery\\synthetic_gallery_source.json",
+          "resolved_path": "C:\\Users\\Blake\\math-model\\output\\figure-library-gallery\\synthetic_gallery_source.json",
+          "sha256": "514bd722ca7eb5e1fa991996115eb856a8f38f5d41bbe2e71b56dd514205d58d"
+        },
+        {
+          "path": "C:\\Users\\Blake\\math-model\\scripts\\build_figure_library.py",
+          "resolved_path": "C:\\Users\\Blake\\math-model\\scripts\\build_figure_library.py",
+          "sha256": "b2e58df6223c0d7a51494df83b79c21820dd9748aa55e4b50620a9834da30490"
+        }
+      ],
+      "requested_font_families": [
+        "Microsoft YaHei",
+        "SimHei",
+        "Times New Roman",
+        "sans-serif"
+      ],
+      "actual_minimum_text_pt": 7.0,
+      "legend_inside_count": 1,
+      "text_overlap_count": 0,
+      "theme_name": "modeling-default",
+      "minimum_font_size_pt": 6
+    }
+  },
+  "visual_review": {
+    "status": "NOT_CHECKED",
+    "png": "NOT_CHECKED",
+    "vector": "NOT_CHECKED",
+    "physical_proof": "NOT_CHECKED",
+    "grayscale": "NOT_CHECKED",
+    "source_values": "NOT_CHECKED"
+  },
+  "completion_status": "NEEDS_VISUAL_REVIEW",
+  "configuration": {
+    "width_mm": 150,
+    "height_mm": 121.91999999999999,
+    "maximum_height_mm": 247.0,
+    "minimum_text_pt": 6,
+    "text_pt": 7.5,
+    "tick_pt": 7,
+    "legend_pt": 7,
+    "title_pt": 8,
+    "panel_pt": 8,
+    "line_width": 1.1,
+    "marker_size": 4,
+    "grid": true,
+    "background": "white",
+    "theme": "modeling-default",
+    "latin_font": "Times New Roman",
+    "chinese_font": "SimHei",
+    "dpi": 450,
+    "minimum_dpi": 450,
+    "width_tolerance_mm": 0.1,
+    "formats": [
+      "pdf",
+      "svg",
+      "png"
+    ],
+    "semantic_styles": {},
+    "preferred_text_pt": [
+      7,
+      8
+    ],
+    "require_claim_and_evidence": true,
+    "sources": [
+      "builtin:algorithms.figure_config.DEFAULTS",
+      {
+        "path": "C:\\Users\\Blake\\math-model\\config\\paper_style.yaml",
+        "sha256": "f655b5d38414c93ddf6648158602205104562c14eaaa33625b17b05ba42ad4f5"
+      }
+    ]
+  },
+  "source_files": [
+    {
+      "path": "C:\\Users\\Blake\\math-model\\output\\figure-library-gallery\\synthetic_gallery_source.json",
+      "resolved_path": "C:\\Users\\Blake\\math-model\\output\\figure-library-gallery\\synthetic_gallery_source.json",
+      "sha256": "514bd722ca7eb5e1fa991996115eb856a8f38f5d41bbe2e71b56dd514205d58d"
+    },
+    {
+      "path": "C:\\Users\\Blake\\math-model\\scripts\\build_figure_library.py",
+      "resolved_path": "C:\\Users\\Blake\\math-model\\scripts\\build_figure_library.py",
+      "sha256": "b2e58df6223c0d7a51494df83b79c21820dd9748aa55e4b50620a9834da30490"
+    }
+  ],
+  "export": {
+    "dpi": 450,
+    "formats": [
+      "pdf",
+      "svg",
+      "png"
+    ],
+    "bbox_inches": null
+  },
+  "file_audit": {
+    "status": "PASS",
+    "png": {
+      "pixels": [
+        2657,
+        2160
+      ],
+      "mode": "RGB",
+      "dpi": [
+        450.0118,
+        450.0118
+      ]
+    },
+    "pdf_fonts": [
+      {
+        "name": "DFIMHP+MicrosoftYaHei",
+        "embedded": true
+      },
+      {
+        "name": "FHXFSG+TimesNewRomanPSMT",
+        "embedded": true
+      }
+    ],
+    "svg_text": "preserved; matching fonts must be installed on the viewing machine"
+  },
+  "template": null,
+  "figure_metadata": {
+    "figure_type": "control_chart",
+    "semantic_key": "control_chart",
+    "input_fields": [
+      "time",
+      "values",
+      "center",
+      "lower",
+      "upper",
+      "interval_kind"
+    ],
+    "calculation": {},
+    "interval_kind": "调用者给定的控制限",
+    "out_of_control": [
+      0,
+      1,
+      2,
+      6,
+      16
+    ],
+    "input_data": {
+      "time": [
+        0.0,
+        0.34285714285714286,
+        0.6857142857142857,
+        1.0285714285714285,
+        1.3714285714285714,
+        1.7142857142857144,
+        2.057142857142857,
+        2.4,
+        2.742857142857143,
+        3.085714285714286,
+        3.428571428571429,
+        3.7714285714285714,
+        4.114285714285714,
+        4.457142857142857,
+        4.8,
+        5.142857142857143,
+        5.485714285714286,
+        5.828571428571428,
+        6.171428571428572,
+        6.514285714285714,
+        6.857142857142858,
+        7.2,
+        7.542857142857143,
+        7.885714285714286,
+        8.228571428571428,
+        8.571428571428571,
+        8.914285714285715,
+        9.257142857142858,
+        9.6,
+        9.942857142857143,
+        10.285714285714286,
+        10.628571428571428,
+        10.971428571428572,
+        11.314285714285715,
+        11.657142857142857,
+        12.0
+      ],
+      "values": [
+        -0.36631708212167535,
+        0.16961482314128906,
+        0.6192424803883569,
+        1.6408473917388424,
+        1.429792040292896,
+        2.1468390220951497,
+        2.1934122409556553,
+        1.741295530392595,
+        1.4079852463521365,
+        1.0108052199978963,
+        1.1384907587858852,
+        0.8320083243671036,
+        0.4068531266548232,
+        0.18140773327257936,
+        0.9744259260359227,
+        1.0351268448839597,
+        1.3615037020933047,
+        1.7154431104467707,
+        1.9627505171536073,
+        2.3594273344814636,
+        2.688862890344496,
+        3.059708798666241,
+        3.6909539926127843,
+        4.002265311859086,
+        3.707795916314548,
+        2.9023075640018963,
+        3.8084742032795185,
+        3.700605354568718,
+        3.035955018037798,
+        2.9718005439841044,
+        2.6178332579645684,
+        3.656167464127724,
+        2.2990944605624617,
+        3.1643978691284107,
+        3.4414109626541065,
+        3.3910157724097467
+      ],
+      "center": [
+        0.14214978966784161,
+        0.6003667938004829,
+        1.0364670129347195,
+        1.3193711009351032,
+        1.8195156663005863,
+        1.791586113446906,
+        1.7769715341188277,
+        1.741980780842142,
+        1.0713355426053472,
+        0.8636563623282327,
+        0.7444523565151128,
+        0.8021612892881776,
+        0.48894623735099874,
+        0.46602304994839916,
+        0.7327329283616691,
+        0.712454104864805,
+        0.9342406368868371,
+        1.6402196143466063,
+        2.226400166499079,
+        2.6745583893772245,
+        2.918698942845589,
+        3.1282720001447286,
+        3.7437918373387244,
+        3.9286362118956406,
+        3.9206074753653013,
+        3.255361009957025,
+        3.461472009801871,
+        3.346982596627183,
+        2.950671142037343,
+        2.844437793163573,
+        2.702714970807597,
+        3.378902259890978,
+        2.4955836598708023,
+        3.0363960222974917,
+        3.1335523309421154,
+        3.4350636260974405
+      ],
+      "lower": [
+        -0.2578502103321584,
+        0.20036679380048283,
+        0.6364670129347195,
+        0.9193711009351032,
+        1.4195156663005863,
+        1.3915861134469059,
+        1.3769715341188276,
+        1.341980780842142,
+        0.6713355426053472,
+        0.4636563623282327,
+        0.34445235651511275,
+        0.4021612892881776,
+        0.08894623735099871,
+        0.06602304994839914,
+        0.3327329283616691,
+        0.31245410486480496,
+        0.5342406368868371,
+        1.2402196143466062,
+        1.826400166499079,
+        2.2745583893772245,
+        2.5186989428455893,
+        2.7282720001447287,
+        3.3437918373387245,
+        3.5286362118956407,
+        3.5206074753653014,
+        2.8553610099570252,
+        3.061472009801871,
+        2.946982596627183,
+        2.550671142037343,
+        2.4444377931635732,
+        2.302714970807597,
+        2.9789022598909782,
+        2.0955836598708024,
+        2.636396022297492,
+        2.7335523309421155,
+        3.0350636260974406
+      ],
+      "upper": [
+        0.5421497896678417,
+        1.0003667938004828,
+        1.4364670129347195,
+        1.7193711009351031,
+        2.219515666300586,
+        2.191586113446906,
+        2.176971534118828,
+        2.141980780842142,
+        1.4713355426053472,
+        1.2636563623282329,
+        1.1444523565151128,
+        1.2021612892881777,
+        0.8889462373509988,
+        0.8660230499483992,
+        1.1327329283616692,
+        1.112454104864805,
+        1.3342406368868371,
+        2.0402196143466065,
+        2.626400166499079,
+        3.0745583893772244,
+        3.318698942845589,
+        3.5282720001447285,
+        4.143791837338725,
+        4.328636211895641,
+        4.320607475365302,
+        3.655361009957025,
+        3.861472009801871,
+        3.746982596627183,
+        3.350671142037343,
+        3.244437793163573,
+        3.1027149708075967,
+        3.778902259890978,
+        2.8955836598708022,
+        3.4363960222974916,
+        3.5335523309421153,
+        3.8350636260974404
+      ],
+      "interval_kind": "调用者给定的控制限"
+    },
+    "data_contract": {
+      "source": "synthetic",
+      "fields": {},
+      "units": {
+        "values": "合成单位",
+        "coordinates": "合成坐标",
+        "scores": "无量纲"
+      },
+      "independent_unit": "synthetic scenario",
+      "repeated_measurement": null,
+      "split": null,
+      "random_seed": 20261011,
+      "interval_kind": "调用者给定的控制限",
+      "deterministic": true,
+      "simulated": true,
+      "transformations": [
+        "chart-specific synthetic fixture"
+      ]
+    },
+    "name": "control_chart",
+    "canonical_key": "control_chart",
+    "name_zh": "控制图",
+    "mode": "preview",
+    "implementation_level": "dedicated",
+    "paper_suitable": false,
+    "source": "synthetic",
+    "simulated": true,
+    "independent_unit": "synthetic scenario",
+    "units": {
+      "values": "合成单位",
+      "coordinates": "合成坐标",
+      "scores": "无量纲"
+    }
+  },
+  "environment": {
+    "python": "3.14.2",
+    "platform": "Windows-11-10.0.26200-SP0",
+    "matplotlib": "3.10.9",
+    "numpy": "2.4.3",
+    "backend": "Agg",
+    "implementation_hashes": {
+      "sci_figures.py": "5286416a562eab90a031670820a366e1021e5fa2c0a7a876a310dfef37b4f617",
+      "figure_config.py": "1ed2c7fbc04dca33d473794180e509a84fb481408baa973eb83387a03614e980",
+      "figure_templates.py": "3f3961ff0cb17415e7dfd08f629a029d2529b292f2dae10ff6c72bfa282b2ff8",
+      "figure_export.py": "0adb2514fd44e79d20966f4b0993aef33f26444513ec4b2f443273a228e695b9"
+    }
+  },
+  "output_hashes": {
+    "pdf": "1de4d3f8462e2f034ea576c511063c5afdcecb97a63fa578c87b89acc08a08e3",
+    "svg": "1bb82a3a03e2edc42fa3349ece1dd5bef3a99c0a10dfb8f120512589e882fec5",
+    "png": "5b414492f414d96ce2b192e48b919878c3459487880872796590eda01af4a156"
+  }
+}

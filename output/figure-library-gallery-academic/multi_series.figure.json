@@ -1,0 +1,501 @@
+{
+  "schema_version": 3,
+  "contract": {
+    "claim": "multi_series 模板展示数据结构与视觉编码",
+    "evidence": [
+      "synthetic demonstration"
+    ],
+    "source_paths": [
+      "output\\figure-library-gallery-academic\\synthetic_gallery_source.json"
+    ],
+    "target_venue": "mathematical-modeling paper",
+    "column": "double",
+    "figure_role": "data-overview",
+    "model_name": null,
+    "scenario": null,
+    "parameter_source": null,
+    "randomness": "deterministic formula; seed 0",
+    "n_definition": "formula-generated demonstration points; not independent measurements",
+    "statistic": "descriptive template view",
+    "uncertainty": "not estimated",
+    "review_risks": [],
+    "panel_evidence": [],
+    "data_transformations": [
+      "none; marks may be rasterized for dense views"
+    ],
+    "excluded_data": [],
+    "theme_name": "modeling-default",
+    "design_brief": null,
+    "width_mm": 150,
+    "height_mm": 121.91999999999999,
+    "question": null,
+    "units": "arbitrary unit",
+    "plotting_code": [
+      "C:\\Users\\Blake\\math-model\\scripts\\build_figure_library.py"
+    ],
+    "source_hashes": null,
+    "claim_status": "uncertain"
+  },
+  "audit": {
+    "passed": true,
+    "errors": [],
+    "warnings": [
+      "legend is fully inside the data region: 多序列折线图"
+    ],
+    "metrics": {
+      "width_mm": 150.0,
+      "height_mm": 121.92,
+      "target_width_mm": 150,
+      "figure_role": "data-overview",
+      "visible_text_count": 22,
+      "axes_count": 1,
+      "data_axes_count": 1,
+      "source_files": [
+        {
+          "path": "output\\figure-library-gallery-academic\\synthetic_gallery_source.json",
+          "resolved_path": "C:\\Users\\Blake\\math-model\\output\\figure-library-gallery-academic\\synthetic_gallery_source.json",
+          "sha256": "514bd722ca7eb5e1fa991996115eb856a8f38f5d41bbe2e71b56dd514205d58d"
+        },
+        {
+          "path": "C:\\Users\\Blake\\math-model\\scripts\\build_figure_library.py",
+          "resolved_path": "C:\\Users\\Blake\\math-model\\scripts\\build_figure_library.py",
+          "sha256": "b2e58df6223c0d7a51494df83b79c21820dd9748aa55e4b50620a9834da30490"
+        }
+      ],
+      "requested_font_families": [
+        "Microsoft YaHei",
+        "SimHei",
+        "Times New Roman",
+        "sans-serif"
+      ],
+      "actual_minimum_text_pt": 7.0,
+      "legend_inside_count": 1,
+      "text_overlap_count": 0,
+      "theme_name": "modeling-default",
+      "minimum_font_size_pt": 6
+    }
+  },
+  "programmatic_audit": {
+    "passed": true,
+    "errors": [],
+    "warnings": [
+      "legend is fully inside the data region: 多序列折线图"
+    ],
+    "metrics": {
+      "width_mm": 150.0,
+      "height_mm": 121.92,
+      "target_width_mm": 150,
+      "figure_role": "data-overview",
+      "visible_text_count": 22,
+      "axes_count": 1,
+      "data_axes_count": 1,
+      "source_files": [
+        {
+          "path": "output\\figure-library-gallery-academic\\synthetic_gallery_source.json",
+          "resolved_path": "C:\\Users\\Blake\\math-model\\output\\figure-library-gallery-academic\\synthetic_gallery_source.json",
+          "sha256": "514bd722ca7eb5e1fa991996115eb856a8f38f5d41bbe2e71b56dd514205d58d"
+        },
+        {
+          "path": "C:\\Users\\Blake\\math-model\\scripts\\build_figure_library.py",
+          "resolved_path": "C:\\Users\\Blake\\math-model\\scripts\\build_figure_library.py",
+          "sha256": "b2e58df6223c0d7a51494df83b79c21820dd9748aa55e4b50620a9834da30490"
+        }
+      ],
+      "requested_font_families": [
+        "Microsoft YaHei",
+        "SimHei",
+        "Times New Roman",
+        "sans-serif"
+      ],
+      "actual_minimum_text_pt": 7.0,
+      "legend_inside_count": 1,
+      "text_overlap_count": 0,
+      "theme_name": "modeling-default",
+      "minimum_font_size_pt": 6
+    }
+  },
+  "visual_review": {
+    "status": "NOT_CHECKED",
+    "png": "NOT_CHECKED",
+    "vector": "NOT_CHECKED",
+    "physical_proof": "NOT_CHECKED",
+    "grayscale": "NOT_CHECKED",
+    "source_values": "NOT_CHECKED"
+  },
+  "completion_status": "NEEDS_VISUAL_REVIEW",
+  "configuration": {
+    "width_mm": 150,
+    "height_mm": 121.91999999999999,
+    "maximum_height_mm": 247.0,
+    "minimum_text_pt": 6,
+    "text_pt": 7.5,
+    "tick_pt": 7,
+    "legend_pt": 7,
+    "title_pt": 8,
+    "panel_pt": 8,
+    "line_width": 1.1,
+    "marker_size": 4,
+    "grid": true,
+    "background": "white",
+    "theme": "modeling-default",
+    "latin_font": "Times New Roman",
+    "chinese_font": "SimHei",
+    "dpi": 450,
+    "minimum_dpi": 450,
+    "width_tolerance_mm": 0.1,
+    "formats": [
+      "pdf",
+      "svg",
+      "png"
+    ],
+    "semantic_styles": {},
+    "preferred_text_pt": [
+      7,
+      8
+    ],
+    "require_claim_and_evidence": true,
+    "sources": [
+      "builtin:algorithms.figure_config.DEFAULTS",
+      {
+        "path": "C:\\Users\\Blake\\math-model\\config\\paper_style.yaml",
+        "sha256": "f655b5d38414c93ddf6648158602205104562c14eaaa33625b17b05ba42ad4f5"
+      }
+    ]
+  },
+  "source_files": [
+    {
+      "path": "output\\figure-library-gallery-academic\\synthetic_gallery_source.json",
+      "resolved_path": "C:\\Users\\Blake\\math-model\\output\\figure-library-gallery-academic\\synthetic_gallery_source.json",
+      "sha256": "514bd722ca7eb5e1fa991996115eb856a8f38f5d41bbe2e71b56dd514205d58d"
+    },
+    {
+      "path": "C:\\Users\\Blake\\math-model\\scripts\\build_figure_library.py",
+      "resolved_path": "C:\\Users\\Blake\\math-model\\scripts\\build_figure_library.py",
+      "sha256": "b2e58df6223c0d7a51494df83b79c21820dd9748aa55e4b50620a9834da30490"
+    }
+  ],
+  "export": {
+    "dpi": 450,
+    "formats": [
+      "pdf",
+      "svg",
+      "png"
+    ],
+    "bbox_inches": null
+  },
+  "file_audit": {
+    "status": "PASS",
+    "png": {
+      "pixels": [
+        2657,
+        2160
+      ],
+      "mode": "RGB",
+      "dpi": [
+        450.0118,
+        450.0118
+      ]
+    },
+    "pdf_fonts": [
+      {
+        "name": "DFIMHP+MicrosoftYaHei",
+        "embedded": true
+      },
+      {
+        "name": "FHXFSG+TimesNewRomanPSMT",
+        "embedded": true
+      }
+    ],
+    "svg_text": "preserved; matching fonts must be installed on the viewing machine"
+  },
+  "template": null,
+  "figure_metadata": {
+    "figure_type": "multi_series",
+    "semantic_key": "multi_series",
+    "input_fields": [
+      "time",
+      "values",
+      "groups"
+    ],
+    "calculation": {},
+    "interval_kind": "none",
+    "input_data": {
+      "time": [
+        0.0,
+        0.34285714285714286,
+        0.6857142857142857,
+        1.0285714285714285,
+        1.3714285714285714,
+        1.7142857142857144,
+        2.057142857142857,
+        2.4,
+        2.742857142857143,
+        3.085714285714286,
+        3.428571428571429,
+        3.7714285714285714,
+        4.114285714285714,
+        4.457142857142857,
+        4.8,
+        5.142857142857143,
+        5.485714285714286,
+        5.828571428571428,
+        6.171428571428572,
+        6.514285714285714,
+        6.857142857142858,
+        7.2,
+        7.542857142857143,
+        7.885714285714286,
+        8.228571428571428,
+        8.571428571428571,
+        8.914285714285715,
+        9.257142857142858,
+        9.6,
+        9.942857142857143,
+        10.285714285714286,
+        10.628571428571428,
+        10.971428571428572,
+        11.314285714285715,
+        11.657142857142857,
+        12.0
+      ],
+      "values": [
+        [
+          1.0,
+          1.0275596675498908,
+          1.048229418212309
+        ],
+        [
+          1.5091195612831152,
+          1.33303140431976,
+          1.2009652865972436
+        ],
+        [
+          1.874258082970853,
+          1.5521145173324027,
+          1.310506843103565
+        ],
+        [
+          2.046840198786705,
+          1.655663786821914,
+          1.3622814778483205
+        ],
+        [
+          2.7108346852101692,
+          2.0540604786759924,
+          1.5614798237753598
+        ],
+        [
+          2.592472337444337,
+          1.983043070016493,
+          1.52597111944561
+        ],
+        [
+          2.465919050473793,
+          1.9071110978341665,
+          1.4880051333544468
+        ],
+        [
+          2.957183995810127,
+          2.2018700650359673,
+          1.635384616955347
+        ],
+        [
+          2.0044896354280644,
+          1.6302534488067293,
+          1.3495763088407282
+        ],
+        [
+          2.1374342731031897,
+          1.7100202314118045,
+          1.3894597001432658
+        ],
+        [
+          1.9450133030302985,
+          1.59456764936807,
+          1.3317334091213986
+        ],
+        [
+          1.7540192560853227,
+          1.4799712212010845,
+          1.2744351950379058
+        ],
+        [
+          1.6103812867631926,
+          1.3937884396078064,
+          1.2313438042412668
+        ],
+        [
+          2.01634478788677,
+          1.6373665402819528,
+          1.35313285457834
+        ],
+        [
+          1.7918102099485016,
+          1.5026457935189916,
+          1.2857724811968594
+        ],
+        [
+          1.9369271804440351,
+          1.5897159758163117,
+          1.3293075723455194
+        ],
+        [
+          2.431392715634625,
+          1.8863952969306657,
+          1.4776472329026964
+        ],
+        [
+          2.5517039817609812,
+          1.9585820566064795,
+          1.5137406127406035
+        ],
+        [
+          3.0922379604509365,
+          2.2829024438204524,
+          1.67590080634759
+        ],
+        [
+          3.7362486777701838,
+          2.669308874212001,
+          1.869104021543364
+        ],
+        [
+          4.18574232894686,
+          2.939005064918007,
+          2.0039521168963668
+        ],
+        [
+          4.554837843473596,
+          3.160462373634048,
+          2.1146807712543874
+        ],
+        [
+          4.8692251299576075,
+          3.349094745524455,
+          2.208996957199591
+        ],
+        [
+          4.74939881164536,
+          3.277198954537107,
+          2.173049061705917
+        ],
+        [
+          4.923775551733689,
+          3.381824998590104,
+          2.2253620837324153
+        ],
+        [
+          4.8204976146911696,
+          3.3198582363645923,
+          2.1943787026196597
+        ],
+        [
+          4.622966846199796,
+          3.2013397752697683,
+          2.1351194720722475
+        ],
+        [
+          4.548393016098981,
+          3.156595477209279,
+          2.112747323042003
+        ],
+        [
+          4.246301034376905,
+          2.9753402881760334,
+          2.0221197285253805
+        ],
+        [
+          3.888050557180872,
+          2.760390001858414,
+          1.9146445853665706
+        ],
+        [
+          3.8460174602393167,
+          2.7351701436934808,
+          1.902034656284104
+        ],
+        [
+          4.337808376046853,
+          3.0302446931780023,
+          2.0495719310263647
+        ],
+        [
+          3.3213855856356544,
+          2.4203910189312836,
+          1.7446450939030052
+        ],
+        [
+          3.6989977247854435,
+          2.646958302421157,
+          1.857928735647942
+        ],
+        [
+          4.260170180831847,
+          2.983661776048999,
+          2.0262804724618633
+        ],
+        [
+          4.7690233794194254,
+          3.288973695201546,
+          2.1789364320381366
+        ]
+      ],
+      "groups": [
+        "方案甲",
+        "方案乙",
+        "方案丙"
+      ]
+    },
+    "data_contract": {
+      "source": "synthetic",
+      "fields": {},
+      "units": {
+        "values": "合成单位",
+        "coordinates": "合成坐标",
+        "scores": "无量纲"
+      },
+      "independent_unit": "synthetic scenario",
+      "repeated_measurement": null,
+      "split": null,
+      "random_seed": 20261011,
+      "interval_kind": "none",
+      "deterministic": true,
+      "simulated": true,
+      "transformations": [
+        "chart-specific synthetic fixture"
+      ]
+    },
+    "name": "multi_series",
+    "canonical_key": "multi_series",
+    "name_zh": "多序列折线图",
+    "mode": "preview",
+    "implementation_level": "dedicated",
+    "paper_suitable": false,
+    "source": "synthetic",
+    "simulated": true,
+    "independent_unit": "synthetic scenario",
+    "units": {
+      "values": "合成单位",
+      "coordinates": "合成坐标",
+      "scores": "无量纲"
+    }
+  },
+  "environment": {
+    "python": "3.14.2",
+    "platform": "Windows-11-10.0.26200-SP0",
+    "matplotlib": "3.10.9",
+    "numpy": "2.4.3",
+    "backend": "Agg",
+    "implementation_hashes": {
+      "sci_figures.py": "5286416a562eab90a031670820a366e1021e5fa2c0a7a876a310dfef37b4f617",
+      "figure_config.py": "1ed2c7fbc04dca33d473794180e509a84fb481408baa973eb83387a03614e980",
+      "figure_templates.py": "3f3961ff0cb17415e7dfd08f629a029d2529b292f2dae10ff6c72bfa282b2ff8",
+      "figure_export.py": "0adb2514fd44e79d20966f4b0993aef33f26444513ec4b2f443273a228e695b9"
+    }
+  },
+  "output_hashes": {
+    "pdf": "a0e83c358dca5971fbcea078d27a71ecc0d763fce5b954a86b90987a66574dcb",
+    "svg": "41afa2e8df8bea9875dea8e44c04e32319718813a158d7b319c9005ae5dd4ed5",
+    "png": "18aed75724204d2a7c033d50a0697dae9cf167cf05625872174e01e19f301c61"
+  }
+}

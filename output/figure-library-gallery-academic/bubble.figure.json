@@ -1,0 +1,390 @@
+{
+  "schema_version": 3,
+  "contract": {
+    "claim": "bubble 模板展示数据结构与视觉编码",
+    "evidence": [
+      "synthetic demonstration"
+    ],
+    "source_paths": [
+      "output\\figure-library-gallery-academic\\synthetic_gallery_source.json"
+    ],
+    "target_venue": "mathematical-modeling paper",
+    "column": "double",
+    "figure_role": "data-overview",
+    "model_name": null,
+    "scenario": null,
+    "parameter_source": null,
+    "randomness": "deterministic formula; seed 0",
+    "n_definition": "formula-generated demonstration points; not independent measurements",
+    "statistic": "descriptive template view",
+    "uncertainty": "not estimated",
+    "review_risks": [],
+    "panel_evidence": [],
+    "data_transformations": [
+      "none; marks may be rasterized for dense views"
+    ],
+    "excluded_data": [],
+    "theme_name": "modeling-default",
+    "design_brief": null,
+    "width_mm": 150,
+    "height_mm": 116.83999999999999,
+    "question": null,
+    "units": "arbitrary unit",
+    "plotting_code": [
+      "C:\\Users\\Blake\\math-model\\scripts\\build_figure_library.py"
+    ],
+    "source_hashes": null,
+    "claim_status": "uncertain"
+  },
+  "audit": {
+    "passed": true,
+    "errors": [],
+    "warnings": [
+      "legend is fully inside the data region: <untitled>"
+    ],
+    "metrics": {
+      "width_mm": 150.0,
+      "height_mm": 116.84,
+      "target_width_mm": 150,
+      "figure_role": "data-overview",
+      "visible_text_count": 22,
+      "axes_count": 1,
+      "data_axes_count": 1,
+      "source_files": [
+        {
+          "path": "output\\figure-library-gallery-academic\\synthetic_gallery_source.json",
+          "resolved_path": "C:\\Users\\Blake\\math-model\\output\\figure-library-gallery-academic\\synthetic_gallery_source.json",
+          "sha256": "514bd722ca7eb5e1fa991996115eb856a8f38f5d41bbe2e71b56dd514205d58d"
+        },
+        {
+          "path": "C:\\Users\\Blake\\math-model\\scripts\\build_figure_library.py",
+          "resolved_path": "C:\\Users\\Blake\\math-model\\scripts\\build_figure_library.py",
+          "sha256": "b2e58df6223c0d7a51494df83b79c21820dd9748aa55e4b50620a9834da30490"
+        }
+      ],
+      "requested_font_families": [
+        "Microsoft YaHei",
+        "SimHei",
+        "Times New Roman",
+        "sans-serif"
+      ],
+      "actual_minimum_text_pt": 7.0,
+      "legend_inside_count": 1,
+      "text_overlap_count": 0,
+      "theme_name": "modeling-default",
+      "minimum_font_size_pt": 6
+    }
+  },
+  "programmatic_audit": {
+    "passed": true,
+    "errors": [],
+    "warnings": [
+      "legend is fully inside the data region: <untitled>"
+    ],
+    "metrics": {
+      "width_mm": 150.0,
+      "height_mm": 116.84,
+      "target_width_mm": 150,
+      "figure_role": "data-overview",
+      "visible_text_count": 22,
+      "axes_count": 1,
+      "data_axes_count": 1,
+      "source_files": [
+        {
+          "path": "output\\figure-library-gallery-academic\\synthetic_gallery_source.json",
+          "resolved_path": "C:\\Users\\Blake\\math-model\\output\\figure-library-gallery-academic\\synthetic_gallery_source.json",
+          "sha256": "514bd722ca7eb5e1fa991996115eb856a8f38f5d41bbe2e71b56dd514205d58d"
+        },
+        {
+          "path": "C:\\Users\\Blake\\math-model\\scripts\\build_figure_library.py",
+          "resolved_path": "C:\\Users\\Blake\\math-model\\scripts\\build_figure_library.py",
+          "sha256": "b2e58df6223c0d7a51494df83b79c21820dd9748aa55e4b50620a9834da30490"
+        }
+      ],
+      "requested_font_families": [
+        "Microsoft YaHei",
+        "SimHei",
+        "Times New Roman",
+        "sans-serif"
+      ],
+      "actual_minimum_text_pt": 7.0,
+      "legend_inside_count": 1,
+      "text_overlap_count": 0,
+      "theme_name": "modeling-default",
+      "minimum_font_size_pt": 6
+    }
+  },
+  "visual_review": {
+    "status": "NOT_CHECKED",
+    "png": "NOT_CHECKED",
+    "vector": "NOT_CHECKED",
+    "physical_proof": "NOT_CHECKED",
+    "grayscale": "NOT_CHECKED",
+    "source_values": "NOT_CHECKED"
+  },
+  "completion_status": "NEEDS_VISUAL_REVIEW",
+  "configuration": {
+    "width_mm": 150,
+    "height_mm": 116.83999999999999,
+    "maximum_height_mm": 247.0,
+    "minimum_text_pt": 6,
+    "text_pt": 7.5,
+    "tick_pt": 7,
+    "legend_pt": 7,
+    "title_pt": 8,
+    "panel_pt": 8,
+    "line_width": 1.1,
+    "marker_size": 4,
+    "grid": true,
+    "background": "white",
+    "theme": "modeling-default",
+    "latin_font": "Times New Roman",
+    "chinese_font": "SimHei",
+    "dpi": 450,
+    "minimum_dpi": 450,
+    "width_tolerance_mm": 0.1,
+    "formats": [
+      "pdf",
+      "svg",
+      "png"
+    ],
+    "semantic_styles": {},
+    "preferred_text_pt": [
+      7,
+      8
+    ],
+    "require_claim_and_evidence": true,
+    "sources": [
+      "builtin:algorithms.figure_config.DEFAULTS",
+      {
+        "path": "C:\\Users\\Blake\\math-model\\config\\paper_style.yaml",
+        "sha256": "f655b5d38414c93ddf6648158602205104562c14eaaa33625b17b05ba42ad4f5"
+      }
+    ]
+  },
+  "source_files": [
+    {
+      "path": "output\\figure-library-gallery-academic\\synthetic_gallery_source.json",
+      "resolved_path": "C:\\Users\\Blake\\math-model\\output\\figure-library-gallery-academic\\synthetic_gallery_source.json",
+      "sha256": "514bd722ca7eb5e1fa991996115eb856a8f38f5d41bbe2e71b56dd514205d58d"
+    },
+    {
+      "path": "C:\\Users\\Blake\\math-model\\scripts\\build_figure_library.py",
+      "resolved_path": "C:\\Users\\Blake\\math-model\\scripts\\build_figure_library.py",
+      "sha256": "b2e58df6223c0d7a51494df83b79c21820dd9748aa55e4b50620a9834da30490"
+    }
+  ],
+  "export": {
+    "dpi": 450,
+    "formats": [
+      "pdf",
+      "svg",
+      "png"
+    ],
+    "bbox_inches": null
+  },
+  "file_audit": {
+    "status": "PASS",
+    "png": {
+      "pixels": [
+        2657,
+        2070
+      ],
+      "mode": "RGB",
+      "dpi": [
+        450.0118,
+        450.0118
+      ]
+    },
+    "pdf_fonts": [
+      {
+        "name": "DFIMHP+MicrosoftYaHei",
+        "embedded": true
+      },
+      {
+        "name": "FHXFSG+TimesNewRomanPSMT",
+        "embedded": true
+      }
+    ],
+    "svg_text": "preserved; matching fonts must be installed on the viewing machine"
+  },
+  "template": null,
+  "figure_metadata": {
+    "figure_type": "bubble_scatter",
+    "groups": [
+      "方案甲",
+      "方案乙",
+      "方案丙",
+      "方案丁"
+    ],
+    "size_semantics": "bubble area encodes magnitude",
+    "data_contract": {
+      "source": "synthetic",
+      "fields": {},
+      "units": {
+        "values": "合成单位",
+        "coordinates": "合成坐标",
+        "scores": "无量纲"
+      },
+      "independent_unit": "synthetic scenario",
+      "repeated_measurement": null,
+      "split": null,
+      "random_seed": 20261011,
+      "interval_kind": null,
+      "deterministic": true,
+      "simulated": true,
+      "transformations": [
+        "chart-specific synthetic fixture"
+      ]
+    },
+    "name": "bubble",
+    "canonical_key": "bubble",
+    "input_data": {
+      "x": [
+        0.09113397179745275,
+        0.28674206162743815,
+        -1.5444115497395523,
+        0.2653796102038214,
+        0.10016263645638562,
+        0.8576278965750713,
+        -0.09848779612572639,
+        1.8100560411575233,
+        -1.0014120738202472,
+        1.3236894078735737,
+        0.7289674487972571,
+        0.05664769513793332,
+        0.9946157898575024,
+        -0.17950877283420666,
+        -1.6947867236522483,
+        -0.20803106379465414,
+        -0.20753021223900597,
+        0.7901657889172091,
+        -2.9798865290844074,
+        0.3419736674848037,
+        -1.4497769844656214,
+        0.5535741911135443,
+        -0.65194747744387,
+        -1.579616014026257,
+        0.6197769588310059,
+        1.3196405887168652,
+        1.5342747513548438,
+        0.4641854374124763,
+        0.6035755302714229,
+        0.33041174446298543,
+        -0.7318792709195956,
+        -0.7841342391244117,
+        -0.008433744993988933,
+        1.0226978614038758,
+        -0.004320947035404521,
+        0.3390740780381212
+      ],
+      "y": [
+        0.8621298804519911,
+        1.2285972663052027,
+        0.043434092866464664,
+        0.04429057577637809,
+        1.8623946886692309,
+        -0.027811430975074436,
+        -0.19794693487944617,
+        0.9047263474638249,
+        -2.141778771153402,
+        0.6319301673084323,
+        -0.5331417819718295,
+        0.7386013189634402,
+        0.8785194446248341,
+        -0.7380343994386573,
+        -0.2779133718477685,
+        -1.372273150253173,
+        -1.414375005854231,
+        -0.08098530990906777,
+        -0.45325437494954085,
+        -0.22410345341252713,
+        -0.3817202395011776,
+        0.36600349684649225,
+        0.5445740282208279,
+        0.15711223522016945,
+        -0.1312642015029071,
+        -0.27936180287455115,
+        0.5099441973486263,
+        0.7930817698889211,
+        0.8024107817416838,
+        0.47091993998161,
+        -1.8656914201576664,
+        0.4833731415353489,
+        -0.5077544759628799,
+        -1.0295516684004,
+        0.9673634359488754,
+        -0.36785404728823917
+      ],
+      "size": [
+        32.50275409324203,
+        10.084491392123136,
+        12.539861619704883,
+        12.842436912021865,
+        34.57779747319097,
+        39.69422114871815,
+        13.134377057146237,
+        18.857505494995646,
+        36.14495640964928,
+        39.1003256434186,
+        32.729159814563545,
+        30.22402290193103,
+        31.853602722468704,
+        20.10599375552406,
+        22.258076850442368,
+        27.228061342337046,
+        36.30233655775707,
+        19.31017512017101,
+        18.318055280279516,
+        27.546955940469346,
+        17.799044913704034,
+        26.703183053108148,
+        14.303895176072484,
+        25.57480754780368,
+        19.7818278019518,
+        25.167947298031734,
+        14.229607168683764,
+        30.639263802703333,
+        39.69002952787164,
+        21.04569361416788,
+        15.939257134870182,
+        23.721613589537206,
+        13.563688191292336,
+        19.593081524178572,
+        21.307771668017104,
+        24.863871637332384
+      ]
+    },
+    "name_zh": "气泡图",
+    "mode": "preview",
+    "implementation_level": "dedicated",
+    "paper_suitable": false,
+    "source": "synthetic",
+    "simulated": true,
+    "independent_unit": "synthetic scenario",
+    "units": {
+      "values": "合成单位",
+      "coordinates": "合成坐标",
+      "scores": "无量纲"
+    },
+    "interval_kind": null
+  },
+  "environment": {
+    "python": "3.14.2",
+    "platform": "Windows-11-10.0.26200-SP0",
+    "matplotlib": "3.10.9",
+    "numpy": "2.4.3",
+    "backend": "Agg",
+    "implementation_hashes": {
+      "sci_figures.py": "5286416a562eab90a031670820a366e1021e5fa2c0a7a876a310dfef37b4f617",
+      "figure_config.py": "1ed2c7fbc04dca33d473794180e509a84fb481408baa973eb83387a03614e980",
+      "figure_templates.py": "3f3961ff0cb17415e7dfd08f629a029d2529b292f2dae10ff6c72bfa282b2ff8",
+      "figure_export.py": "0adb2514fd44e79d20966f4b0993aef33f26444513ec4b2f443273a228e695b9"
+    }
+  },
+  "output_hashes": {
+    "pdf": "00348674d75b5dd1a0e93a6a9a022e1a84ce89e87422971a5a54a66daaa507c5",
+    "svg": "07dfa0b0b192b28f31ca826ecf47ac5f4ae32067e71a79e8e96f9636397ed53b",
+    "png": "e4ba5cf7367795e8cda6ae84292a22a68dcf17b6df1c23f6eb836b321786ce56"
+  }
+}

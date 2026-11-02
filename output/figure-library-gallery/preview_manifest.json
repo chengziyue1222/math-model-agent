@@ -1,0 +1,2934 @@
+{
+  "schema_version": 1,
+  "generated_from": "scripts/build_figure_library.py",
+  "synthetic_notice": "合成数据，仅用于模板演示，不代表真实研究结果",
+  "figures": [
+    {
+      "name": "adjacency",
+      "name_zh": "邻接关系图",
+      "category": "网络、流量与空间关系",
+      "question_zh": "网络、流量与空间关系中的邻接关系图",
+      "implementation_level": "dedicated",
+      "status": "dedicated semantic renderer; visual QA pending",
+      "paper_suitable": false,
+      "files": {
+        "pdf": "adjacency.pdf",
+        "svg": "adjacency.svg",
+        "png": "adjacency.png",
+        "metadata": "adjacency.figure.json"
+      },
+      "audit": true,
+      "visual_review": "NOT_CHECKED",
+      "synthetic": true,
+      "generic_demo": false
+    },
+    {
+      "name": "adjacency_matrix",
+      "name_zh": "邻接矩阵",
+      "category": "热图与矩阵",
+      "question_zh": "热图与矩阵中的邻接矩阵",
+      "implementation_level": "dedicated",
+      "status": "dedicated semantic renderer; visual QA pending",
+      "paper_suitable": false,
+      "files": {
+        "pdf": "adjacency_matrix.pdf",
+        "svg": "adjacency_matrix.svg",
+        "png": "adjacency_matrix.png",
+        "metadata": "adjacency_matrix.figure.json"
+      },
+      "audit": true,
+      "visual_review": "NOT_CHECKED",
+      "synthetic": true,
+      "generic_demo": false
+    },
+    {
+      "name": "ahp_weights",
+      "name_zh": "AHP权重图",
+      "category": "多指标与综合评价",
+      "question_zh": "多指标与综合评价中的AHP权重图",
+      "implementation_level": "dedicated",
+      "status": "dedicated semantic renderer; visual QA pending",
+      "paper_suitable": false,
+      "files": {
+        "pdf": "ahp_weights.pdf",
+        "svg": "ahp_weights.svg",
+        "png": "ahp_weights.png",
+        "metadata": "ahp_weights.figure.json"
+      },
+      "audit": true,
+      "visual_review": "NOT_CHECKED",
+      "synthetic": true,
+      "generic_demo": false
+    },
+    {
+      "name": "algorithm_flow",
+      "name_zh": "算法流程图",
+      "category": "数学建模专用图",
+      "question_zh": "数学建模专用图中的算法流程图",
+      "implementation_level": "dedicated",
+      "status": "dedicated semantic renderer; visual QA pending",
+      "paper_suitable": false,
+      "files": {
+        "pdf": "algorithm_flow.pdf",
+        "svg": "algorithm_flow.svg",
+        "png": "algorithm_flow.png",
+        "metadata": "algorithm_flow.figure.json"
+      },
+      "audit": true,
+      "visual_review": "NOT_CHECKED",
+      "synthetic": true,
+      "generic_demo": false
+    },
+    {
+      "name": "alluvial",
+      "name_zh": "冲积图",
+      "category": "网络、流量与空间关系",
+      "question_zh": "网络、流量与空间关系中的冲积图",
+      "implementation_level": "dedicated",
+      "status": "dedicated statistical renderer; visual QA pending",
+      "paper_suitable": false,
+      "files": {
+        "pdf": "alluvial.pdf",
+        "svg": "alluvial.svg",
+        "png": "alluvial.png",
+        "metadata": "alluvial.figure.json"
+      },
+      "audit": true,
+      "visual_review": "NOT_CHECKED",
+      "synthetic": true,
+      "generic_demo": false
+    },
+    {
+      "name": "area",
+      "name_zh": "面积图",
+      "category": "时间序列与动态过程",
+      "question_zh": "时间序列与动态过程中的面积图",
+      "implementation_level": "dedicated",
+      "status": "dedicated semantic renderer; visual QA pending",
+      "paper_suitable": false,
+      "files": {
+        "pdf": "area.pdf",
+        "svg": "area.svg",
+        "png": "area.png",
+        "metadata": "area.figure.json"
+      },
+      "audit": true,
+      "visual_review": "NOT_CHECKED",
+      "synthetic": true,
+      "generic_demo": false
+    },
+    {
+      "name": "autocorrelation",
+      "name_zh": "自相关图",
+      "category": "时间序列与动态过程",
+      "question_zh": "时间序列与动态过程中的自相关图",
+      "implementation_level": "dedicated",
+      "status": "dedicated semantic renderer; visual QA pending",
+      "paper_suitable": false,
+      "files": {
+        "pdf": "autocorrelation.pdf",
+        "svg": "autocorrelation.svg",
+        "png": "autocorrelation.png",
+        "metadata": "autocorrelation.figure.json"
+      },
+      "audit": true,
+      "visual_review": "NOT_CHECKED",
+      "synthetic": true,
+      "generic_demo": false
+    },
+    {
+      "name": "bar",
+      "name_zh": "柱状图",
+      "category": "类别比较",
+      "question_zh": "类别比较中的柱状图",
+      "implementation_level": "dedicated",
+      "status": "dedicated statistical renderer; visual QA pending",
+      "paper_suitable": false,
+      "files": {
+        "pdf": "bar.pdf",
+        "svg": "bar.svg",
+        "png": "bar.png",
+        "metadata": "bar.figure.json"
+      },
+      "audit": true,
+      "visual_review": "NOT_CHECKED",
+      "synthetic": true,
+      "generic_demo": false
+    },
+    {
+      "name": "beeswarm",
+      "name_zh": "蜂群图",
+      "category": "单变量与分布",
+      "question_zh": "单变量与分布中的蜂群图",
+      "implementation_level": "dedicated",
+      "status": "dedicated semantic renderer; visual QA pending",
+      "paper_suitable": false,
+      "files": {
+        "pdf": "beeswarm.pdf",
+        "svg": "beeswarm.svg",
+        "png": "beeswarm.png",
+        "metadata": "beeswarm.figure.json"
+      },
+      "audit": true,
+      "visual_review": "NOT_CHECKED",
+      "synthetic": true,
+      "generic_demo": false
+    },
+    {
+      "name": "bland_altman",
+      "name_zh": "Bland-Altman一致性图",
+      "category": "关系与相关",
+      "question_zh": "关系与相关中的Bland-Altman一致性图",
+      "implementation_level": "dedicated",
+      "status": "dedicated statistical renderer; visual QA pending",
+      "paper_suitable": false,
+      "files": {
+        "pdf": "bland_altman.pdf",
+        "svg": "bland_altman.svg",
+        "png": "bland_altman.png",
+        "metadata": "bland_altman.figure.json"
+      },
+      "audit": true,
+      "visual_review": "NOT_CHECKED",
+      "synthetic": true,
+      "generic_demo": false
+    },
+    {
+      "name": "boxplot",
+      "name_zh": "箱线图",
+      "category": "单变量与分布",
+      "question_zh": "单变量与分布中的箱线图",
+      "implementation_level": "dedicated",
+      "status": "dedicated statistical renderer; visual QA pending",
+      "paper_suitable": false,
+      "files": {
+        "pdf": "boxplot.pdf",
+        "svg": "boxplot.svg",
+        "png": "boxplot.png",
+        "metadata": "boxplot.figure.json"
+      },
+      "audit": true,
+      "visual_review": "NOT_CHECKED",
+      "synthetic": true,
+      "generic_demo": false
+    },
+    {
+      "name": "bubble",
+      "name_zh": "气泡图",
+      "category": "关系与相关",
+      "question_zh": "关系与相关中的气泡图",
+      "implementation_level": "dedicated",
+      "status": "dedicated statistical renderer; visual QA pending",
+      "paper_suitable": false,
+      "files": {
+        "pdf": "bubble.pdf",
+        "svg": "bubble.svg",
+        "png": "bubble.png",
+        "metadata": "bubble.figure.json"
+      },
+      "audit": true,
+      "visual_review": "NOT_CHECKED",
+      "synthetic": true,
+      "generic_demo": false
+    },
+    {
+      "name": "calendar_heatmap",
+      "name_zh": "日历热图",
+      "category": "时间序列与动态过程",
+      "question_zh": "时间序列与动态过程中的日历热图",
+      "implementation_level": "dedicated",
+      "status": "dedicated semantic renderer; visual QA pending",
+      "paper_suitable": false,
+      "files": {
+        "pdf": "calendar_heatmap.pdf",
+        "svg": "calendar_heatmap.svg",
+        "png": "calendar_heatmap.png",
+        "metadata": "calendar_heatmap.figure.json"
+      },
+      "audit": true,
+      "visual_review": "NOT_CHECKED",
+      "synthetic": true,
+      "generic_demo": false
+    },
+    {
+      "name": "calibration_curve",
+      "name_zh": "校准曲线",
+      "category": "模型评估",
+      "question_zh": "模型评估中的校准曲线",
+      "implementation_level": "dedicated",
+      "status": "dedicated semantic renderer; visual QA pending",
+      "paper_suitable": false,
+      "files": {
+        "pdf": "calibration_curve.pdf",
+        "svg": "calibration_curve.svg",
+        "png": "calibration_curve.png",
+        "metadata": "calibration_curve.figure.json"
+      },
+      "audit": true,
+      "visual_review": "NOT_CHECKED",
+      "synthetic": true,
+      "generic_demo": false
+    },
+    {
+      "name": "chord",
+      "name_zh": "弦图",
+      "category": "网络、流量与空间关系",
+      "question_zh": "网络、流量与空间关系中的弦图",
+      "implementation_level": "dedicated",
+      "status": "dedicated statistical renderer; visual QA pending",
+      "paper_suitable": false,
+      "files": {
+        "pdf": "chord.pdf",
+        "svg": "chord.svg",
+        "png": "chord.png",
+        "metadata": "chord.figure.json"
+      },
+      "audit": true,
+      "visual_review": "NOT_CHECKED",
+      "synthetic": true,
+      "generic_demo": false
+    },
+    {
+      "name": "circular_heatmap",
+      "name_zh": "环形热图",
+      "category": "热图与矩阵",
+      "question_zh": "热图与矩阵中的环形热图",
+      "implementation_level": "dedicated",
+      "status": "dedicated semantic renderer; visual QA pending",
+      "paper_suitable": false,
+      "files": {
+        "pdf": "circular_heatmap.pdf",
+        "svg": "circular_heatmap.svg",
+        "png": "circular_heatmap.png",
+        "metadata": "circular_heatmap.figure.json"
+      },
+      "audit": true,
+      "visual_review": "NOT_CHECKED",
+      "synthetic": true,
+      "generic_demo": false
+    },
+    {
+      "name": "cleveland_dot",
+      "name_zh": "克利夫兰点图",
+      "category": "类别比较",
+      "question_zh": "类别比较中的克利夫兰点图",
+      "implementation_level": "dedicated",
+      "status": "dedicated semantic renderer; visual QA pending",
+      "paper_suitable": false,
+      "files": {
+        "pdf": "cleveland_dot.pdf",
+        "svg": "cleveland_dot.svg",
+        "png": "cleveland_dot.png",
+        "metadata": "cleveland_dot.figure.json"
+      },
+      "audit": true,
+      "visual_review": "NOT_CHECKED",
+      "synthetic": true,
+      "generic_demo": false
+    },
+    {
+      "name": "cluster_scatter",
+      "name_zh": "聚类散点图",
+      "category": "降维、聚类与高维结构",
+      "question_zh": "降维、聚类与高维结构中的聚类散点图",
+      "implementation_level": "dedicated",
+      "status": "dedicated statistical renderer; visual QA pending",
+      "paper_suitable": false,
+      "files": {
+        "pdf": "cluster_scatter.pdf",
+        "svg": "cluster_scatter.svg",
+        "png": "cluster_scatter.png",
+        "metadata": "cluster_scatter.figure.json"
+      },
+      "audit": true,
+      "visual_review": "NOT_CHECKED",
+      "synthetic": true,
+      "generic_demo": false
+    },
+    {
+      "name": "cluster_stability",
+      "name_zh": "聚类稳定性图",
+      "category": "降维、聚类与高维结构",
+      "question_zh": "降维、聚类与高维结构中的聚类稳定性图",
+      "implementation_level": "dedicated",
+      "status": "dedicated semantic renderer; visual QA pending",
+      "paper_suitable": false,
+      "files": {
+        "pdf": "cluster_stability.pdf",
+        "svg": "cluster_stability.svg",
+        "png": "cluster_stability.png",
+        "metadata": "cluster_stability.figure.json"
+      },
+      "audit": true,
+      "visual_review": "NOT_CHECKED",
+      "synthetic": true,
+      "generic_demo": false
+    },
+    {
+      "name": "clustered_heatmap",
+      "name_zh": "聚类热图",
+      "category": "关系与相关",
+      "question_zh": "关系与相关中的聚类热图",
+      "implementation_level": "dedicated",
+      "status": "dedicated semantic renderer; visual QA pending",
+      "paper_suitable": false,
+      "files": {
+        "pdf": "clustered_heatmap.pdf",
+        "svg": "clustered_heatmap.svg",
+        "png": "clustered_heatmap.png",
+        "metadata": "clustered_heatmap.figure.json"
+      },
+      "audit": true,
+      "visual_review": "NOT_CHECKED",
+      "synthetic": true,
+      "generic_demo": false
+    },
+    {
+      "name": "clustered_heatmap_matrix",
+      "name_zh": "聚类矩阵热图",
+      "category": "热图与矩阵",
+      "question_zh": "热图与矩阵中的聚类矩阵热图",
+      "implementation_level": "alias",
+      "status": "alias of clustered_heatmap",
+      "paper_suitable": false,
+      "files": {
+        "pdf": "clustered_heatmap_matrix.pdf",
+        "svg": "clustered_heatmap_matrix.svg",
+        "png": "clustered_heatmap_matrix.png",
+        "metadata": "clustered_heatmap_matrix.figure.json"
+      },
+      "audit": true,
+      "visual_review": "NOT_CHECKED",
+      "synthetic": true,
+      "generic_demo": false
+    },
+    {
+      "name": "community_network",
+      "name_zh": "社区网络图",
+      "category": "网络、流量与空间关系",
+      "question_zh": "网络、流量与空间关系中的社区网络图",
+      "implementation_level": "dedicated",
+      "status": "dedicated statistical renderer; visual QA pending",
+      "paper_suitable": false,
+      "files": {
+        "pdf": "community_network.pdf",
+        "svg": "community_network.svg",
+        "png": "community_network.png",
+        "metadata": "community_network.figure.json"
+      },
+      "audit": true,
+      "visual_review": "NOT_CHECKED",
+      "synthetic": true,
+      "generic_demo": false
+    },
+    {
+      "name": "confusion_matrix",
+      "name_zh": "混淆矩阵",
+      "category": "热图与矩阵",
+      "question_zh": "热图与矩阵中的混淆矩阵",
+      "implementation_level": "dedicated",
+      "status": "dedicated statistical renderer; visual QA pending",
+      "paper_suitable": false,
+      "files": {
+        "pdf": "confusion_matrix.pdf",
+        "svg": "confusion_matrix.svg",
+        "png": "confusion_matrix.png",
+        "metadata": "confusion_matrix.figure.json"
+      },
+      "audit": true,
+      "visual_review": "NOT_CHECKED",
+      "synthetic": true,
+      "generic_demo": false
+    },
+    {
+      "name": "confusion_matrix_eval",
+      "name_zh": "模型混淆矩阵",
+      "category": "模型评估",
+      "question_zh": "模型评估中的模型混淆矩阵",
+      "implementation_level": "alias",
+      "status": "alias of confusion_matrix",
+      "paper_suitable": false,
+      "files": {
+        "pdf": "confusion_matrix_eval.pdf",
+        "svg": "confusion_matrix_eval.svg",
+        "png": "confusion_matrix_eval.png",
+        "metadata": "confusion_matrix_eval.figure.json"
+      },
+      "audit": true,
+      "visual_review": "NOT_CHECKED",
+      "synthetic": true,
+      "generic_demo": false
+    },
+    {
+      "name": "constraint_boundary",
+      "name_zh": "约束边界图",
+      "category": "数学建模专用图",
+      "question_zh": "数学建模专用图中的约束边界图",
+      "implementation_level": "dedicated",
+      "status": "dedicated semantic renderer; visual QA pending",
+      "paper_suitable": false,
+      "files": {
+        "pdf": "constraint_boundary.pdf",
+        "svg": "constraint_boundary.svg",
+        "png": "constraint_boundary.png",
+        "metadata": "constraint_boundary.figure.json"
+      },
+      "audit": true,
+      "visual_review": "NOT_CHECKED",
+      "synthetic": true,
+      "generic_demo": false
+    },
+    {
+      "name": "constraint_slack",
+      "name_zh": "约束松弛图",
+      "category": "优化、灵敏度与稳健性",
+      "question_zh": "优化、灵敏度与稳健性中的约束松弛图",
+      "implementation_level": "dedicated",
+      "status": "dedicated semantic renderer; visual QA pending",
+      "paper_suitable": false,
+      "files": {
+        "pdf": "constraint_slack.pdf",
+        "svg": "constraint_slack.svg",
+        "png": "constraint_slack.png",
+        "metadata": "constraint_slack.figure.json"
+      },
+      "audit": true,
+      "visual_review": "NOT_CHECKED",
+      "synthetic": true,
+      "generic_demo": false
+    },
+    {
+      "name": "contour",
+      "name_zh": "空间等高线图",
+      "category": "网络、流量与空间关系",
+      "question_zh": "网络、流量与空间关系中的空间等高线图",
+      "implementation_level": "dedicated",
+      "status": "dedicated semantic renderer; visual QA pending",
+      "paper_suitable": false,
+      "files": {
+        "pdf": "contour.pdf",
+        "svg": "contour.svg",
+        "png": "contour.png",
+        "metadata": "contour.figure.json"
+      },
+      "audit": true,
+      "visual_review": "NOT_CHECKED",
+      "synthetic": true,
+      "generic_demo": false
+    },
+    {
+      "name": "contour_density",
+      "name_zh": "等高线密度图",
+      "category": "关系与相关",
+      "question_zh": "关系与相关中的等高线密度图",
+      "implementation_level": "dedicated",
+      "status": "dedicated semantic renderer; visual QA pending",
+      "paper_suitable": false,
+      "files": {
+        "pdf": "contour_density.pdf",
+        "svg": "contour_density.svg",
+        "png": "contour_density.png",
+        "metadata": "contour_density.figure.json"
+      },
+      "audit": true,
+      "visual_review": "NOT_CHECKED",
+      "synthetic": true,
+      "generic_demo": false
+    },
+    {
+      "name": "contribution_decomposition",
+      "name_zh": "贡献分解图",
+      "category": "多指标与综合评价",
+      "question_zh": "多指标与综合评价中的贡献分解图",
+      "implementation_level": "dedicated",
+      "status": "dedicated semantic renderer; visual QA pending",
+      "paper_suitable": false,
+      "files": {
+        "pdf": "contribution_decomposition.pdf",
+        "svg": "contribution_decomposition.svg",
+        "png": "contribution_decomposition.png",
+        "metadata": "contribution_decomposition.figure.json"
+      },
+      "audit": true,
+      "visual_review": "NOT_CHECKED",
+      "synthetic": true,
+      "generic_demo": false
+    },
+    {
+      "name": "control_chart",
+      "name_zh": "控制图",
+      "category": "单变量与分布",
+      "question_zh": "单变量与分布中的控制图",
+      "implementation_level": "dedicated",
+      "status": "dedicated semantic renderer; visual QA pending",
+      "paper_suitable": false,
+      "files": {
+        "pdf": "control_chart.pdf",
+        "svg": "control_chart.svg",
+        "png": "control_chart.png",
+        "metadata": "control_chart.figure.json"
+      },
+      "audit": true,
+      "visual_review": "NOT_CHECKED",
+      "synthetic": true,
+      "generic_demo": false
+    },
+    {
+      "name": "convergence",
+      "name_zh": "收敛曲线",
+      "category": "优化、灵敏度与稳健性",
+      "question_zh": "优化、灵敏度与稳健性中的收敛曲线",
+      "implementation_level": "dedicated",
+      "status": "dedicated statistical renderer; visual QA pending",
+      "paper_suitable": false,
+      "files": {
+        "pdf": "convergence.pdf",
+        "svg": "convergence.svg",
+        "png": "convergence.png",
+        "metadata": "convergence.figure.json"
+      },
+      "audit": true,
+      "visual_review": "NOT_CHECKED",
+      "synthetic": true,
+      "generic_demo": false
+    },
+    {
+      "name": "coordinate_system",
+      "name_zh": "坐标系图",
+      "category": "数学建模专用图",
+      "question_zh": "数学建模专用图中的坐标系图",
+      "implementation_level": "dedicated",
+      "status": "dedicated semantic renderer; visual QA pending",
+      "paper_suitable": false,
+      "files": {
+        "pdf": "coordinate_system.pdf",
+        "svg": "coordinate_system.svg",
+        "png": "coordinate_system.png",
+        "metadata": "coordinate_system.figure.json"
+      },
+      "audit": true,
+      "visual_review": "NOT_CHECKED",
+      "synthetic": true,
+      "generic_demo": false
+    },
+    {
+      "name": "correlation_bubble",
+      "name_zh": "相关气泡图",
+      "category": "关系与相关",
+      "question_zh": "关系与相关中的相关气泡图",
+      "implementation_level": "dedicated",
+      "status": "dedicated statistical renderer; visual QA pending",
+      "paper_suitable": false,
+      "files": {
+        "pdf": "correlation_bubble.pdf",
+        "svg": "correlation_bubble.svg",
+        "png": "correlation_bubble.png",
+        "metadata": "correlation_bubble.figure.json"
+      },
+      "audit": true,
+      "visual_review": "NOT_CHECKED",
+      "synthetic": true,
+      "generic_demo": false
+    },
+    {
+      "name": "correlation_matrix",
+      "name_zh": "相关矩阵",
+      "category": "关系与相关",
+      "question_zh": "关系与相关中的相关矩阵",
+      "implementation_level": "dedicated",
+      "status": "dedicated statistical renderer; visual QA pending",
+      "paper_suitable": false,
+      "files": {
+        "pdf": "correlation_matrix.pdf",
+        "svg": "correlation_matrix.svg",
+        "png": "correlation_matrix.png",
+        "metadata": "correlation_matrix.figure.json"
+      },
+      "audit": true,
+      "visual_review": "NOT_CHECKED",
+      "synthetic": true,
+      "generic_demo": false
+    },
+    {
+      "name": "correlation_network",
+      "name_zh": "相关网络图",
+      "category": "网络、流量与空间关系",
+      "question_zh": "网络、流量与空间关系中的相关网络图",
+      "implementation_level": "dedicated",
+      "status": "dedicated statistical renderer; visual QA pending",
+      "paper_suitable": false,
+      "files": {
+        "pdf": "correlation_network.pdf",
+        "svg": "correlation_network.svg",
+        "png": "correlation_network.png",
+        "metadata": "correlation_network.figure.json"
+      },
+      "audit": true,
+      "visual_review": "NOT_CHECKED",
+      "synthetic": true,
+      "generic_demo": false
+    },
+    {
+      "name": "coverage",
+      "name_zh": "覆盖率图",
+      "category": "模型评估",
+      "question_zh": "模型评估中的覆盖率图",
+      "implementation_level": "dedicated",
+      "status": "dedicated semantic renderer; visual QA pending",
+      "paper_suitable": false,
+      "files": {
+        "pdf": "coverage.pdf",
+        "svg": "coverage.svg",
+        "png": "coverage.png",
+        "metadata": "coverage.figure.json"
+      },
+      "audit": true,
+      "visual_review": "NOT_CHECKED",
+      "synthetic": true,
+      "generic_demo": false
+    },
+    {
+      "name": "cross_validation",
+      "name_zh": "交叉验证图",
+      "category": "模型评估",
+      "question_zh": "模型评估中的交叉验证图",
+      "implementation_level": "dedicated",
+      "status": "dedicated semantic renderer; visual QA pending",
+      "paper_suitable": false,
+      "files": {
+        "pdf": "cross_validation.pdf",
+        "svg": "cross_validation.svg",
+        "png": "cross_validation.png",
+        "metadata": "cross_validation.figure.json"
+      },
+      "audit": true,
+      "visual_review": "NOT_CHECKED",
+      "synthetic": true,
+      "generic_demo": false
+    },
+    {
+      "name": "decision_tree",
+      "name_zh": "决策树图",
+      "category": "数学建模专用图",
+      "question_zh": "数学建模专用图中的决策树图",
+      "implementation_level": "dedicated",
+      "status": "dedicated semantic renderer; visual QA pending",
+      "paper_suitable": false,
+      "files": {
+        "pdf": "decision_tree.pdf",
+        "svg": "decision_tree.svg",
+        "png": "decision_tree.png",
+        "metadata": "decision_tree.figure.json"
+      },
+      "audit": true,
+      "visual_review": "NOT_CHECKED",
+      "synthetic": true,
+      "generic_demo": false
+    },
+    {
+      "name": "decomposition",
+      "name_zh": "时间序列分解图",
+      "category": "时间序列与动态过程",
+      "question_zh": "时间序列与动态过程中的时间序列分解图",
+      "implementation_level": "dedicated",
+      "status": "dedicated semantic renderer; visual QA pending",
+      "paper_suitable": false,
+      "files": {
+        "pdf": "decomposition.pdf",
+        "svg": "decomposition.svg",
+        "png": "decomposition.png",
+        "metadata": "decomposition.figure.json"
+      },
+      "audit": true,
+      "visual_review": "NOT_CHECKED",
+      "synthetic": true,
+      "generic_demo": false
+    },
+    {
+      "name": "dendrogram",
+      "name_zh": "树状图",
+      "category": "降维、聚类与高维结构",
+      "question_zh": "降维、聚类与高维结构中的树状图",
+      "implementation_level": "dedicated",
+      "status": "dedicated semantic renderer; visual QA pending",
+      "paper_suitable": false,
+      "files": {
+        "pdf": "dendrogram.pdf",
+        "svg": "dendrogram.svg",
+        "png": "dendrogram.png",
+        "metadata": "dendrogram.figure.json"
+      },
+      "audit": true,
+      "visual_review": "NOT_CHECKED",
+      "synthetic": true,
+      "generic_demo": false
+    },
+    {
+      "name": "dependency_graph",
+      "name_zh": "依赖关系图",
+      "category": "网络、流量与空间关系",
+      "question_zh": "网络、流量与空间关系中的依赖关系图",
+      "implementation_level": "dedicated",
+      "status": "dedicated semantic renderer; visual QA pending",
+      "paper_suitable": false,
+      "files": {
+        "pdf": "dependency_graph.pdf",
+        "svg": "dependency_graph.svg",
+        "png": "dependency_graph.png",
+        "metadata": "dependency_graph.figure.json"
+      },
+      "audit": true,
+      "visual_review": "NOT_CHECKED",
+      "synthetic": true,
+      "generic_demo": false
+    },
+    {
+      "name": "diverging_bar",
+      "name_zh": "发散条形图",
+      "category": "类别比较",
+      "question_zh": "类别比较中的发散条形图",
+      "implementation_level": "dedicated",
+      "status": "dedicated semantic renderer; visual QA pending",
+      "paper_suitable": false,
+      "files": {
+        "pdf": "diverging_bar.pdf",
+        "svg": "diverging_bar.svg",
+        "png": "diverging_bar.png",
+        "metadata": "diverging_bar.figure.json"
+      },
+      "audit": true,
+      "visual_review": "NOT_CHECKED",
+      "synthetic": true,
+      "generic_demo": false
+    },
+    {
+      "name": "diverging_heatmap",
+      "name_zh": "发散色热图",
+      "category": "热图与矩阵",
+      "question_zh": "热图与矩阵中的发散色热图",
+      "implementation_level": "dedicated",
+      "status": "dedicated semantic renderer; visual QA pending",
+      "paper_suitable": false,
+      "files": {
+        "pdf": "diverging_heatmap.pdf",
+        "svg": "diverging_heatmap.svg",
+        "png": "diverging_heatmap.png",
+        "metadata": "diverging_heatmap.figure.json"
+      },
+      "audit": true,
+      "visual_review": "NOT_CHECKED",
+      "synthetic": true,
+      "generic_demo": false
+    },
+    {
+      "name": "dot_plot",
+      "name_zh": "点图",
+      "category": "类别比较",
+      "question_zh": "类别比较中的点图",
+      "implementation_level": "dedicated",
+      "status": "dedicated statistical renderer; visual QA pending",
+      "paper_suitable": false,
+      "files": {
+        "pdf": "dot_plot.pdf",
+        "svg": "dot_plot.svg",
+        "png": "dot_plot.png",
+        "metadata": "dot_plot.figure.json"
+      },
+      "audit": true,
+      "visual_review": "NOT_CHECKED",
+      "synthetic": true,
+      "generic_demo": false
+    },
+    {
+      "name": "ecdf",
+      "name_zh": "经验累积分布图",
+      "category": "单变量与分布",
+      "question_zh": "单变量与分布中的经验累积分布图",
+      "implementation_level": "dedicated",
+      "status": "dedicated statistical renderer; visual QA pending",
+      "paper_suitable": false,
+      "files": {
+        "pdf": "ecdf.pdf",
+        "svg": "ecdf.svg",
+        "png": "ecdf.png",
+        "metadata": "ecdf.figure.json"
+      },
+      "audit": true,
+      "visual_review": "NOT_CHECKED",
+      "synthetic": true,
+      "generic_demo": false
+    },
+    {
+      "name": "effect_size",
+      "name_zh": "效应量图",
+      "category": "类别比较",
+      "question_zh": "类别比较中的效应量图",
+      "implementation_level": "dedicated",
+      "status": "dedicated semantic renderer; visual QA pending",
+      "paper_suitable": false,
+      "files": {
+        "pdf": "effect_size.pdf",
+        "svg": "effect_size.svg",
+        "png": "effect_size.png",
+        "metadata": "effect_size.figure.json"
+      },
+      "audit": true,
+      "visual_review": "NOT_CHECKED",
+      "synthetic": true,
+      "generic_demo": false
+    },
+    {
+      "name": "embedding_trajectory",
+      "name_zh": "嵌入轨迹图",
+      "category": "降维、聚类与高维结构",
+      "question_zh": "降维、聚类与高维结构中的嵌入轨迹图",
+      "implementation_level": "dedicated",
+      "status": "dedicated statistical renderer; visual QA pending",
+      "paper_suitable": false,
+      "files": {
+        "pdf": "embedding_trajectory.pdf",
+        "svg": "embedding_trajectory.svg",
+        "png": "embedding_trajectory.png",
+        "metadata": "embedding_trajectory.figure.json"
+      },
+      "audit": true,
+      "visual_review": "NOT_CHECKED",
+      "synthetic": true,
+      "generic_demo": false
+    },
+    {
+      "name": "error_band",
+      "name_zh": "误差带图",
+      "category": "时间序列与动态过程",
+      "question_zh": "时间序列与动态过程中的误差带图",
+      "implementation_level": "dedicated",
+      "status": "dedicated statistical renderer; visual QA pending",
+      "paper_suitable": false,
+      "files": {
+        "pdf": "error_band.pdf",
+        "svg": "error_band.svg",
+        "png": "error_band.png",
+        "metadata": "error_band.figure.json"
+      },
+      "audit": true,
+      "visual_review": "NOT_CHECKED",
+      "synthetic": true,
+      "generic_demo": false
+    },
+    {
+      "name": "error_by_time",
+      "name_zh": "随时间误差图",
+      "category": "模型评估",
+      "question_zh": "模型评估中的随时间误差图",
+      "implementation_level": "dedicated",
+      "status": "dedicated semantic renderer; visual QA pending",
+      "paper_suitable": false,
+      "files": {
+        "pdf": "error_by_time.pdf",
+        "svg": "error_by_time.svg",
+        "png": "error_by_time.png",
+        "metadata": "error_by_time.figure.json"
+      },
+      "audit": true,
+      "visual_review": "NOT_CHECKED",
+      "synthetic": true,
+      "generic_demo": false
+    },
+    {
+      "name": "errorbar",
+      "name_zh": "误差棒图",
+      "category": "类别比较",
+      "question_zh": "类别比较中的误差棒图",
+      "implementation_level": "dedicated",
+      "status": "dedicated statistical renderer; visual QA pending",
+      "paper_suitable": false,
+      "files": {
+        "pdf": "errorbar.pdf",
+        "svg": "errorbar.svg",
+        "png": "errorbar.png",
+        "metadata": "errorbar.figure.json"
+      },
+      "audit": true,
+      "visual_review": "NOT_CHECKED",
+      "synthetic": true,
+      "generic_demo": false
+    },
+    {
+      "name": "event_timeline",
+      "name_zh": "事件时间线",
+      "category": "时间序列与动态过程",
+      "question_zh": "时间序列与动态过程中的事件时间线",
+      "implementation_level": "dedicated",
+      "status": "dedicated semantic renderer; visual QA pending",
+      "paper_suitable": false,
+      "files": {
+        "pdf": "event_timeline.pdf",
+        "svg": "event_timeline.svg",
+        "png": "event_timeline.png",
+        "metadata": "event_timeline.figure.json"
+      },
+      "audit": true,
+      "visual_review": "NOT_CHECKED",
+      "synthetic": true,
+      "generic_demo": false
+    },
+    {
+      "name": "faceted_heatmap",
+      "name_zh": "分面热图",
+      "category": "热图与矩阵",
+      "question_zh": "热图与矩阵中的分面热图",
+      "implementation_level": "dedicated",
+      "status": "dedicated semantic renderer; visual QA pending",
+      "paper_suitable": false,
+      "files": {
+        "pdf": "faceted_heatmap.pdf",
+        "svg": "faceted_heatmap.svg",
+        "png": "faceted_heatmap.png",
+        "metadata": "faceted_heatmap.figure.json"
+      },
+      "audit": true,
+      "visual_review": "NOT_CHECKED",
+      "synthetic": true,
+      "generic_demo": false
+    },
+    {
+      "name": "feasible_heatmap",
+      "name_zh": "可行域热图",
+      "category": "热图与矩阵",
+      "question_zh": "热图与矩阵中的可行域热图",
+      "implementation_level": "dedicated",
+      "status": "dedicated semantic renderer; visual QA pending",
+      "paper_suitable": false,
+      "files": {
+        "pdf": "feasible_heatmap.pdf",
+        "svg": "feasible_heatmap.svg",
+        "png": "feasible_heatmap.png",
+        "metadata": "feasible_heatmap.figure.json"
+      },
+      "audit": true,
+      "visual_review": "NOT_CHECKED",
+      "synthetic": true,
+      "generic_demo": false
+    },
+    {
+      "name": "feasible_region",
+      "name_zh": "可行域图",
+      "category": "优化、灵敏度与稳健性",
+      "question_zh": "优化、灵敏度与稳健性中的可行域图",
+      "implementation_level": "dedicated",
+      "status": "dedicated semantic renderer; visual QA pending",
+      "paper_suitable": false,
+      "files": {
+        "pdf": "feasible_region.pdf",
+        "svg": "feasible_region.svg",
+        "png": "feasible_region.png",
+        "metadata": "feasible_region.figure.json"
+      },
+      "audit": true,
+      "visual_review": "NOT_CHECKED",
+      "synthetic": true,
+      "generic_demo": false
+    },
+    {
+      "name": "feature_importance",
+      "name_zh": "特征重要性图",
+      "category": "模型评估",
+      "question_zh": "模型评估中的特征重要性图",
+      "implementation_level": "dedicated",
+      "status": "dedicated semantic renderer; visual QA pending",
+      "paper_suitable": false,
+      "files": {
+        "pdf": "feature_importance.pdf",
+        "svg": "feature_importance.svg",
+        "png": "feature_importance.png",
+        "metadata": "feature_importance.figure.json"
+      },
+      "audit": true,
+      "visual_review": "NOT_CHECKED",
+      "synthetic": true,
+      "generic_demo": false
+    },
+    {
+      "name": "flowchart",
+      "name_zh": "流程图",
+      "category": "网络、流量与空间关系",
+      "question_zh": "网络、流量与空间关系中的流程图",
+      "implementation_level": "dedicated",
+      "status": "dedicated semantic renderer; visual QA pending",
+      "paper_suitable": false,
+      "files": {
+        "pdf": "flowchart.pdf",
+        "svg": "flowchart.svg",
+        "png": "flowchart.png",
+        "metadata": "flowchart.figure.json"
+      },
+      "audit": true,
+      "visual_review": "NOT_CHECKED",
+      "synthetic": true,
+      "generic_demo": false
+    },
+    {
+      "name": "forecast_interval",
+      "name_zh": "预测区间图",
+      "category": "时间序列与动态过程",
+      "question_zh": "时间序列与动态过程中的预测区间图",
+      "implementation_level": "dedicated",
+      "status": "dedicated statistical renderer; visual QA pending",
+      "paper_suitable": false,
+      "files": {
+        "pdf": "forecast_interval.pdf",
+        "svg": "forecast_interval.svg",
+        "png": "forecast_interval.png",
+        "metadata": "forecast_interval.figure.json"
+      },
+      "audit": true,
+      "visual_review": "NOT_CHECKED",
+      "synthetic": true,
+      "generic_demo": false
+    },
+    {
+      "name": "forest",
+      "name_zh": "森林图",
+      "category": "类别比较",
+      "question_zh": "类别比较中的森林图",
+      "implementation_level": "dedicated",
+      "status": "dedicated statistical renderer; visual QA pending",
+      "paper_suitable": false,
+      "files": {
+        "pdf": "forest.pdf",
+        "svg": "forest.svg",
+        "png": "forest.png",
+        "metadata": "forest.figure.json"
+      },
+      "audit": true,
+      "visual_review": "NOT_CHECKED",
+      "synthetic": true,
+      "generic_demo": false
+    },
+    {
+      "name": "gantt",
+      "name_zh": "甘特图",
+      "category": "时间序列与动态过程",
+      "question_zh": "时间序列与动态过程中的甘特图",
+      "implementation_level": "dedicated",
+      "status": "dedicated semantic renderer; visual QA pending",
+      "paper_suitable": false,
+      "files": {
+        "pdf": "gantt.pdf",
+        "svg": "gantt.svg",
+        "png": "gantt.png",
+        "metadata": "gantt.figure.json"
+      },
+      "audit": true,
+      "visual_review": "NOT_CHECKED",
+      "synthetic": true,
+      "generic_demo": false
+    },
+    {
+      "name": "geometry",
+      "name_zh": "几何结构图",
+      "category": "数学建模专用图",
+      "question_zh": "数学建模专用图中的几何结构图",
+      "implementation_level": "dedicated",
+      "status": "dedicated semantic renderer; visual QA pending",
+      "paper_suitable": false,
+      "files": {
+        "pdf": "geometry.pdf",
+        "svg": "geometry.svg",
+        "png": "geometry.png",
+        "metadata": "geometry.figure.json"
+      },
+      "audit": true,
+      "visual_review": "NOT_CHECKED",
+      "synthetic": true,
+      "generic_demo": false
+    },
+    {
+      "name": "global_local",
+      "name_zh": "全局-局部敏感性图",
+      "category": "优化、灵敏度与稳健性",
+      "question_zh": "优化、灵敏度与稳健性中的全局-局部敏感性图",
+      "implementation_level": "dedicated",
+      "status": "dedicated semantic renderer; visual QA pending",
+      "paper_suitable": false,
+      "files": {
+        "pdf": "global_local.pdf",
+        "svg": "global_local.svg",
+        "png": "global_local.png",
+        "metadata": "global_local.figure.json"
+      },
+      "audit": true,
+      "visual_review": "NOT_CHECKED",
+      "synthetic": true,
+      "generic_demo": false
+    },
+    {
+      "name": "grouped_bar",
+      "name_zh": "分组柱状图",
+      "category": "类别比较",
+      "question_zh": "类别比较中的分组柱状图",
+      "implementation_level": "dedicated",
+      "status": "dedicated statistical renderer; visual QA pending",
+      "paper_suitable": false,
+      "files": {
+        "pdf": "grouped_bar.pdf",
+        "svg": "grouped_bar.svg",
+        "png": "grouped_bar.png",
+        "metadata": "grouped_bar.figure.json"
+      },
+      "audit": true,
+      "visual_review": "NOT_CHECKED",
+      "synthetic": true,
+      "generic_demo": false
+    },
+    {
+      "name": "heatmap",
+      "name_zh": "热图",
+      "category": "热图与矩阵",
+      "question_zh": "热图与矩阵中的热图",
+      "implementation_level": "dedicated",
+      "status": "dedicated statistical renderer; visual QA pending",
+      "paper_suitable": false,
+      "files": {
+        "pdf": "heatmap.pdf",
+        "svg": "heatmap.svg",
+        "png": "heatmap.png",
+        "metadata": "heatmap.figure.json"
+      },
+      "audit": true,
+      "visual_review": "NOT_CHECKED",
+      "synthetic": true,
+      "generic_demo": false
+    },
+    {
+      "name": "hexbin",
+      "name_zh": "六边形分箱图",
+      "category": "关系与相关",
+      "question_zh": "关系与相关中的六边形分箱图",
+      "implementation_level": "dedicated",
+      "status": "dedicated semantic renderer; visual QA pending",
+      "paper_suitable": false,
+      "files": {
+        "pdf": "hexbin.pdf",
+        "svg": "hexbin.svg",
+        "png": "hexbin.png",
+        "metadata": "hexbin.figure.json"
+      },
+      "audit": true,
+      "visual_review": "NOT_CHECKED",
+      "synthetic": true,
+      "generic_demo": false
+    },
+    {
+      "name": "high_dim_density",
+      "name_zh": "高维密度图",
+      "category": "降维、聚类与高维结构",
+      "question_zh": "降维、聚类与高维结构中的高维密度图",
+      "implementation_level": "dedicated",
+      "status": "dedicated semantic renderer; visual QA pending",
+      "paper_suitable": false,
+      "files": {
+        "pdf": "high_dim_density.pdf",
+        "svg": "high_dim_density.svg",
+        "png": "high_dim_density.png",
+        "metadata": "high_dim_density.figure.json"
+      },
+      "audit": true,
+      "visual_review": "NOT_CHECKED",
+      "synthetic": true,
+      "generic_demo": false
+    },
+    {
+      "name": "histogram",
+      "name_zh": "直方图",
+      "category": "单变量与分布",
+      "question_zh": "单变量与分布中的直方图",
+      "implementation_level": "dedicated",
+      "status": "dedicated statistical renderer; visual QA pending",
+      "paper_suitable": false,
+      "files": {
+        "pdf": "histogram.pdf",
+        "svg": "histogram.svg",
+        "png": "histogram.png",
+        "metadata": "histogram.figure.json"
+      },
+      "audit": true,
+      "visual_review": "NOT_CHECKED",
+      "synthetic": true,
+      "generic_demo": false
+    },
+    {
+      "name": "horizontal_bar",
+      "name_zh": "横向柱状图",
+      "category": "类别比较",
+      "question_zh": "类别比较中的横向柱状图",
+      "implementation_level": "dedicated",
+      "status": "dedicated statistical renderer; visual QA pending",
+      "paper_suitable": false,
+      "files": {
+        "pdf": "horizontal_bar.pdf",
+        "svg": "horizontal_bar.svg",
+        "png": "horizontal_bar.png",
+        "metadata": "horizontal_bar.figure.json"
+      },
+      "audit": true,
+      "visual_review": "NOT_CHECKED",
+      "synthetic": true,
+      "generic_demo": false
+    },
+    {
+      "name": "ice",
+      "name_zh": "个体条件期望图",
+      "category": "模型评估",
+      "question_zh": "模型评估中的个体条件期望图",
+      "implementation_level": "dedicated",
+      "status": "dedicated semantic renderer; visual QA pending",
+      "paper_suitable": false,
+      "files": {
+        "pdf": "ice.pdf",
+        "svg": "ice.svg",
+        "png": "ice.png",
+        "metadata": "ice.figure.json"
+      },
+      "audit": true,
+      "visual_review": "NOT_CHECKED",
+      "synthetic": true,
+      "generic_demo": false
+    },
+    {
+      "name": "indicator_correlation",
+      "name_zh": "指标相关图",
+      "category": "多指标与综合评价",
+      "question_zh": "多指标与综合评价中的指标相关图",
+      "implementation_level": "alias",
+      "status": "alias of correlation_matrix",
+      "paper_suitable": false,
+      "files": {
+        "pdf": "indicator_correlation.pdf",
+        "svg": "indicator_correlation.svg",
+        "png": "indicator_correlation.png",
+        "metadata": "indicator_correlation.figure.json"
+      },
+      "audit": true,
+      "visual_review": "NOT_CHECKED",
+      "synthetic": true,
+      "generic_demo": false
+    },
+    {
+      "name": "input_model_validation_output",
+      "name_zh": "输入-模型-验证-输出图",
+      "category": "数学建模专用图",
+      "question_zh": "数学建模专用图中的输入-模型-验证-输出图",
+      "implementation_level": "dedicated",
+      "status": "dedicated semantic renderer; visual QA pending",
+      "paper_suitable": false,
+      "files": {
+        "pdf": "input_model_validation_output.pdf",
+        "svg": "input_model_validation_output.svg",
+        "png": "input_model_validation_output.png",
+        "metadata": "input_model_validation_output.figure.json"
+      },
+      "audit": true,
+      "visual_review": "NOT_CHECKED",
+      "synthetic": true,
+      "generic_demo": false
+    },
+    {
+      "name": "jitter",
+      "name_zh": "抖动散点图",
+      "category": "单变量与分布",
+      "question_zh": "单变量与分布中的抖动散点图",
+      "implementation_level": "dedicated",
+      "status": "dedicated semantic renderer; visual QA pending",
+      "paper_suitable": false,
+      "files": {
+        "pdf": "jitter.pdf",
+        "svg": "jitter.svg",
+        "png": "jitter.png",
+        "metadata": "jitter.figure.json"
+      },
+      "audit": true,
+      "visual_review": "NOT_CHECKED",
+      "synthetic": true,
+      "generic_demo": false
+    },
+    {
+      "name": "joint_density",
+      "name_zh": "联合密度图",
+      "category": "关系与相关",
+      "question_zh": "关系与相关中的联合密度图",
+      "implementation_level": "dedicated",
+      "status": "dedicated semantic renderer; visual QA pending",
+      "paper_suitable": false,
+      "files": {
+        "pdf": "joint_density.pdf",
+        "svg": "joint_density.svg",
+        "png": "joint_density.png",
+        "metadata": "joint_density.figure.json"
+      },
+      "audit": true,
+      "visual_review": "NOT_CHECKED",
+      "synthetic": true,
+      "generic_demo": false
+    },
+    {
+      "name": "kde",
+      "name_zh": "核密度图",
+      "category": "单变量与分布",
+      "question_zh": "单变量与分布中的核密度图",
+      "implementation_level": "dedicated",
+      "status": "dedicated statistical renderer; visual QA pending",
+      "paper_suitable": false,
+      "files": {
+        "pdf": "kde.pdf",
+        "svg": "kde.svg",
+        "png": "kde.png",
+        "metadata": "kde.figure.json"
+      },
+      "audit": true,
+      "visual_review": "NOT_CHECKED",
+      "synthetic": true,
+      "generic_demo": false
+    },
+    {
+      "name": "learning_curve",
+      "name_zh": "学习曲线",
+      "category": "模型评估",
+      "question_zh": "模型评估中的学习曲线",
+      "implementation_level": "dedicated",
+      "status": "dedicated statistical renderer; visual QA pending",
+      "paper_suitable": false,
+      "files": {
+        "pdf": "learning_curve.pdf",
+        "svg": "learning_curve.svg",
+        "png": "learning_curve.png",
+        "metadata": "learning_curve.figure.json"
+      },
+      "audit": true,
+      "visual_review": "NOT_CHECKED",
+      "synthetic": true,
+      "generic_demo": false
+    },
+    {
+      "name": "lift_gain",
+      "name_zh": "提升-增益曲线",
+      "category": "模型评估",
+      "question_zh": "模型评估中的提升-增益曲线",
+      "implementation_level": "dedicated",
+      "status": "dedicated semantic renderer; visual QA pending",
+      "paper_suitable": false,
+      "files": {
+        "pdf": "lift_gain.pdf",
+        "svg": "lift_gain.svg",
+        "png": "lift_gain.png",
+        "metadata": "lift_gain.figure.json"
+      },
+      "audit": true,
+      "visual_review": "NOT_CHECKED",
+      "synthetic": true,
+      "generic_demo": false
+    },
+    {
+      "name": "lollipop",
+      "name_zh": "棒棒糖图",
+      "category": "类别比较",
+      "question_zh": "类别比较中的棒棒糖图",
+      "implementation_level": "dedicated",
+      "status": "dedicated semantic renderer; visual QA pending",
+      "paper_suitable": false,
+      "files": {
+        "pdf": "lollipop.pdf",
+        "svg": "lollipop.svg",
+        "png": "lollipop.png",
+        "metadata": "lollipop.figure.json"
+      },
+      "audit": true,
+      "visual_review": "NOT_CHECKED",
+      "synthetic": true,
+      "generic_demo": false
+    },
+    {
+      "name": "mantel",
+      "name_zh": "Mantel关联图",
+      "category": "关系与相关",
+      "question_zh": "关系与相关中的Mantel关联图",
+      "implementation_level": "dedicated",
+      "status": "dedicated semantic renderer; visual QA pending",
+      "paper_suitable": false,
+      "files": {
+        "pdf": "mantel.pdf",
+        "svg": "mantel.svg",
+        "png": "mantel.png",
+        "metadata": "mantel.figure.json"
+      },
+      "audit": true,
+      "visual_review": "NOT_CHECKED",
+      "synthetic": true,
+      "generic_demo": false
+    },
+    {
+      "name": "mechanism",
+      "name_zh": "机制示意图",
+      "category": "数学建模专用图",
+      "question_zh": "数学建模专用图中的机制示意图",
+      "implementation_level": "dedicated",
+      "status": "dedicated semantic renderer; visual QA pending",
+      "paper_suitable": false,
+      "files": {
+        "pdf": "mechanism.pdf",
+        "svg": "mechanism.svg",
+        "png": "mechanism.png",
+        "metadata": "mechanism.figure.json"
+      },
+      "audit": true,
+      "visual_review": "NOT_CHECKED",
+      "synthetic": true,
+      "generic_demo": false
+    },
+    {
+      "name": "model_interval",
+      "name_zh": "模型区间图",
+      "category": "模型评估",
+      "question_zh": "模型评估中的模型区间图",
+      "implementation_level": "dedicated",
+      "status": "dedicated semantic renderer; visual QA pending",
+      "paper_suitable": false,
+      "files": {
+        "pdf": "model_interval.pdf",
+        "svg": "model_interval.svg",
+        "png": "model_interval.png",
+        "metadata": "model_interval.figure.json"
+      },
+      "audit": true,
+      "visual_review": "NOT_CHECKED",
+      "synthetic": true,
+      "generic_demo": false
+    },
+    {
+      "name": "multi_metric_comparison",
+      "name_zh": "多指标比较图",
+      "category": "类别比较",
+      "question_zh": "类别比较中的多指标比较图",
+      "implementation_level": "dedicated",
+      "status": "dedicated semantic renderer; visual QA pending",
+      "paper_suitable": false,
+      "files": {
+        "pdf": "multi_metric_comparison.pdf",
+        "svg": "multi_metric_comparison.svg",
+        "png": "multi_metric_comparison.png",
+        "metadata": "multi_metric_comparison.figure.json"
+      },
+      "audit": true,
+      "visual_review": "NOT_CHECKED",
+      "synthetic": true,
+      "generic_demo": false
+    },
+    {
+      "name": "multi_metric_points",
+      "name_zh": "多指标点图",
+      "category": "多指标与综合评价",
+      "question_zh": "多指标与综合评价中的多指标点图",
+      "implementation_level": "alias",
+      "status": "alias of multi_metric_comparison",
+      "paper_suitable": false,
+      "files": {
+        "pdf": "multi_metric_points.pdf",
+        "svg": "multi_metric_points.svg",
+        "png": "multi_metric_points.png",
+        "metadata": "multi_metric_points.figure.json"
+      },
+      "audit": true,
+      "visual_review": "NOT_CHECKED",
+      "synthetic": true,
+      "generic_demo": false
+    },
+    {
+      "name": "multi_series",
+      "name_zh": "多序列折线图",
+      "category": "时间序列与动态过程",
+      "question_zh": "时间序列与动态过程中的多序列折线图",
+      "implementation_level": "dedicated",
+      "status": "dedicated semantic renderer; visual QA pending",
+      "paper_suitable": false,
+      "files": {
+        "pdf": "multi_series.pdf",
+        "svg": "multi_series.svg",
+        "png": "multi_series.png",
+        "metadata": "multi_series.figure.json"
+      },
+      "audit": true,
+      "visual_review": "NOT_CHECKED",
+      "synthetic": true,
+      "generic_demo": false
+    },
+    {
+      "name": "observed_predicted",
+      "name_zh": "观测值-预测值图",
+      "category": "时间序列与动态过程",
+      "question_zh": "时间序列与动态过程中的观测值-预测值图",
+      "implementation_level": "dedicated",
+      "status": "dedicated statistical renderer; visual QA pending",
+      "paper_suitable": false,
+      "files": {
+        "pdf": "observed_predicted.pdf",
+        "svg": "observed_predicted.svg",
+        "png": "observed_predicted.png",
+        "metadata": "observed_predicted.figure.json"
+      },
+      "audit": true,
+      "visual_review": "NOT_CHECKED",
+      "synthetic": true,
+      "generic_demo": false
+    },
+    {
+      "name": "optimum_distribution",
+      "name_zh": "最优值分布图",
+      "category": "优化、灵敏度与稳健性",
+      "question_zh": "优化、灵敏度与稳健性中的最优值分布图",
+      "implementation_level": "dedicated",
+      "status": "dedicated semantic renderer; visual QA pending",
+      "paper_suitable": false,
+      "files": {
+        "pdf": "optimum_distribution.pdf",
+        "svg": "optimum_distribution.svg",
+        "png": "optimum_distribution.png",
+        "metadata": "optimum_distribution.figure.json"
+      },
+      "audit": true,
+      "visual_review": "NOT_CHECKED",
+      "synthetic": true,
+      "generic_demo": false
+    },
+    {
+      "name": "pairgrid",
+      "name_zh": "成对关系图",
+      "category": "关系与相关",
+      "question_zh": "关系与相关中的成对关系图",
+      "implementation_level": "dedicated",
+      "status": "dedicated statistical renderer; visual QA pending",
+      "paper_suitable": false,
+      "files": {
+        "pdf": "pairgrid.pdf",
+        "svg": "pairgrid.svg",
+        "png": "pairgrid.png",
+        "metadata": "pairgrid.figure.json"
+      },
+      "audit": true,
+      "visual_review": "NOT_CHECKED",
+      "synthetic": true,
+      "generic_demo": false
+    },
+    {
+      "name": "parallel_coordinates",
+      "name_zh": "平行坐标图",
+      "category": "降维、聚类与高维结构",
+      "question_zh": "降维、聚类与高维结构中的平行坐标图",
+      "implementation_level": "dedicated",
+      "status": "dedicated semantic renderer; visual QA pending",
+      "paper_suitable": false,
+      "files": {
+        "pdf": "parallel_coordinates.pdf",
+        "svg": "parallel_coordinates.svg",
+        "png": "parallel_coordinates.png",
+        "metadata": "parallel_coordinates.figure.json"
+      },
+      "audit": true,
+      "visual_review": "NOT_CHECKED",
+      "synthetic": true,
+      "generic_demo": false
+    },
+    {
+      "name": "parameter_response",
+      "name_zh": "参数响应图",
+      "category": "数学建模专用图",
+      "question_zh": "数学建模专用图中的参数响应图",
+      "implementation_level": "dedicated",
+      "status": "dedicated semantic renderer; visual QA pending",
+      "paper_suitable": false,
+      "files": {
+        "pdf": "parameter_response.pdf",
+        "svg": "parameter_response.svg",
+        "png": "parameter_response.png",
+        "metadata": "parameter_response.figure.json"
+      },
+      "audit": true,
+      "visual_review": "NOT_CHECKED",
+      "synthetic": true,
+      "generic_demo": false
+    },
+    {
+      "name": "pareto",
+      "name_zh": "帕累托前沿图",
+      "category": "优化、灵敏度与稳健性",
+      "question_zh": "优化、灵敏度与稳健性中的帕累托前沿图",
+      "implementation_level": "dedicated",
+      "status": "dedicated statistical renderer; visual QA pending",
+      "paper_suitable": false,
+      "files": {
+        "pdf": "pareto.pdf",
+        "svg": "pareto.svg",
+        "png": "pareto.png",
+        "metadata": "pareto.figure.json"
+      },
+      "audit": true,
+      "visual_review": "NOT_CHECKED",
+      "synthetic": true,
+      "generic_demo": false
+    },
+    {
+      "name": "pareto_distribution",
+      "name_zh": "帕累托分布图",
+      "category": "单变量与分布",
+      "question_zh": "单变量与分布中的帕累托分布图",
+      "implementation_level": "dedicated",
+      "status": "dedicated semantic renderer; visual QA pending",
+      "paper_suitable": false,
+      "files": {
+        "pdf": "pareto_distribution.pdf",
+        "svg": "pareto_distribution.svg",
+        "png": "pareto_distribution.png",
+        "metadata": "pareto_distribution.figure.json"
+      },
+      "audit": true,
+      "visual_review": "NOT_CHECKED",
+      "synthetic": true,
+      "generic_demo": false
+    },
+    {
+      "name": "partial_autocorrelation",
+      "name_zh": "偏自相关图",
+      "category": "时间序列与动态过程",
+      "question_zh": "时间序列与动态过程中的偏自相关图",
+      "implementation_level": "dedicated",
+      "status": "dedicated semantic renderer; visual QA pending",
+      "paper_suitable": false,
+      "files": {
+        "pdf": "partial_autocorrelation.pdf",
+        "svg": "partial_autocorrelation.svg",
+        "png": "partial_autocorrelation.png",
+        "metadata": "partial_autocorrelation.figure.json"
+      },
+      "audit": true,
+      "visual_review": "NOT_CHECKED",
+      "synthetic": true,
+      "generic_demo": false
+    },
+    {
+      "name": "partial_correlation",
+      "name_zh": "偏相关图",
+      "category": "关系与相关",
+      "question_zh": "关系与相关中的偏相关图",
+      "implementation_level": "dedicated",
+      "status": "dedicated semantic renderer; visual QA pending",
+      "paper_suitable": false,
+      "files": {
+        "pdf": "partial_correlation.pdf",
+        "svg": "partial_correlation.svg",
+        "png": "partial_correlation.png",
+        "metadata": "partial_correlation.figure.json"
+      },
+      "audit": true,
+      "visual_review": "NOT_CHECKED",
+      "synthetic": true,
+      "generic_demo": false
+    },
+    {
+      "name": "partial_dependence",
+      "name_zh": "部分依赖图",
+      "category": "关系与相关",
+      "question_zh": "关系与相关中的部分依赖图",
+      "implementation_level": "dedicated",
+      "status": "dedicated semantic renderer; visual QA pending",
+      "paper_suitable": false,
+      "files": {
+        "pdf": "partial_dependence.pdf",
+        "svg": "partial_dependence.svg",
+        "png": "partial_dependence.png",
+        "metadata": "partial_dependence.figure.json"
+      },
+      "audit": true,
+      "visual_review": "NOT_CHECKED",
+      "synthetic": true,
+      "generic_demo": false
+    },
+    {
+      "name": "pca_biplot",
+      "name_zh": "主成分双标图",
+      "category": "降维、聚类与高维结构",
+      "question_zh": "降维、聚类与高维结构中的主成分双标图",
+      "implementation_level": "dedicated",
+      "status": "dedicated statistical renderer; visual QA pending",
+      "paper_suitable": false,
+      "files": {
+        "pdf": "pca_biplot.pdf",
+        "svg": "pca_biplot.svg",
+        "png": "pca_biplot.png",
+        "metadata": "pca_biplot.figure.json"
+      },
+      "audit": true,
+      "visual_review": "NOT_CHECKED",
+      "synthetic": true,
+      "generic_demo": false
+    },
+    {
+      "name": "pca_loadings",
+      "name_zh": "主成分载荷图",
+      "category": "降维、聚类与高维结构",
+      "question_zh": "降维、聚类与高维结构中的主成分载荷图",
+      "implementation_level": "dedicated",
+      "status": "dedicated statistical renderer; visual QA pending",
+      "paper_suitable": false,
+      "files": {
+        "pdf": "pca_loadings.pdf",
+        "svg": "pca_loadings.svg",
+        "png": "pca_loadings.png",
+        "metadata": "pca_loadings.figure.json"
+      },
+      "audit": true,
+      "visual_review": "NOT_CHECKED",
+      "synthetic": true,
+      "generic_demo": false
+    },
+    {
+      "name": "pca_scores",
+      "name_zh": "主成分得分图",
+      "category": "降维、聚类与高维结构",
+      "question_zh": "降维、聚类与高维结构中的主成分得分图",
+      "implementation_level": "dedicated",
+      "status": "dedicated statistical renderer; visual QA pending",
+      "paper_suitable": false,
+      "files": {
+        "pdf": "pca_scores.pdf",
+        "svg": "pca_scores.svg",
+        "png": "pca_scores.png",
+        "metadata": "pca_scores.figure.json"
+      },
+      "audit": true,
+      "visual_review": "NOT_CHECKED",
+      "synthetic": true,
+      "generic_demo": false
+    },
+    {
+      "name": "percent_stacked_bar",
+      "name_zh": "百分比堆叠柱状图",
+      "category": "类别比较",
+      "question_zh": "类别比较中的百分比堆叠柱状图",
+      "implementation_level": "dedicated",
+      "status": "dedicated semantic renderer; visual QA pending",
+      "paper_suitable": false,
+      "files": {
+        "pdf": "percent_stacked_bar.pdf",
+        "svg": "percent_stacked_bar.svg",
+        "png": "percent_stacked_bar.png",
+        "metadata": "percent_stacked_bar.figure.json"
+      },
+      "audit": true,
+      "visual_review": "NOT_CHECKED",
+      "synthetic": true,
+      "generic_demo": false
+    },
+    {
+      "name": "perturbation",
+      "name_zh": "扰动分析图",
+      "category": "优化、灵敏度与稳健性",
+      "question_zh": "优化、灵敏度与稳健性中的扰动分析图",
+      "implementation_level": "dedicated",
+      "status": "dedicated semantic renderer; visual QA pending",
+      "paper_suitable": false,
+      "files": {
+        "pdf": "perturbation.pdf",
+        "svg": "perturbation.svg",
+        "png": "perturbation.png",
+        "metadata": "perturbation.figure.json"
+      },
+      "audit": true,
+      "visual_review": "NOT_CHECKED",
+      "synthetic": true,
+      "generic_demo": false
+    },
+    {
+      "name": "pr_curve",
+      "name_zh": "PR曲线",
+      "category": "模型评估",
+      "question_zh": "模型评估中的PR曲线",
+      "implementation_level": "dedicated",
+      "status": "dedicated statistical renderer; visual QA pending",
+      "paper_suitable": false,
+      "files": {
+        "pdf": "pr_curve.pdf",
+        "svg": "pr_curve.svg",
+        "png": "pr_curve.png",
+        "metadata": "pr_curve.figure.json"
+      },
+      "audit": true,
+      "visual_review": "NOT_CHECKED",
+      "synthetic": true,
+      "generic_demo": false
+    },
+    {
+      "name": "probability_plot",
+      "name_zh": "概率图",
+      "category": "单变量与分布",
+      "question_zh": "单变量与分布中的概率图",
+      "implementation_level": "dedicated",
+      "status": "dedicated semantic renderer; visual QA pending",
+      "paper_suitable": false,
+      "files": {
+        "pdf": "probability_plot.pdf",
+        "svg": "probability_plot.svg",
+        "png": "probability_plot.png",
+        "metadata": "probability_plot.figure.json"
+      },
+      "audit": true,
+      "visual_review": "NOT_CHECKED",
+      "synthetic": true,
+      "generic_demo": false
+    },
+    {
+      "name": "qq_plot",
+      "name_zh": "QQ图",
+      "category": "单变量与分布",
+      "question_zh": "单变量与分布中的QQ图",
+      "implementation_level": "dedicated",
+      "status": "dedicated statistical renderer; visual QA pending",
+      "paper_suitable": false,
+      "files": {
+        "pdf": "qq_plot.pdf",
+        "svg": "qq_plot.svg",
+        "png": "qq_plot.png",
+        "metadata": "qq_plot.figure.json"
+      },
+      "audit": true,
+      "visual_review": "NOT_CHECKED",
+      "synthetic": true,
+      "generic_demo": false
+    },
+    {
+      "name": "radar",
+      "name_zh": "雷达图",
+      "category": "多指标与综合评价",
+      "question_zh": "多指标与综合评价中的雷达图",
+      "implementation_level": "dedicated",
+      "status": "dedicated statistical renderer; visual QA pending",
+      "paper_suitable": false,
+      "files": {
+        "pdf": "radar.pdf",
+        "svg": "radar.svg",
+        "png": "radar.png",
+        "metadata": "radar.figure.json"
+      },
+      "audit": true,
+      "visual_review": "NOT_CHECKED",
+      "synthetic": true,
+      "generic_demo": false
+    },
+    {
+      "name": "raincloud",
+      "name_zh": "雨云图",
+      "category": "单变量与分布",
+      "question_zh": "单变量与分布中的雨云图",
+      "implementation_level": "dedicated",
+      "status": "dedicated statistical renderer; visual QA pending",
+      "paper_suitable": false,
+      "files": {
+        "pdf": "raincloud.pdf",
+        "svg": "raincloud.svg",
+        "png": "raincloud.png",
+        "metadata": "raincloud.figure.json"
+      },
+      "audit": true,
+      "visual_review": "NOT_CHECKED",
+      "synthetic": true,
+      "generic_demo": false
+    },
+    {
+      "name": "ranking",
+      "name_zh": "排名图",
+      "category": "多指标与综合评价",
+      "question_zh": "多指标与综合评价中的排名图",
+      "implementation_level": "dedicated",
+      "status": "dedicated semantic renderer; visual QA pending",
+      "paper_suitable": false,
+      "files": {
+        "pdf": "ranking.pdf",
+        "svg": "ranking.svg",
+        "png": "ranking.png",
+        "metadata": "ranking.figure.json"
+      },
+      "audit": true,
+      "visual_review": "NOT_CHECKED",
+      "synthetic": true,
+      "generic_demo": false
+    },
+    {
+      "name": "raw_points",
+      "name_zh": "原始点图",
+      "category": "类别比较",
+      "question_zh": "类别比较中的原始点图",
+      "implementation_level": "dedicated",
+      "status": "dedicated semantic renderer; visual QA pending",
+      "paper_suitable": false,
+      "files": {
+        "pdf": "raw_points.pdf",
+        "svg": "raw_points.svg",
+        "png": "raw_points.png",
+        "metadata": "raw_points.figure.json"
+      },
+      "audit": true,
+      "visual_review": "NOT_CHECKED",
+      "synthetic": true,
+      "generic_demo": false
+    },
+    {
+      "name": "repeated_convergence",
+      "name_zh": "重复收敛曲线",
+      "category": "优化、灵敏度与稳健性",
+      "question_zh": "优化、灵敏度与稳健性中的重复收敛曲线",
+      "implementation_level": "dedicated",
+      "status": "dedicated semantic renderer; visual QA pending",
+      "paper_suitable": false,
+      "files": {
+        "pdf": "repeated_convergence.pdf",
+        "svg": "repeated_convergence.svg",
+        "png": "repeated_convergence.png",
+        "metadata": "repeated_convergence.figure.json"
+      },
+      "audit": true,
+      "visual_review": "NOT_CHECKED",
+      "synthetic": true,
+      "generic_demo": false
+    },
+    {
+      "name": "residual_distribution",
+      "name_zh": "残差分布图",
+      "category": "模型评估",
+      "question_zh": "模型评估中的残差分布图",
+      "implementation_level": "dedicated",
+      "status": "dedicated semantic renderer; visual QA pending",
+      "paper_suitable": false,
+      "files": {
+        "pdf": "residual_distribution.pdf",
+        "svg": "residual_distribution.svg",
+        "png": "residual_distribution.png",
+        "metadata": "residual_distribution.figure.json"
+      },
+      "audit": true,
+      "visual_review": "NOT_CHECKED",
+      "synthetic": true,
+      "generic_demo": false
+    },
+    {
+      "name": "residuals",
+      "name_zh": "残差图",
+      "category": "模型评估",
+      "question_zh": "模型评估中的残差图",
+      "implementation_level": "dedicated",
+      "status": "dedicated statistical renderer; visual QA pending",
+      "paper_suitable": false,
+      "files": {
+        "pdf": "residuals.pdf",
+        "svg": "residuals.svg",
+        "png": "residuals.png",
+        "metadata": "residuals.figure.json"
+      },
+      "audit": true,
+      "visual_review": "NOT_CHECKED",
+      "synthetic": true,
+      "generic_demo": false
+    },
+    {
+      "name": "response_1d",
+      "name_zh": "一维响应曲线",
+      "category": "优化、灵敏度与稳健性",
+      "question_zh": "优化、灵敏度与稳健性中的一维响应曲线",
+      "implementation_level": "dedicated",
+      "status": "dedicated semantic renderer; visual QA pending",
+      "paper_suitable": false,
+      "files": {
+        "pdf": "response_1d.pdf",
+        "svg": "response_1d.svg",
+        "png": "response_1d.png",
+        "metadata": "response_1d.figure.json"
+      },
+      "audit": true,
+      "visual_review": "NOT_CHECKED",
+      "synthetic": true,
+      "generic_demo": false
+    },
+    {
+      "name": "response_surface",
+      "name_zh": "响应面图",
+      "category": "热图与矩阵",
+      "question_zh": "热图与矩阵中的响应面图",
+      "implementation_level": "dedicated",
+      "status": "dedicated statistical renderer; visual QA pending",
+      "paper_suitable": false,
+      "files": {
+        "pdf": "response_surface.pdf",
+        "svg": "response_surface.svg",
+        "png": "response_surface.png",
+        "metadata": "response_surface.figure.json"
+      },
+      "audit": true,
+      "visual_review": "NOT_CHECKED",
+      "synthetic": true,
+      "generic_demo": false
+    },
+    {
+      "name": "response_surface_opt",
+      "name_zh": "优化响应面图",
+      "category": "优化、灵敏度与稳健性",
+      "question_zh": "优化、灵敏度与稳健性中的优化响应面图",
+      "implementation_level": "dedicated",
+      "status": "dedicated semantic renderer; visual QA pending",
+      "paper_suitable": false,
+      "files": {
+        "pdf": "response_surface_opt.pdf",
+        "svg": "response_surface_opt.svg",
+        "png": "response_surface_opt.png",
+        "metadata": "response_surface_opt.figure.json"
+      },
+      "audit": true,
+      "visual_review": "NOT_CHECKED",
+      "synthetic": true,
+      "generic_demo": false
+    },
+    {
+      "name": "ridgeline",
+      "name_zh": "山脊图",
+      "category": "单变量与分布",
+      "question_zh": "单变量与分布中的山脊图",
+      "implementation_level": "dedicated",
+      "status": "dedicated statistical renderer; visual QA pending",
+      "paper_suitable": false,
+      "files": {
+        "pdf": "ridgeline.pdf",
+        "svg": "ridgeline.svg",
+        "png": "ridgeline.png",
+        "metadata": "ridgeline.figure.json"
+      },
+      "audit": true,
+      "visual_review": "NOT_CHECKED",
+      "synthetic": true,
+      "generic_demo": false
+    },
+    {
+      "name": "risk_return",
+      "name_zh": "风险-收益图",
+      "category": "优化、灵敏度与稳健性",
+      "question_zh": "优化、灵敏度与稳健性中的风险-收益图",
+      "implementation_level": "dedicated",
+      "status": "dedicated semantic renderer; visual QA pending",
+      "paper_suitable": false,
+      "files": {
+        "pdf": "risk_return.pdf",
+        "svg": "risk_return.svg",
+        "png": "risk_return.png",
+        "metadata": "risk_return.figure.json"
+      },
+      "audit": true,
+      "visual_review": "NOT_CHECKED",
+      "synthetic": true,
+      "generic_demo": false
+    },
+    {
+      "name": "robustness_envelope",
+      "name_zh": "稳健性包络图",
+      "category": "优化、灵敏度与稳健性",
+      "question_zh": "优化、灵敏度与稳健性中的稳健性包络图",
+      "implementation_level": "dedicated",
+      "status": "dedicated statistical renderer; visual QA pending",
+      "paper_suitable": false,
+      "files": {
+        "pdf": "robustness_envelope.pdf",
+        "svg": "robustness_envelope.svg",
+        "png": "robustness_envelope.png",
+        "metadata": "robustness_envelope.figure.json"
+      },
+      "audit": true,
+      "visual_review": "NOT_CHECKED",
+      "synthetic": true,
+      "generic_demo": false
+    },
+    {
+      "name": "roc_curve",
+      "name_zh": "ROC曲线",
+      "category": "模型评估",
+      "question_zh": "模型评估中的ROC曲线",
+      "implementation_level": "dedicated",
+      "status": "dedicated statistical renderer; visual QA pending",
+      "paper_suitable": false,
+      "files": {
+        "pdf": "roc_curve.pdf",
+        "svg": "roc_curve.svg",
+        "png": "roc_curve.png",
+        "metadata": "roc_curve.figure.json"
+      },
+      "audit": true,
+      "visual_review": "NOT_CHECKED",
+      "synthetic": true,
+      "generic_demo": false
+    },
+    {
+      "name": "rolling_mean",
+      "name_zh": "滚动均值图",
+      "category": "时间序列与动态过程",
+      "question_zh": "时间序列与动态过程中的滚动均值图",
+      "implementation_level": "dedicated",
+      "status": "dedicated semantic renderer; visual QA pending",
+      "paper_suitable": false,
+      "files": {
+        "pdf": "rolling_mean.pdf",
+        "svg": "rolling_mean.svg",
+        "png": "rolling_mean.png",
+        "metadata": "rolling_mean.figure.json"
+      },
+      "audit": true,
+      "visual_review": "NOT_CHECKED",
+      "synthetic": true,
+      "generic_demo": false
+    },
+    {
+      "name": "sankey",
+      "name_zh": "桑基图",
+      "category": "网络、流量与空间关系",
+      "question_zh": "网络、流量与空间关系中的桑基图",
+      "implementation_level": "dedicated",
+      "status": "dedicated statistical renderer; visual QA pending",
+      "paper_suitable": false,
+      "files": {
+        "pdf": "sankey.pdf",
+        "svg": "sankey.svg",
+        "png": "sankey.png",
+        "metadata": "sankey.figure.json"
+      },
+      "audit": true,
+      "visual_review": "NOT_CHECKED",
+      "synthetic": true,
+      "generic_demo": false
+    },
+    {
+      "name": "scatter",
+      "name_zh": "散点图",
+      "category": "关系与相关",
+      "question_zh": "关系与相关中的散点图",
+      "implementation_level": "dedicated",
+      "status": "dedicated statistical renderer; visual QA pending",
+      "paper_suitable": false,
+      "files": {
+        "pdf": "scatter.pdf",
+        "svg": "scatter.svg",
+        "png": "scatter.png",
+        "metadata": "scatter.figure.json"
+      },
+      "audit": true,
+      "visual_review": "NOT_CHECKED",
+      "synthetic": true,
+      "generic_demo": false
+    },
+    {
+      "name": "scatter_trend",
+      "name_zh": "趋势散点图",
+      "category": "关系与相关",
+      "question_zh": "关系与相关中的趋势散点图",
+      "implementation_level": "dedicated",
+      "status": "dedicated statistical renderer; visual QA pending",
+      "paper_suitable": false,
+      "files": {
+        "pdf": "scatter_trend.pdf",
+        "svg": "scatter_trend.svg",
+        "png": "scatter_trend.png",
+        "metadata": "scatter_trend.figure.json"
+      },
+      "audit": true,
+      "visual_review": "NOT_CHECKED",
+      "synthetic": true,
+      "generic_demo": false
+    },
+    {
+      "name": "scenario",
+      "name_zh": "情景分析图",
+      "category": "优化、灵敏度与稳健性",
+      "question_zh": "优化、灵敏度与稳健性中的情景分析图",
+      "implementation_level": "dedicated",
+      "status": "dedicated semantic renderer; visual QA pending",
+      "paper_suitable": false,
+      "files": {
+        "pdf": "scenario.pdf",
+        "svg": "scenario.svg",
+        "png": "scenario.png",
+        "metadata": "scenario.figure.json"
+      },
+      "audit": true,
+      "visual_review": "NOT_CHECKED",
+      "synthetic": true,
+      "generic_demo": false
+    },
+    {
+      "name": "scenario_ranking",
+      "name_zh": "情景排序图",
+      "category": "优化、灵敏度与稳健性",
+      "question_zh": "优化、灵敏度与稳健性中的情景排序图",
+      "implementation_level": "dedicated",
+      "status": "dedicated semantic renderer; visual QA pending",
+      "paper_suitable": false,
+      "files": {
+        "pdf": "scenario_ranking.pdf",
+        "svg": "scenario_ranking.svg",
+        "png": "scenario_ranking.png",
+        "metadata": "scenario_ranking.figure.json"
+      },
+      "audit": true,
+      "visual_review": "NOT_CHECKED",
+      "synthetic": true,
+      "generic_demo": false
+    },
+    {
+      "name": "scheme_indicator_matrix",
+      "name_zh": "方案-指标矩阵",
+      "category": "多指标与综合评价",
+      "question_zh": "多指标与综合评价中的方案-指标矩阵",
+      "implementation_level": "alias",
+      "status": "alias of heatmap",
+      "paper_suitable": false,
+      "files": {
+        "pdf": "scheme_indicator_matrix.pdf",
+        "svg": "scheme_indicator_matrix.svg",
+        "png": "scheme_indicator_matrix.png",
+        "metadata": "scheme_indicator_matrix.figure.json"
+      },
+      "audit": true,
+      "visual_review": "NOT_CHECKED",
+      "synthetic": true,
+      "generic_demo": false
+    },
+    {
+      "name": "score_bar",
+      "name_zh": "综合得分柱状图",
+      "category": "多指标与综合评价",
+      "question_zh": "多指标与综合评价中的综合得分柱状图",
+      "implementation_level": "dedicated",
+      "status": "dedicated semantic renderer; visual QA pending",
+      "paper_suitable": false,
+      "files": {
+        "pdf": "score_bar.pdf",
+        "svg": "score_bar.svg",
+        "png": "score_bar.png",
+        "metadata": "score_bar.figure.json"
+      },
+      "audit": true,
+      "visual_review": "NOT_CHECKED",
+      "synthetic": true,
+      "generic_demo": false
+    },
+    {
+      "name": "scree_plot",
+      "name_zh": "碎石图",
+      "category": "降维、聚类与高维结构",
+      "question_zh": "降维、聚类与高维结构中的碎石图",
+      "implementation_level": "dedicated",
+      "status": "dedicated statistical renderer; visual QA pending",
+      "paper_suitable": false,
+      "files": {
+        "pdf": "scree_plot.pdf",
+        "svg": "scree_plot.svg",
+        "png": "scree_plot.png",
+        "metadata": "scree_plot.figure.json"
+      },
+      "audit": true,
+      "visual_review": "NOT_CHECKED",
+      "synthetic": true,
+      "generic_demo": false
+    },
+    {
+      "name": "sensitivity",
+      "name_zh": "灵敏度曲线",
+      "category": "优化、灵敏度与稳健性",
+      "question_zh": "优化、灵敏度与稳健性中的灵敏度曲线",
+      "implementation_level": "dedicated",
+      "status": "dedicated statistical renderer; visual QA pending",
+      "paper_suitable": false,
+      "files": {
+        "pdf": "sensitivity.pdf",
+        "svg": "sensitivity.svg",
+        "png": "sensitivity.png",
+        "metadata": "sensitivity.figure.json"
+      },
+      "audit": true,
+      "visual_review": "NOT_CHECKED",
+      "synthetic": true,
+      "generic_demo": false
+    },
+    {
+      "name": "separation_loadings",
+      "name_zh": "分离载荷图",
+      "category": "降维、聚类与高维结构",
+      "question_zh": "降维、聚类与高维结构中的分离载荷图",
+      "implementation_level": "dedicated",
+      "status": "dedicated semantic renderer; visual QA pending",
+      "paper_suitable": false,
+      "files": {
+        "pdf": "separation_loadings.pdf",
+        "svg": "separation_loadings.svg",
+        "png": "separation_loadings.png",
+        "metadata": "separation_loadings.figure.json"
+      },
+      "audit": true,
+      "visual_review": "NOT_CHECKED",
+      "synthetic": true,
+      "generic_demo": false
+    },
+    {
+      "name": "shap_beeswarm",
+      "name_zh": "SHAP蜂群图",
+      "category": "模型评估",
+      "question_zh": "模型评估中的SHAP蜂群图",
+      "implementation_level": "dedicated",
+      "status": "dedicated semantic renderer; visual QA pending",
+      "paper_suitable": false,
+      "files": {
+        "pdf": "shap_beeswarm.pdf",
+        "svg": "shap_beeswarm.svg",
+        "png": "shap_beeswarm.png",
+        "metadata": "shap_beeswarm.figure.json"
+      },
+      "audit": true,
+      "visual_review": "NOT_CHECKED",
+      "synthetic": true,
+      "generic_demo": false
+    },
+    {
+      "name": "shap_summary",
+      "name_zh": "SHAP汇总图",
+      "category": "模型评估",
+      "question_zh": "模型评估中的SHAP汇总图",
+      "implementation_level": "dedicated",
+      "status": "dedicated semantic renderer; visual QA pending",
+      "paper_suitable": false,
+      "files": {
+        "pdf": "shap_summary.pdf",
+        "svg": "shap_summary.svg",
+        "png": "shap_summary.png",
+        "metadata": "shap_summary.figure.json"
+      },
+      "audit": true,
+      "visual_review": "NOT_CHECKED",
+      "synthetic": true,
+      "generic_demo": false
+    },
+    {
+      "name": "spatial_3d",
+      "name_zh": "三维空间图",
+      "category": "网络、流量与空间关系",
+      "question_zh": "网络、流量与空间关系中的三维空间图",
+      "implementation_level": "dedicated",
+      "status": "dedicated semantic renderer; visual QA pending",
+      "paper_suitable": false,
+      "files": {
+        "pdf": "spatial_3d.pdf",
+        "svg": "spatial_3d.svg",
+        "png": "spatial_3d.png",
+        "metadata": "spatial_3d.figure.json"
+      },
+      "audit": true,
+      "visual_review": "NOT_CHECKED",
+      "synthetic": true,
+      "generic_demo": false
+    },
+    {
+      "name": "spatial_heatmap",
+      "name_zh": "空间热图",
+      "category": "网络、流量与空间关系",
+      "question_zh": "网络、流量与空间关系中的空间热图",
+      "implementation_level": "dedicated",
+      "status": "dedicated semantic renderer; visual QA pending",
+      "paper_suitable": false,
+      "files": {
+        "pdf": "spatial_heatmap.pdf",
+        "svg": "spatial_heatmap.svg",
+        "png": "spatial_heatmap.png",
+        "metadata": "spatial_heatmap.figure.json"
+      },
+      "audit": true,
+      "visual_review": "NOT_CHECKED",
+      "synthetic": true,
+      "generic_demo": false
+    },
+    {
+      "name": "spatial_scatter",
+      "name_zh": "空间散点图",
+      "category": "网络、流量与空间关系",
+      "question_zh": "网络、流量与空间关系中的空间散点图",
+      "implementation_level": "dedicated",
+      "status": "dedicated semantic renderer; visual QA pending",
+      "paper_suitable": false,
+      "files": {
+        "pdf": "spatial_scatter.pdf",
+        "svg": "spatial_scatter.svg",
+        "png": "spatial_scatter.png",
+        "metadata": "spatial_scatter.figure.json"
+      },
+      "audit": true,
+      "visual_review": "NOT_CHECKED",
+      "synthetic": true,
+      "generic_demo": false
+    },
+    {
+      "name": "stacked_area",
+      "name_zh": "堆叠面积图",
+      "category": "时间序列与动态过程",
+      "question_zh": "时间序列与动态过程中的堆叠面积图",
+      "implementation_level": "dedicated",
+      "status": "dedicated semantic renderer; visual QA pending",
+      "paper_suitable": false,
+      "files": {
+        "pdf": "stacked_area.pdf",
+        "svg": "stacked_area.svg",
+        "png": "stacked_area.png",
+        "metadata": "stacked_area.figure.json"
+      },
+      "audit": true,
+      "visual_review": "NOT_CHECKED",
+      "synthetic": true,
+      "generic_demo": false
+    },
+    {
+      "name": "stacked_bar",
+      "name_zh": "堆叠柱状图",
+      "category": "类别比较",
+      "question_zh": "类别比较中的堆叠柱状图",
+      "implementation_level": "dedicated",
+      "status": "dedicated statistical renderer; visual QA pending",
+      "paper_suitable": false,
+      "files": {
+        "pdf": "stacked_bar.pdf",
+        "svg": "stacked_bar.svg",
+        "png": "stacked_bar.png",
+        "metadata": "stacked_bar.figure.json"
+      },
+      "audit": true,
+      "visual_review": "NOT_CHECKED",
+      "synthetic": true,
+      "generic_demo": false
+    },
+    {
+      "name": "state_machine",
+      "name_zh": "状态机图",
+      "category": "数学建模专用图",
+      "question_zh": "数学建模专用图中的状态机图",
+      "implementation_level": "dedicated",
+      "status": "dedicated semantic renderer; visual QA pending",
+      "paper_suitable": false,
+      "files": {
+        "pdf": "state_machine.pdf",
+        "svg": "state_machine.svg",
+        "png": "state_machine.png",
+        "metadata": "state_machine.figure.json"
+      },
+      "audit": true,
+      "visual_review": "NOT_CHECKED",
+      "synthetic": true,
+      "generic_demo": false
+    },
+    {
+      "name": "state_trajectory",
+      "name_zh": "状态轨迹图",
+      "category": "时间序列与动态过程",
+      "question_zh": "时间序列与动态过程中的状态轨迹图",
+      "implementation_level": "dedicated",
+      "status": "dedicated semantic renderer; visual QA pending",
+      "paper_suitable": false,
+      "files": {
+        "pdf": "state_trajectory.pdf",
+        "svg": "state_trajectory.svg",
+        "png": "state_trajectory.png",
+        "metadata": "state_trajectory.figure.json"
+      },
+      "audit": true,
+      "visual_review": "NOT_CHECKED",
+      "synthetic": true,
+      "generic_demo": false
+    },
+    {
+      "name": "state_transition",
+      "name_zh": "状态转移图",
+      "category": "网络、流量与空间关系",
+      "question_zh": "网络、流量与空间关系中的状态转移图",
+      "implementation_level": "dedicated",
+      "status": "dedicated semantic renderer; visual QA pending",
+      "paper_suitable": false,
+      "files": {
+        "pdf": "state_transition.pdf",
+        "svg": "state_transition.svg",
+        "png": "state_transition.png",
+        "metadata": "state_transition.figure.json"
+      },
+      "audit": true,
+      "visual_review": "NOT_CHECKED",
+      "synthetic": true,
+      "generic_demo": false
+    },
+    {
+      "name": "step",
+      "name_zh": "阶梯图",
+      "category": "时间序列与动态过程",
+      "question_zh": "时间序列与动态过程中的阶梯图",
+      "implementation_level": "dedicated",
+      "status": "dedicated semantic renderer; visual QA pending",
+      "paper_suitable": false,
+      "files": {
+        "pdf": "step.pdf",
+        "svg": "step.svg",
+        "png": "step.png",
+        "metadata": "step.figure.json"
+      },
+      "audit": true,
+      "visual_review": "NOT_CHECKED",
+      "synthetic": true,
+      "generic_demo": false
+    },
+    {
+      "name": "task_decomposition",
+      "name_zh": "任务分解图",
+      "category": "数学建模专用图",
+      "question_zh": "数学建模专用图中的任务分解图",
+      "implementation_level": "dedicated",
+      "status": "dedicated semantic renderer; visual QA pending",
+      "paper_suitable": false,
+      "files": {
+        "pdf": "task_decomposition.pdf",
+        "svg": "task_decomposition.svg",
+        "png": "task_decomposition.png",
+        "metadata": "task_decomposition.figure.json"
+      },
+      "audit": true,
+      "visual_review": "NOT_CHECKED",
+      "synthetic": true,
+      "generic_demo": false
+    },
+    {
+      "name": "taylor_diagram",
+      "name_zh": "泰勒图",
+      "category": "模型评估",
+      "question_zh": "模型评估中的泰勒图",
+      "implementation_level": "dedicated",
+      "status": "dedicated semantic renderer; visual QA pending",
+      "paper_suitable": false,
+      "files": {
+        "pdf": "taylor_diagram.pdf",
+        "svg": "taylor_diagram.svg",
+        "png": "taylor_diagram.png",
+        "metadata": "taylor_diagram.figure.json"
+      },
+      "audit": true,
+      "visual_review": "NOT_CHECKED",
+      "synthetic": true,
+      "generic_demo": false
+    },
+    {
+      "name": "technical_route",
+      "name_zh": "技术路线图",
+      "category": "数学建模专用图",
+      "question_zh": "数学建模专用图中的技术路线图",
+      "implementation_level": "dedicated",
+      "status": "dedicated semantic renderer; visual QA pending",
+      "paper_suitable": false,
+      "files": {
+        "pdf": "technical_route.pdf",
+        "svg": "technical_route.svg",
+        "png": "technical_route.png",
+        "metadata": "technical_route.figure.json"
+      },
+      "audit": true,
+      "visual_review": "NOT_CHECKED",
+      "synthetic": true,
+      "generic_demo": false
+    },
+    {
+      "name": "threshold_crossing",
+      "name_zh": "阈值穿越图",
+      "category": "优化、灵敏度与稳健性",
+      "question_zh": "优化、灵敏度与稳健性中的阈值穿越图",
+      "implementation_level": "dedicated",
+      "status": "dedicated semantic renderer; visual QA pending",
+      "paper_suitable": false,
+      "files": {
+        "pdf": "threshold_crossing.pdf",
+        "svg": "threshold_crossing.svg",
+        "png": "threshold_crossing.png",
+        "metadata": "threshold_crossing.figure.json"
+      },
+      "audit": true,
+      "visual_review": "NOT_CHECKED",
+      "synthetic": true,
+      "generic_demo": false
+    },
+    {
+      "name": "threshold_heatmap",
+      "name_zh": "阈值热图",
+      "category": "热图与矩阵",
+      "question_zh": "热图与矩阵中的阈值热图",
+      "implementation_level": "dedicated",
+      "status": "dedicated semantic renderer; visual QA pending",
+      "paper_suitable": false,
+      "files": {
+        "pdf": "threshold_heatmap.pdf",
+        "svg": "threshold_heatmap.svg",
+        "png": "threshold_heatmap.png",
+        "metadata": "threshold_heatmap.figure.json"
+      },
+      "audit": true,
+      "visual_review": "NOT_CHECKED",
+      "synthetic": true,
+      "generic_demo": false
+    },
+    {
+      "name": "time_heatmap",
+      "name_zh": "时间热图",
+      "category": "时间序列与动态过程",
+      "question_zh": "时间序列与动态过程中的时间热图",
+      "implementation_level": "dedicated",
+      "status": "dedicated semantic renderer; visual QA pending",
+      "paper_suitable": false,
+      "files": {
+        "pdf": "time_heatmap.pdf",
+        "svg": "time_heatmap.svg",
+        "png": "time_heatmap.png",
+        "metadata": "time_heatmap.figure.json"
+      },
+      "audit": true,
+      "visual_review": "NOT_CHECKED",
+      "synthetic": true,
+      "generic_demo": false
+    },
+    {
+      "name": "time_series",
+      "name_zh": "时间序列图",
+      "category": "时间序列与动态过程",
+      "question_zh": "时间序列与动态过程中的时间序列图",
+      "implementation_level": "dedicated",
+      "status": "dedicated statistical renderer; visual QA pending",
+      "paper_suitable": false,
+      "files": {
+        "pdf": "time_series.pdf",
+        "svg": "time_series.svg",
+        "png": "time_series.png",
+        "metadata": "time_series.figure.json"
+      },
+      "audit": true,
+      "visual_review": "NOT_CHECKED",
+      "synthetic": true,
+      "generic_demo": false
+    },
+    {
+      "name": "topsis_weights",
+      "name_zh": "TOPSIS权重图",
+      "category": "多指标与综合评价",
+      "question_zh": "多指标与综合评价中的TOPSIS权重图",
+      "implementation_level": "dedicated",
+      "status": "dedicated semantic renderer; visual QA pending",
+      "paper_suitable": false,
+      "files": {
+        "pdf": "topsis_weights.pdf",
+        "svg": "topsis_weights.svg",
+        "png": "topsis_weights.png",
+        "metadata": "topsis_weights.figure.json"
+      },
+      "audit": true,
+      "visual_review": "NOT_CHECKED",
+      "synthetic": true,
+      "generic_demo": false
+    },
+    {
+      "name": "tornado",
+      "name_zh": "龙卷风图",
+      "category": "优化、灵敏度与稳健性",
+      "question_zh": "优化、灵敏度与稳健性中的龙卷风图",
+      "implementation_level": "dedicated",
+      "status": "dedicated semantic renderer; visual QA pending",
+      "paper_suitable": false,
+      "files": {
+        "pdf": "tornado.pdf",
+        "svg": "tornado.svg",
+        "png": "tornado.png",
+        "metadata": "tornado.figure.json"
+      },
+      "audit": true,
+      "visual_review": "NOT_CHECKED",
+      "synthetic": true,
+      "generic_demo": false
+    },
+    {
+      "name": "transition_matrix",
+      "name_zh": "转移矩阵",
+      "category": "热图与矩阵",
+      "question_zh": "热图与矩阵中的转移矩阵",
+      "implementation_level": "dedicated",
+      "status": "dedicated statistical renderer; visual QA pending",
+      "paper_suitable": false,
+      "files": {
+        "pdf": "transition_matrix.pdf",
+        "svg": "transition_matrix.svg",
+        "png": "transition_matrix.png",
+        "metadata": "transition_matrix.figure.json"
+      },
+      "audit": true,
+      "visual_review": "NOT_CHECKED",
+      "synthetic": true,
+      "generic_demo": false
+    },
+    {
+      "name": "tsne",
+      "name_zh": "t-SNE图",
+      "category": "降维、聚类与高维结构",
+      "question_zh": "降维、聚类与高维结构中的t-SNE图",
+      "implementation_level": "dedicated",
+      "status": "dedicated statistical renderer; visual QA pending",
+      "paper_suitable": false,
+      "files": {
+        "pdf": "tsne.pdf",
+        "svg": "tsne.svg",
+        "png": "tsne.png",
+        "metadata": "tsne.figure.json"
+      },
+      "audit": true,
+      "visual_review": "NOT_CHECKED",
+      "synthetic": true,
+      "generic_demo": false
+    },
+    {
+      "name": "umap",
+      "name_zh": "UMAP图",
+      "category": "降维、聚类与高维结构",
+      "question_zh": "降维、聚类与高维结构中的UMAP图",
+      "implementation_level": "dedicated",
+      "status": "dedicated statistical renderer; visual QA pending",
+      "paper_suitable": false,
+      "files": {
+        "pdf": "umap.pdf",
+        "svg": "umap.svg",
+        "png": "umap.png",
+        "metadata": "umap.figure.json"
+      },
+      "audit": true,
+      "visual_review": "NOT_CHECKED",
+      "synthetic": true,
+      "generic_demo": false
+    },
+    {
+      "name": "variable_dependency",
+      "name_zh": "变量依赖图",
+      "category": "数学建模专用图",
+      "question_zh": "数学建模专用图中的变量依赖图",
+      "implementation_level": "dedicated",
+      "status": "dedicated semantic renderer; visual QA pending",
+      "paper_suitable": false,
+      "files": {
+        "pdf": "variable_dependency.pdf",
+        "svg": "variable_dependency.svg",
+        "png": "variable_dependency.png",
+        "metadata": "variable_dependency.figure.json"
+      },
+      "audit": true,
+      "visual_review": "NOT_CHECKED",
+      "synthetic": true,
+      "generic_demo": false
+    },
+    {
+      "name": "violin",
+      "name_zh": "小提琴图",
+      "category": "单变量与分布",
+      "question_zh": "单变量与分布中的小提琴图",
+      "implementation_level": "dedicated",
+      "status": "dedicated statistical renderer; visual QA pending",
+      "paper_suitable": false,
+      "files": {
+        "pdf": "violin.pdf",
+        "svg": "violin.svg",
+        "png": "violin.png",
+        "metadata": "violin.figure.json"
+      },
+      "audit": true,
+      "visual_review": "NOT_CHECKED",
+      "synthetic": true,
+      "generic_demo": false
+    },
+    {
+      "name": "volcano",
+      "name_zh": "火山图",
+      "category": "关系与相关",
+      "question_zh": "关系与相关中的火山图",
+      "implementation_level": "dedicated",
+      "status": "dedicated semantic renderer; visual QA pending",
+      "paper_suitable": false,
+      "files": {
+        "pdf": "volcano.pdf",
+        "svg": "volcano.svg",
+        "png": "volcano.png",
+        "metadata": "volcano.figure.json"
+      },
+      "audit": true,
+      "visual_review": "NOT_CHECKED",
+      "synthetic": true,
+      "generic_demo": false
+    },
+    {
+      "name": "waterfall",
+      "name_zh": "瀑布图",
+      "category": "类别比较",
+      "question_zh": "类别比较中的瀑布图",
+      "implementation_level": "dedicated",
+      "status": "dedicated statistical renderer; visual QA pending",
+      "paper_suitable": false,
+      "files": {
+        "pdf": "waterfall.pdf",
+        "svg": "waterfall.svg",
+        "png": "waterfall.png",
+        "metadata": "waterfall.figure.json"
+      },
+      "audit": true,
+      "visual_review": "NOT_CHECKED",
+      "synthetic": true,
+      "generic_demo": false
+    },
+    {
+      "name": "weight_sensitivity",
+      "name_zh": "权重敏感性图",
+      "category": "多指标与综合评价",
+      "question_zh": "多指标与综合评价中的权重敏感性图",
+      "implementation_level": "dedicated",
+      "status": "dedicated semantic renderer; visual QA pending",
+      "paper_suitable": false,
+      "files": {
+        "pdf": "weight_sensitivity.pdf",
+        "svg": "weight_sensitivity.svg",
+        "png": "weight_sensitivity.png",
+        "metadata": "weight_sensitivity.figure.json"
+      },
+      "audit": true,
+      "visual_review": "NOT_CHECKED",
+      "synthetic": true,
+      "generic_demo": false
+    },
+    {
+      "name": "weighted_network",
+      "name_zh": "加权网络图",
+      "category": "网络、流量与空间关系",
+      "question_zh": "网络、流量与空间关系中的加权网络图",
+      "implementation_level": "dedicated",
+      "status": "dedicated statistical renderer; visual QA pending",
+      "paper_suitable": false,
+      "files": {
+        "pdf": "weighted_network.pdf",
+        "svg": "weighted_network.svg",
+        "png": "weighted_network.png",
+        "metadata": "weighted_network.figure.json"
+      },
+      "audit": true,
+      "visual_review": "NOT_CHECKED",
+      "synthetic": true,
+      "generic_demo": false
+    }
+  ],
+  "errors": []
+}

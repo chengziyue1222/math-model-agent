@@ -1,0 +1,19 @@
+{
+  "status": "PASS",
+  "command": [
+    "C:\\Python314\\python.exe",
+    "C:\\Users\\Blake\\.codex\\skills\\make-model-figures\\scripts\\minimal_example.py",
+    "--output",
+    "figures",
+    "--suite"
+  ],
+  "working_directory": "C:\\Users\\Blake\\AppData\\Local\\Temp\\figure-independent-h6kp1gl8",
+  "repository_config_used": false,
+  "figure_count": 6,
+  "config_sources": [
+    "builtin:algorithms.figure_config.DEFAULTS"
+  ],
+  "stdout": "figures\\demo_comparison.figure.json\nfigures\\demo_prediction.figure.json\nfigures\\demo_optimization.figure.json\nfigures\\demo_sensitivity.figure.json\nfigures\\demo_robustness.figure.json\nfigures\\demo_mechanism.figure.json\n",
+  "stderr": "",
+  "visual_review": "NOT_CHECKED for temporary outputs; repository gallery reviewed separately"
+}
