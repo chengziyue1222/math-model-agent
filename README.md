@@ -127,6 +127,16 @@ ranking = topsis(decision_matrix, weights, benefit_indicators)
 | `diagram.py` | 流程图、ER 图、三线表、SQL 解析 | LaTeX 配图 |
 | `paper_check.py` | 论文质量检查（结构/图表/引用/数值） | 提交前终检 |
 
+### 🎨 科研绘图库 / Figure Library (`code/algorithms/figures/`)
+
+内置 24 个绘图模块的科研绘图库，覆盖学术风格、时间序列、优化收敛、网络、热图、降维、分布、模型评价与竞赛实用图。每个图件同时导出 PNG、SVG、PDF 三种格式，并附带 `.figure.json` 元数据契约（变量、单位、数据来源、可追溯哈希）。
+
+- 常规图库预览：[output/figure-library-gallery/index.html](output/figure-library-gallery/index.html)（clone 后本地浏览器打开）
+- 学术风格图库预览：[output/figure-library-gallery-academic/index.html](output/figure-library-gallery-academic/index.html)
+- 多轮修复、评审与能力矩阵：[docs/figure-library-capability-matrix.md](docs/figure-library-capability-matrix.md)、[docs/figure-upgrade-report.md](docs/figure-upgrade-report.md)
+- 重新生成图库：`python scripts/build_figure_gallery.py`、`python scripts/build_figure_library.py`
+- 建模流程中的图表交接由 `make-model-figures` Skill 与 `figure_handoff.py` 保证"图上证据必须来自已计算结果"
+
 **快速使用 / Quick Start:**
 
 ```python
@@ -445,6 +455,7 @@ python scripts/install_skills.py --dry-run
 
 ## 版本历史 / Changelog
 
+- **v7.4.0** (2026-11-02) — 公开科研绘图库（常规 + 学术风格图库，PNG/SVG/PDF 图件与元数据契约），新增证据门控、研究验证与投稿格式适配；模块数增至 32
 - **v7.3.0** (2026-09-23) — Streamlit 界面与 2026 CUMCM 提交预检；公开导出增至 149，图表设计系统补齐调色板与中文字体回退
 - **v7.2.0** (2026-08-10) — 新增 rapid / competition / audit 三档工作流，统一标准 Skill 的可执行契约入口，并校正文档与 Windows 测试体验
 - **v6.0** (2026-07-08) — 蒸馏 zhanwen/MathModel + MathModelAgent，新增蒙特卡罗、图像处理、综合评价、竞赛工作流
