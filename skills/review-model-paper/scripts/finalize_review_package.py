@@ -9,7 +9,7 @@ from pathlib import Path
 from typing import Any
 
 
-MAX_DELIVERY_BYTES = 20 * 1024 * 1024
+MAX_DELIVERY_BYTES = 20_000_000
 
 
 def digest(path: Path) -> str:
@@ -49,11 +49,12 @@ def finalize(
     layout_validation: Path,
     visual_layout_audit: Path,
     paper_review_report: Path,
-    support_archive: Path,
-    support_manifest: Path,
-    reproduction_report: Path,
+    support_archive: Path | None = None,
+    support_manifest: Path | None = None,
+    reproduction_report: Path | None = None,
     submission_preflight: Path,
     profile: str = "competition",
+    venue: str | None = None,
     pdf: Path | None = None,
     docx: Path | None = None,
     latex_compile_report: Path | None = None,
@@ -67,6 +68,13 @@ def finalize(
     if profile not in {"competition", "audit"}:
         raise ValueError(f"unknown review profile: {profile}")
     root = project_root.resolve()
+    import sys
+    code = Path(__file__).resolve().parents[3] / "code"
+    if code.is_dir() and str(code) not in sys.path:
+        sys.path.insert(0, str(code))
+    from algorithms.venue_config import resolve_project_venue
+    from algorithms.evidence_gates import validate_gate_payloads
+    policy = resolve_project_venue(root, venue=venue)
     required: dict[str, Path | None] = {
         "manuscript": manuscript,
         "official_problem": official_problem,
@@ -74,7 +82,7 @@ def finalize(
         "quality_validation": quality_validation,
         "result_object": result_object,
         "project_manifest": project_manifest,
-        "cumcm_layout_validation": layout_validation,
+        "layout_validation": layout_validation,
         "visual_layout_audit": visual_layout_audit,
         "paper_review_report": paper_review_report,
         "support_archive": support_archive,
@@ -82,6 +90,9 @@ def finalize(
         "reproduction_report": reproduction_report,
         "submission_preflight": submission_preflight,
     }
+    if policy["support_package"] is not True and support_archive is None and support_manifest is None:
+        for role in ("support_archive", "support_manifest", "reproduction_report"):
+            required.pop(role)
     formats = {"main_pdf": pdf, "main_docx": docx}
     if profile == "competition" and not any(formats.values()):
         raise ValueError("competition requires PDF or DOCX; PDF is the default")
@@ -100,6 +111,8 @@ def finalize(
         )
     else:
         required.update({role: path for role, path in formats.items() if path is not None})
+        if figure_registry is not None:
+            required["figure_registry"] = figure_registry
         if pdf is not None:
             required["latex_compile_report"] = latex_compile_report
         if docx is not None:
@@ -114,22 +127,26 @@ def finalize(
             raise FileNotFoundError(f"{role} is missing or empty: {relative}")
         artifacts[role] = (resolved, relative)
     for role in ("main_pdf", "main_docx", "support_archive"):
-        if role in artifacts and artifacts[role][0].stat().st_size > MAX_DELIVERY_BYTES:
-            raise ValueError(f"{role} exceeds 20 MiB")
+        if role in artifacts and policy["max_delivery_bytes"] is not None and artifacts[role][0].stat().st_size > policy["max_delivery_bytes"]:
+            raise ValueError(f"{role} exceeds {policy['max_delivery_bytes']} bytes")
 
     gates = {
         "paper_review": _status_pass(artifacts["paper_review_report"][0]),
-        "cumcm_layout": _status_pass(artifacts["cumcm_layout_validation"][0]),
+        "layout": _status_pass(artifacts["layout_validation"][0]),
         "visual_layout": _status_pass(artifacts["visual_layout_audit"][0]),
-        "clean_reproduction": _status_pass(artifacts["reproduction_report"][0]),
         "submission_preflight": _status_pass(artifacts["submission_preflight"][0]),
     }
+    if "reproduction_report" in artifacts:
+        gates["clean_reproduction"] = _status_pass(artifacts["reproduction_report"][0])
     if "latex_compile_report" in artifacts:
         gates["latex_compile"] = _status_pass(artifacts["latex_compile_report"][0])
     if "docx_render_report" in artifacts:
         gates["docx_render"] = _status_pass(artifacts["docx_render_report"][0])
     if profile == "audit":
         gates["independent_content_review"] = _status_pass(artifacts["independent_content_review"][0])
+    semantic_errors = validate_gate_payloads(root, {role: {"path": relative} for role, (_, relative) in artifacts.items()},
+                                             require_results=True, require_figures=True)
+    gates["question_evidence"] = not semantic_errors
 
     binding: dict[str, Any] | None = None
     if profile == "audit":
@@ -151,6 +168,8 @@ def finalize(
     readiness = {
         "schema_version": "1.1",
         "profile": profile,
+        "venue": policy["venue"],
+        "semantic_errors": semantic_errors,
         "status": "READY_FOR_SUBMISSION" if all(gates.values()) else "BLOCKED",
         "paper_formats": sorted(role.removeprefix("main_") for role in formats if role in artifacts),
         "required_formats_present": (pdf is not None and docx is not None) if profile == "audit" else any(formats.values()),
@@ -181,15 +200,17 @@ def main(argv: list[str] | None = None) -> int:
     parser = argparse.ArgumentParser(description=__doc__)
     parser.add_argument("--project-root", type=Path, required=True)
     parser.add_argument("--profile", choices=("competition", "audit"), default="competition")
+    parser.add_argument("--venue")
     for name in (
         "manuscript", "official-problem", "decision-contract", "quality-validation", "result-object",
         "project-manifest", "layout-validation", "visual-layout-audit", "paper-review-report",
-        "support-archive", "support-manifest", "reproduction-report", "submission-preflight",
+        "submission-preflight",
     ):
         parser.add_argument(f"--{name}", type=Path, required=True)
     for name in (
         "pdf", "docx", "latex-compile-report", "docx-render-report", "claim-registry",
         "figure-registry", "table-registry", "references-bib", "independent-review",
+        "support-archive", "support-manifest", "reproduction-report",
     ):
         parser.add_argument(f"--{name}", type=Path)
     args = parser.parse_args(argv)

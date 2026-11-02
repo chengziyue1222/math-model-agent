@@ -167,17 +167,18 @@ class TestPublicationWorkflow:
 
         assert not report.passed
         assert any("figure width" in error for error in report.errors)
-        assert any("below 5 pt" in error for error in report.errors)
+        assert any("below 7 pt" in error for error in report.errors)
 
     def test_panel_label_helper_uses_consistent_typography(self):
         fig, axis = plt.subplots()
         label = add_panel_label(axis, "a")
 
-        assert label.get_fontsize() == 8
+        assert label.get_fontsize() == 9
         assert label.get_fontweight() == "bold"
         assert label.get_fontstyle() == "normal"
 
     def test_export_writes_vector_raster_and_audit_metadata(self, tmp_path):
+        (tmp_path / "results.csv").write_text("x,y\n0,1\n1,2\n2,4\n")
         with matplotlib.rc_context(publication_rc_params()):
             fig, axis = plt.subplots(
                 figsize=publication_size("single", 60), constrained_layout=True
@@ -196,7 +197,7 @@ class TestPublicationWorkflow:
             contract = FigureContract(
                 "Response increases over time",
                 ("three observations", "positive slope"),
-                source_paths=("results.csv",),
+                source_paths=(str(tmp_path / "results.csv"),),
                 column="single",
                 figure_role="model-result",
                 model_name="deterministic trend example v1",
@@ -228,7 +229,7 @@ class TestPublicationWorkflow:
         assert metadata["contract"]["design_brief"]["layout_recipe"] == "evidence-grid"
         assert metadata["audit"]["metrics"]["figure_role"] == "model-result"
         assert metadata["export"]["dpi"] == 450
-        assert metadata["schema_version"] == 2
+        assert metadata["schema_version"] == 3
 
     def test_strict_export_refuses_failed_audit(self, tmp_path):
         fig, axis = plt.subplots(figsize=(2, 2))

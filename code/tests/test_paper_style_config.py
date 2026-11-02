@@ -37,4 +37,4 @@ def test_both_cumcm_templates_follow_the_canonical_layout_without_contents():
     assert style["page"]["numbering_continuous"] is True
     assert style["page"]["max_body_pages"] == 30
     assert style["page"]["abstract_page_excluded_from_body_limit"] is True
-    assert style["delivery"]["paper_max_bytes"] == 20 * 1024 * 1024
+    assert style["delivery"]["paper_max_bytes"] == 20_000_000

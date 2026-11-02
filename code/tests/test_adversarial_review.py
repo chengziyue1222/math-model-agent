@@ -164,3 +164,15 @@ def test_second_pass_review_is_invalidated_when_quality_artifact_changes(tmp_pat
     codes = {issue["code"] for issue in semantic_issues(tmp_path, manuscript)}
 
     assert "REVIEW_SUSPICIOUSLY_SHALLOW" in codes
+
+
+def test_second_pass_strength_follows_profile_and_distinct_questions(tmp_path):
+    paper = tmp_path / "paper.md"
+    paper.write_text("问题一\n问题二\n问题三\n问题四\n", encoding="utf-8")
+    competition = semantic_issues(tmp_path, paper, profile="competition")
+    finding = next(item for item in competition if item["code"] == "REVIEW_SUSPICIOUSLY_SHALLOW")
+    assert finding["severity"] == "warning"
+    audit = semantic_issues(tmp_path, paper, profile="audit")
+    assert next(item for item in audit if item["code"] == finding["code"])["severity"] == "blocking"
+    paper.write_text("问题一\n问题一\n问题二\n问题二\n", encoding="utf-8")
+    assert "REVIEW_SUSPICIOUSLY_SHALLOW" not in {item["code"] for item in semantic_issues(tmp_path, paper)}

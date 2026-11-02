@@ -6,5 +6,6 @@ def test_paper_figure_theme_is_restrained_and_readable():
     assert params["figure.facecolor"] == "#FFFFFF"
     assert params["axes.grid"] is True
     assert params["font.size"] >= 7
-    assert params["grid.color"] == MODELING_PAPER_THEME["grid"]
+    assert params["grid.color"] == "#E4E8ED"
+    assert paper_figure_rc_params(config={"theme": "modeling-default"})["grid.color"] == MODELING_PAPER_THEME["grid"]
     assert MODELING_PAPER_THEME["emphasis"] == "#A6534C"

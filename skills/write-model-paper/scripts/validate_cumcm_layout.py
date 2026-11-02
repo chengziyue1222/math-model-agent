@@ -8,7 +8,7 @@ from pathlib import Path
 from typing import Any
 
 
-MAX_PAPER_BYTES = 20 * 1024 * 1024
+MAX_PAPER_BYTES = 20_000_000  # conservative local interpretation of 20 MB
 MAX_BODY_PAGES = 30
 REQUIRED = {
     "A4 margins": ("left=2.5cm", "right=2.5cm", "top=2.5cm", "bottom=2.8cm"),
@@ -90,7 +90,7 @@ def inspect_pdf(pdf_path: Path, *, project_root: Path | None = None) -> dict[str
         return {"status": "FAIL", "errors": ["paper PDF is missing"]}
     size = pdf_path.stat().st_size
     if size > MAX_PAPER_BYTES:
-        errors.append(f"paper exceeds 20 MiB: {size} bytes")
+        errors.append(f"paper exceeds local 20 MB cap ({MAX_PAPER_BYTES} bytes): {size} bytes")
 
     document = fitz.open(pdf_path)
     page_texts = [page.get_text("text") for page in document]

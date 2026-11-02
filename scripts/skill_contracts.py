@@ -9,8 +9,12 @@ import sys
 from pathlib import Path
 from typing import Any
 
+_CODE = Path(__file__).resolve().parents[1] / "code"
+if _CODE.is_dir() and str(_CODE) not in sys.path:
+    sys.path.insert(0, str(_CODE))
 
-CONTRACT_VERSION = "1.4"
+
+CONTRACT_VERSION = "1.5"
 PROFILES = ("rapid", "competition", "audit")
 
 COMMON_CONTRACTS: dict[str, dict[str, tuple[Any, ...]]] = {
@@ -156,7 +160,10 @@ def contract_for(
     *,
     version: str = CONTRACT_VERSION,
     profile: str = "competition",
+    venue: str = "generic-research-report",
 ) -> dict[str, tuple[Any, ...]]:
+    if version not in {"1.1", "1.2", "1.3", "1.4", CONTRACT_VERSION}:
+        raise ValueError(f"unsupported contract version: {version}")
     if version == "1.1":
         contracts = LEGACY_CONTRACTS_1_1
     elif version == "1.2":
@@ -168,7 +175,23 @@ def contract_for(
             raise ValueError(f"unknown workflow profile: {profile}")
         contracts = PROFILE_CONTRACTS[profile]
     try:
-        return contracts[skill]
+        result = dict(contracts[skill])
+        if version == CONTRACT_VERSION:
+            from algorithms.venue_config import venue_profile
+            policy = venue_profile(venue)
+            result = {direction: tuple("layout_validation" if role == "cumcm_layout_validation" else role
+                                      for role in roles) if direction != "one_of_inputs" else roles
+                      for direction, roles in result.items()}
+            if profile == "competition":
+                result["inputs"] = tuple(r for r in result.get("inputs", ()) if r not in {"claim_registry", "table_registry"})
+            if skill == "review-model-paper" and profile != "rapid":
+                result["inputs"] = tuple(r for r in result["inputs"] if r not in {"submission_preflight", "reproduction_report"})
+                result["outputs"] += ("submission_preflight",)
+                if policy["support_package"] is True:
+                    result["outputs"] += ("reproduction_report",)
+            if policy["support_package"] is not True:
+                result["inputs"] = tuple(r for r in result.get("inputs", ()) if r not in {"support_archive", "support_manifest", "reproduction_report"})
+        return result
     except KeyError as exc:
         raise ValueError(f"unknown standard skill: {skill}") from exc
 
@@ -184,9 +207,14 @@ def validate_records(
     *,
     contract_version: str = CONTRACT_VERSION,
     profile: str = "competition",
+    venue: str = "generic-research-report",
 ) -> list[str]:
-    contract = contract_for(skill, version=contract_version, profile=profile)
+    contract = contract_for(skill, version=contract_version, profile=profile, venue=venue)
     supplied_inputs, supplied_outputs = _roles(inputs), _roles(outputs)
+    if contract_version == CONTRACT_VERSION and venue == "CUMCM":
+        for supplied in (supplied_inputs, supplied_outputs):
+            if "cumcm_layout_validation" in supplied:
+                supplied.add("layout_validation")
     errors: list[str] = []
     for direction, required, supplied in (
         ("input", contract.get("inputs", ()), supplied_inputs),
@@ -210,11 +238,13 @@ def validate_terminal_run(run: dict[str, Any]) -> list[str]:
         run.get("outputs", []),
         contract_version=str(run.get("contract_version", "1.1")),
         profile=str(run.get("profile", "competition")),
+        venue=str(run.get("venue", "generic-research-report")),
     )
 
 
-def export_contracts(profile: str = "competition") -> dict[str, Any]:
-    return {"contract_version": CONTRACT_VERSION, "profile": profile, "skills": PROFILE_CONTRACTS[profile]}
+def export_contracts(profile: str = "competition", venue: str = "generic-research-report") -> dict[str, Any]:
+    return {"contract_version": CONTRACT_VERSION, "profile": profile, "venue": venue,
+            "skills": {s: contract_for(s, profile=profile, venue=venue) for s in COMMON_CONTRACTS}}
 
 
 def main(argv: list[str] | None = None) -> int:
@@ -222,19 +252,20 @@ def main(argv: list[str] | None = None) -> int:
     parser.add_argument("--export", type=Path)
     parser.add_argument("--skill", choices=sorted(CONTRACTS))
     parser.add_argument("--profile", choices=PROFILES, default="competition")
+    parser.add_argument("--venue", default="generic-research-report")
     parser.add_argument("--run", type=Path)
     args = parser.parse_args(argv)
     if args.export:
         args.export.parent.mkdir(parents=True, exist_ok=True)
-        args.export.write_text(json.dumps(export_contracts(args.profile), ensure_ascii=False, indent=2) + "\n", encoding="utf-8")
+        args.export.write_text(json.dumps(export_contracts(args.profile, args.venue), ensure_ascii=False, indent=2) + "\n", encoding="utf-8")
     if args.run:
         run = json.loads(args.run.read_text(encoding="utf-8"))
         errors = validate_terminal_run(run)
     elif args.skill:
-        print(json.dumps({"skill": args.skill, "profile": args.profile, **contract_for(args.skill, profile=args.profile)}, ensure_ascii=False, indent=2))
+        print(json.dumps({"skill": args.skill, "profile": args.profile, "venue": args.venue, **contract_for(args.skill, profile=args.profile, venue=args.venue)}, ensure_ascii=False, indent=2))
         return 0
     else:
-        print(json.dumps(export_contracts(args.profile), ensure_ascii=False, indent=2))
+        print(json.dumps(export_contracts(args.profile, args.venue), ensure_ascii=False, indent=2))
         return 0
     if errors:
         print("\n".join(f"- {error}" for error in errors), file=sys.stderr)

@@ -32,7 +32,8 @@
 from __future__ import annotations
 
 import math
-import json
+import warnings as python_warnings
+import logging
 from dataclasses import asdict, dataclass
 from itertools import combinations
 from pathlib import Path
@@ -52,6 +53,7 @@ from matplotlib.patches import Patch, Wedge
 from matplotlib.path import Path as MplPath
 from matplotlib.patches import PathPatch
 from matplotlib.text import Text
+from .figure_config import load_figure_config
 
 
 # ---------------------------------------------------------------------------
@@ -65,6 +67,13 @@ MODELING_PALETTE = {
     "sequential": ("#F7F8F5", "#D7E4E7", "#A6C4CF", "#6F9DB0", "#315D78"),
 }
 MODELING_PALETTES = {
+    "cumcm-research": {
+        "categorical": ("#0072B2", "#D55E00", "#009E73", "#7A5195", "#B68500", "#4E6673"),
+        "diverging": ("#2166AC", "#F7F7F7", "#B35806"),
+        "sequential": ("#F2F7FB", "#C5DBEA", "#86B5D3", "#377EA8", "#154B6A"),
+        "accent": "#D55E00", "ink": "#20252B", "grey": "#6B7280",
+        "grid": "#E4E8ED", "background": "#FFFFFF",
+    },
     "modeling-default": {
         **MODELING_PALETTE,
         "accent": "#A6534C",
@@ -201,8 +210,21 @@ class FigureContract:
     excluded_data: tuple[str, ...] = ()
     theme_name: str = "modeling-default"
     design_brief: FigureDesignBrief | None = None
+    width_mm: float | None = None
+    height_mm: float | None = None
+    question: str | None = None
+    units: str | None = None
+    plotting_code: tuple[str, ...] = ()
+    source_hashes: dict[str, str] | None = None
+    claim_status: str = "verified"
 
     def __post_init__(self) -> None:
+        if self.width_mm is None:
+            object.__setattr__(self, "width_mm", PUBLICATION_WIDTH_MM.get(self.column))
+        elif not np.isfinite(self.width_mm) or self.width_mm <= 0:
+            raise ValueError("width_mm must be finite and positive")
+        if self.claim_status not in {"verified", "question", "uncertain"}:
+            raise ValueError("claim_status must be verified, question or uncertain")
         if not isinstance(self.claim, str) or not self.claim.strip():
             raise ValueError("FigureContract.claim must be non-empty")
         if not self.evidence or any(
@@ -244,12 +266,6 @@ class FigureContract:
             self.design_brief, FigureDesignBrief
         ):
             raise ValueError("FigureContract.design_brief must be a FigureDesignBrief")
-
-    @property
-    def width_mm(self) -> float:
-        """Return the target printed width in millimetres."""
-        return PUBLICATION_WIDTH_MM[self.column]
-
 
 @dataclass(frozen=True)
 class FigureAuditReport:
@@ -338,18 +354,22 @@ def mm_to_inches(value_mm: float) -> float:
     return value_mm / 25.4
 
 
-def publication_size(column: str = "single", height_mm: float = 65.0) -> tuple[float, float]:
+def publication_size(column: str | None = "single", height_mm: float | None = 65.0,
+                     *, width_mm: float | None = None, config=None) -> tuple[float, float]:
     """Return an exact single- or double-column Matplotlib figure size."""
-    if column not in PUBLICATION_WIDTH_MM:
+    if column is not None and column not in PUBLICATION_WIDTH_MM:
         choices = ", ".join(PUBLICATION_WIDTH_MM)
         raise ValueError(f"column must be one of: {choices}")
-    return mm_to_inches(PUBLICATION_WIDTH_MM[column]), mm_to_inches(height_mm)
+    cfg = load_figure_config(config)
+    width = width_mm if width_mm is not None else (PUBLICATION_WIDTH_MM[column] if column else cfg["width_mm"])
+    return mm_to_inches(width), mm_to_inches(height_mm if height_mm is not None else cfg["height_mm"])
 
 
 def publication_rc_params(
     font_family: str = "sans-serif",
     *,
     language: str = "en",
+    config=None,
 ) -> dict[str, object]:
     """Return restrained, editable publication defaults for ``mpl.rc_context``."""
     if font_family not in {"sans-serif", "serif"}:
@@ -368,7 +388,13 @@ def publication_rc_params(
             *(font for font in (cjk_font, *_CJK_FONT_CANDIDATES) if font),
             *sans_fonts,
         ]
-    return {
+    cfg = load_figure_config(config)
+    if cfg["chinese_font"] != "auto" and language == "zh":
+        installed_names = {item.name.casefold() for item in font_manager.fontManager.ttflist}
+        if str(cfg["chinese_font"]).casefold() in installed_names:
+            sans_fonts.insert(0, cfg["chinese_font"])
+    sans_fonts.insert(0, cfg["latin_font"])
+    params = {
         "font.family": font_family,
         "font.sans-serif": sans_fonts,
         "font.serif": ["Times New Roman", "Times", "Liberation Serif", "DejaVu Serif"],
@@ -389,12 +415,37 @@ def publication_rc_params(
         "savefig.dpi": 450,
         "savefig.facecolor": "white",
     }
+    palette = get_modeling_palette(cfg["theme"])
+    params.update({"font.size": cfg["text_pt"], "axes.labelsize": cfg["text_pt"],
+                   "axes.titlesize": cfg["title_pt"], "xtick.labelsize": cfg["tick_pt"],
+                   "ytick.labelsize": cfg["tick_pt"], "legend.fontsize": cfg["legend_pt"],
+                   "lines.linewidth": cfg["line_width"], "lines.markersize": cfg["marker_size"],
+                   "axes.prop_cycle": mpl.cycler(color=palette["categorical"]),
+                   "figure.facecolor": cfg["background"], "axes.facecolor": cfg["background"],
+                   "savefig.facecolor": cfg["background"], "savefig.dpi": cfg["dpi"],
+                   "axes.grid": cfg["grid"], "grid.color": palette["grid"],
+                   "grid.linewidth": .45, "grid.alpha": .55, "legend.frameon": False,
+                   "text.color": palette["ink"], "axes.labelcolor": palette["ink"]})
+    if cfg.get("categorical_colors"):
+        params["axes.prop_cycle"] = mpl.cycler(color=cfg["categorical_colors"])
+    params["mathtext.fontset"] = cfg.get("math_fontset", "stix" if "Times" in cfg["latin_font"] else "dejavusans")
+    if language == "zh":
+        configured_cjk = str(cfg["chinese_font"])
+        installed_names = {item.name.casefold() for item in font_manager.fontManager.ttflist}
+        cjk = (resolve_cjk_font() if configured_cjk == "auto" or configured_cjk.casefold() not in installed_names
+               else configured_cjk)
+        params["font.family"] = [cfg["latin_font"], *([cjk] if cjk else []), font_family]
+    from matplotlib.colors import to_hex
+    for key in ("figure.facecolor", "axes.facecolor", "savefig.facecolor"):
+        params[key] = to_hex(params[key]).upper()
+    return params
 
 
 def paper_figure_rc_params(
     font_family: str = "sans-serif",
     *,
     language: str = "zh",
+    config=None,
 ) -> dict[str, object]:
     """Return the restrained A4-paper theme used by modeling-paper figures.
 
@@ -402,31 +453,7 @@ def paper_figure_rc_params(
     figure set reads as one paper rather than a sequence of dashboard panels.
     Venue-specific size constraints still belong to :func:`publication_size`.
     """
-    params = publication_rc_params(font_family, language=language)
-    params.update(
-        {
-            "font.size": 7.5,
-            "axes.labelsize": 7.5,
-            "axes.titlesize": 8.0,
-            "xtick.labelsize": 6.5,
-            "ytick.labelsize": 6.5,
-            "legend.fontsize": 6.5,
-            "axes.edgecolor": MODELING_PAPER_THEME["axis"],
-            "axes.labelcolor": MODELING_PAPER_THEME["text"],
-            "xtick.color": MODELING_PAPER_THEME["axis"],
-            "ytick.color": MODELING_PAPER_THEME["axis"],
-            "text.color": MODELING_PAPER_THEME["text"],
-            "axes.facecolor": MODELING_PAPER_THEME["background"],
-            "figure.facecolor": MODELING_PAPER_THEME["background"],
-            "axes.grid": True,
-            "grid.color": MODELING_PAPER_THEME["grid"],
-            "grid.linewidth": 0.45,
-            "grid.alpha": 0.55,
-            "legend.frameon": False,
-        }
-    )
-    return params
-
+    return publication_rc_params(font_family, language=language, config=config)
 
 def _intersection_fraction(first, second) -> float:
     width = max(0.0, min(first.x1, second.x1) - max(first.x0, second.x0))
@@ -438,14 +465,31 @@ def audit_publication_figure(
     fig: plt.Figure,
     contract: FigureContract,
     *,
-    minimum_font_size: float = 5.0,
-    width_tolerance_mm: float = 3.0,
+    minimum_font_size: float | None = None,
+    width_tolerance_mm: float | None = None,
+    config=None,
+    source_root=None,
 ) -> FigureAuditReport:
     """Run deterministic layout, typography, color, and traceability checks."""
+    cfg = load_figure_config(config if config is not None else getattr(fig, "_figure_config", None))
+    minimum_font_size = cfg["minimum_text_pt"] if minimum_font_size is None else minimum_font_size
+    width_tolerance_mm = cfg["width_tolerance_mm"] if width_tolerance_mm is None else width_tolerance_mm
     if minimum_font_size <= 0 or width_tolerance_mm < 0:
         raise ValueError("audit thresholds must be non-negative and font size positive")
 
-    fig.canvas.draw()
+    render_logs = []
+    class RenderLogCapture(logging.Handler):
+        def emit(self, record):
+            render_logs.append(record.getMessage())
+    handler = RenderLogCapture(level=logging.WARNING)
+    logger = logging.getLogger("matplotlib")
+    logger.addHandler(handler)
+    try:
+        with python_warnings.catch_warnings(record=True) as render_warnings:
+            python_warnings.simplefilter("always")
+            fig.canvas.draw()
+    finally:
+        logger.removeHandler(handler)
     renderer = fig.canvas.get_renderer()
     width_in, height_in = fig.get_size_inches()
     width_mm, height_mm = width_in * 25.4, height_in * 25.4
@@ -457,12 +501,29 @@ def audit_publication_figure(
             f"figure width is {width_mm:.1f} mm; expected {contract.width_mm:.1f} mm "
             f"for {contract.column}-column output"
         )
-    if height_mm > 247.0:
-        errors.append(f"figure height is {height_mm:.1f} mm; maximum is 247.0 mm")
+    if contract.height_mm is not None and abs(height_mm - contract.height_mm) > width_tolerance_mm:
+        errors.append(f"figure height differs from target {contract.height_mm} mm")
+    if height_mm > cfg["maximum_height_mm"]:
+        errors.append(f"figure height is {height_mm:.1f} mm; maximum is {cfg['maximum_height_mm']:g} mm")
 
+    # Matplotlib creates spare ticks beyond view limits; they are not rendered.
+    hidden_tick_ids = set()
+    for axis in fig.axes:
+        coordinates = (axis.xaxis, axis.yaxis, axis.zaxis) if axis.name == '3d' else (axis.xaxis, axis.yaxis)
+        axes_visible = getattr(axis, '_axis3don', True) if axis.name == '3d' else axis.axison
+        for coordinate in coordinates:
+            if axis.name == '3d':
+                low, high = sorted(coordinate.get_view_interval())
+                drawn = [tick for tick in (*coordinate.get_major_ticks(), *coordinate.get_minor_ticks())
+                         if low <= tick.get_loc() <= high] if axes_visible and coordinate.get_visible() else []
+            else:
+                drawn = coordinate._update_ticks() if axes_visible and coordinate.get_visible() else []
+            active = {id(label) for tick in drawn for label in (tick.label1, tick.label2)}
+            hidden_tick_ids.update(id(label) for tick in (*coordinate.get_major_ticks(), *coordinate.get_minor_ticks())
+                                   for label in (tick.label1, tick.label2) if id(label) not in active)
     visible_texts = [
         item for item in fig.findobj(match=Text)
-        if item.get_visible() and item.get_text().strip()
+        if item.get_visible() and item.get_text().strip() and id(item) not in hidden_tick_ids
     ]
     small_texts = sorted({
         round(float(item.get_fontsize()), 2)
@@ -475,22 +536,31 @@ def audit_publication_figure(
             + ", ".join(f"{size:g}" for size in small_texts)
         )
 
-    layout_texts = list(fig.texts)
-    for axis in fig.axes:
-        layout_texts.extend([axis.title, axis.xaxis.label, axis.yaxis.label])
-        layout_texts.extend(axis.texts)
-        legend = axis.get_legend()
-        if legend is not None:
-            layout_texts.extend(legend.get_texts())
-    layout_texts = [
-        item for item in layout_texts
-        if item.get_visible() and item.get_text().strip()
-    ]
-    layout_texts = list({id(item): item for item in layout_texts}.values())
+    layout_texts = visible_texts
+
+    def rendered_text_box(item):
+        # Text3D inherits a 2D extent method that otherwise interprets unprojected
+        # world coordinates as projected coordinates. Mirror its actual draw.
+        from mpl_toolkits.mplot3d.art3d import Text3D
+        if isinstance(item, Text3D):
+            from copy import copy
+            from mpl_toolkits.mplot3d import proj3d
+            position = np.asarray(item.get_position_3d())
+            points = np.array([position, position + item._dir_vec])
+            if hasattr(proj3d, '_scale_proj_transform'):
+                projected = proj3d._scale_proj_transform(points[:, 0], points[:, 1], points[:, 2], item.axes)
+            else:
+                projected = proj3d.proj_transform(points[:, 0], points[:, 1], points[:, 2], item.axes.get_proj())
+            clone = copy(item)
+            clone.set_position((projected[0][0], projected[1][0]))
+            angle = np.degrees(np.arctan2(projected[1][1]-projected[1][0], projected[0][1]-projected[0][0]))
+            clone.set_rotation((angle+90)%180-90)
+            return clone.get_window_extent(renderer)
+        return item.get_window_extent(renderer)
 
     figure_box = fig.bbox
     for item in layout_texts:
-        box = item.get_window_extent(renderer)
+        box = rendered_text_box(item)
         if (
             box.x0 < figure_box.x0 - 1.0
             or box.y0 < figure_box.y0 - 1.0
@@ -501,7 +571,7 @@ def audit_publication_figure(
 
     overlap_pairs: list[str] = []
     text_boxes = [
-        (item.get_text(), item.get_window_extent(renderer)) for item in layout_texts
+        (item.get_text(), rendered_text_box(item)) for item in layout_texts
     ]
     for (first_text, first_box), (second_text, second_box) in combinations(text_boxes, 2):
         width = max(0.0, min(first_box.x1, second_box.x1) - max(first_box.x0, second_box.x0))
@@ -511,7 +581,7 @@ def audit_publication_figure(
         if smaller > 4.0 and overlap / smaller >= 0.50:
             overlap_pairs.append(f"{first_text!r} / {second_text!r}")
     if overlap_pairs:
-        errors.append("substantial text overlap detected: " + ", ".join(overlap_pairs[:5]))
+        warnings.append("potential text overlap (bounding boxes, inspect visually): " + ", ".join(overlap_pairs[:5]))
 
     risky_colormaps: set[str] = set()
     legends_inside = 0
@@ -558,11 +628,46 @@ def audit_publication_figure(
         warnings.append("summary statistic is not documented in the figure contract")
     if contract.uncertainty is None:
         warnings.append("uncertainty representation is not documented in the figure contract")
-    if len(fig.axes) > 1 and contract.design_brief is None:
+    data_axes = [ax for ax in fig.axes if ax.get_label() != "<colorbar>" and not hasattr(ax, "_colorbar")]
+    if len(data_axes) > 1 and contract.design_brief is None:
         warnings.append("multi-panel figure has no recorded design brief")
     if contract.excluded_data:
         warnings.append("excluded rows or columns are recorded; disclose them in the figure notes")
 
+    import hashlib
+    source_records = []
+    for source in (*contract.source_paths, *contract.plotting_code):
+        path = Path(source)
+        if not path.is_absolute():
+            path = Path(source_root or Path.cwd()) / path
+        if not path.is_file():
+            errors.append(f"source file missing: {path}")
+            continue
+        digest = hashlib.sha256(path.read_bytes()).hexdigest()
+        source_records.append({"path": source, "resolved_path": str(path.resolve()), "sha256": digest})
+        if contract.source_hashes and source in contract.source_hashes and digest != contract.source_hashes[source]:
+            errors.append(f"source hash changed: {source}")
+    for warning in render_warnings:
+        message = str(warning.message)
+        if "Glyph" in message and "missing" in message:
+            errors.append("missing glyph: " + message)
+        else:
+            warnings.append("render: " + message)
+    for message in render_logs:
+        if "glyph" in message.lower() or "dummy symbol" in message:
+            errors.append("missing glyph: " + message)
+        else:
+            warnings.append("font/render fallback: " + message)
+    requested_fonts = {family for item in visible_texts for family in item.get_fontfamily()}
+    installed_fonts = {font.name.casefold() for font in font_manager.fontManager.ttflist}
+    for family in requested_fonts - {"serif", "sans-serif", "monospace", "cursive", "fantasy"}:
+        if family.casefold() not in installed_fonts:
+            warnings.append(f"requested font unavailable; fallback used: {family}")
+    for legend in [*fig.legends, *(ax.get_legend() for ax in fig.axes)]:
+        if legend is not None and legend.get_visible():
+            box = legend.get_window_extent(renderer)
+            if box.x0 < -1 or box.y0 < -1 or box.x1 > fig.bbox.x1+1 or box.y1 > fig.bbox.y1+1:
+                errors.append("legend extends outside canvas")
     errors = list(dict.fromkeys(errors))
     warnings = list(dict.fromkeys(warnings))
     return FigureAuditReport(
@@ -576,6 +681,10 @@ def audit_publication_figure(
             "figure_role": contract.figure_role,
             "visible_text_count": len(visible_texts),
             "axes_count": len(fig.axes),
+            "data_axes_count": len(data_axes),
+            "source_files": source_records,
+            "requested_font_families": sorted(requested_fonts),
+            "actual_minimum_text_pt": min((t.get_fontsize() for t in visible_texts), default=None),
             "legend_inside_count": legends_inside,
             "text_overlap_count": len(overlap_pairs),
             "theme_name": contract.theme_name,
@@ -590,6 +699,7 @@ def add_panel_label(
     *,
     x: float = -0.12,
     y: float = 1.03,
+    config=None,
 ) -> Text:
     """Add a consistent 8 pt bold, upright panel label to an axes."""
     if not isinstance(label, str) or not label.strip():
@@ -599,7 +709,7 @@ def add_panel_label(
         y,
         label,
         transform=axis.transAxes,
-        fontsize=8,
+        fontsize=load_figure_config(config or getattr(axis.figure, "_figure_config", None))["panel_pt"],
         fontweight="bold",
         fontstyle="normal",
         va="bottom",
@@ -612,43 +722,17 @@ def export_publication_figure(
     output_stem: str | Path,
     contract: FigureContract,
     *,
-    dpi: int = 450,
+    dpi: int | None = None,
+    config=None,
+    source_root=None,
     strict: bool = True,
     close: bool = False,
 ) -> dict[str, str]:
     """Export PDF/SVG masters, a high-resolution PNG proof, and a JSON audit."""
-    if dpi < 450:
-        raise ValueError("dpi must be at least 450 for publication export")
-    stem = Path(output_stem)
-    if stem.suffix:
-        raise ValueError("output_stem must not include a file extension")
-    stem.parent.mkdir(parents=True, exist_ok=True)
+    from .figure_export import export_bundle
+    return export_bundle(fig, output_stem, contract, dpi=dpi, strict=strict,
+                         close=close, config=config, source_root=source_root)
 
-    report = audit_publication_figure(fig, contract)
-    if strict and not report.passed:
-        raise ValueError("publication figure audit failed: " + "; ".join(report.errors))
-
-    paths: dict[str, str] = {}
-    with mpl.rc_context({"pdf.fonttype": 42, "svg.fonttype": "none"}):
-        for extension in ("pdf", "svg", "png"):
-            path = stem.with_suffix(f".{extension}")
-            fig.savefig(path, dpi=dpi if extension == "png" else None, facecolor="white")
-            paths[extension] = str(path)
-
-    metadata_path = stem.with_suffix(".figure.json")
-    payload = {
-        "schema_version": 2,
-        "contract": asdict(contract),
-        "audit": report.to_dict(),
-        "export": {"dpi": dpi, "formats": ["pdf", "svg", "png"]},
-    }
-    metadata_path.write_text(
-        json.dumps(payload, ensure_ascii=False, indent=2), encoding="utf-8"
-    )
-    paths["metadata"] = str(metadata_path)
-    if close:
-        plt.close(fig)
-    return paths
 
 def _configure_mpl(style: str = "serif") -> None:
     """Apply publication-quality matplotlib settings."""
@@ -839,6 +923,7 @@ class TaylorDiagram:
         ax.text(lx, ly, "Correlation", fontsize=7.2, rotation=-43, rotation_mode="anchor", ha="center", va="center")
         ax.text(self.ref_std, -0.060, "Observed", fontsize=6.4, ha="center", va="top")
 
+    @mpl.rc_context()
     def make(self) -> plt.Figure:
         _configure_mpl()
         n = len(self.panels)
@@ -888,12 +973,29 @@ class PairedRaincloud:
         conditions: list[str],
         palette: dict[str, dict[str, str]],
         ylabel: str = "Value",
+        *,
+        pair_ids: dict[tuple[str, str], np.ndarray] | None = None,
+        independent_unit: str = "observation",
     ):
         self.data = data
         self.groups = groups
         self.conditions = conditions
         self.palette = palette
         self.ylabel = ylabel
+        self.pair_ids = pair_ids
+        self.independent_unit = independent_unit
+        if not independent_unit.strip():
+            raise ValueError("independent_unit must be non-empty")
+        if pair_ids is not None:
+            for group in groups:
+                keys = [(condition, group) for condition in conditions]
+                if any(key not in pair_ids for key in keys):
+                    raise ValueError("pair_ids must include every condition/group combination")
+                lengths = [len(np.asarray(pair_ids[key])) for key in keys]
+                if len(set(lengths)) != 1:
+                    raise ValueError("paired conditions must have the same number of pair IDs")
+                if len(set(map(tuple, (np.asarray(pair_ids[key]) for key in keys)))) != 1:
+                    raise ValueError("pair IDs must identify the same units across paired conditions")
 
     @staticmethod
     def _draw_half_violin(ax, values, anchor_x, side, fill, edge, width=0.28, alpha=0.74, zorder=1):
@@ -927,6 +1029,7 @@ class PairedRaincloud:
         for m in bp["medians"]:
             m.set(color=edge, linewidth=2.4)
 
+    @mpl.rc_context()
     def make(self) -> plt.Figure:
         _configure_mpl()
         mpl.rcParams.update({"axes.spines.right": False, "axes.spines.top": False,
@@ -963,6 +1066,13 @@ class PairedRaincloud:
         handles = [Patch(facecolor=self.palette[g]["fill"], edgecolor=self.palette[g]["fill"], label=g) for g in self.groups]
         fig.legend(handles=handles, loc="upper right", bbox_to_anchor=(0.96, 0.965),
                    fontsize=18, title_fontsize=20, handlelength=1.8, borderaxespad=0)
+        fig._figure_metadata = {
+            "figure_type": "paired_raincloud",
+            "paired": self.pair_ids is not None,
+            "pair_ids_supplied": self.pair_ids is not None,
+            "independent_unit": self.independent_unit,
+            "interpretation_warning": "training/test rows are not biological replicates" if self.pair_ids is None else None,
+        }
         return fig
 
 
@@ -988,9 +1098,32 @@ class CvRocCurve:
         n_folds: Number of CV folds, default 5.
     """
 
-    def __init__(self, models: list[RocModelSpec], n_folds: int = 5):
-        self.models = models
-        self.n_folds = n_folds
+    def __init__(self, models: list[RocModelSpec] | None = None, n_folds: int = 5,
+                 *, y_true=None, y_score=None, simulate: bool | None = None,
+                 random_state: int = 814, split: str | None = None,
+                 average: str = "fold", interval_kind: str = "fold standard deviation"):
+        """Create a ROC figure recipe.
+
+        ``simulate=True`` is an explicit demonstration route that accepts
+        :class:`RocModelSpec` AUC targets.  ``simulate=False`` requires real
+        binary labels and scores and computes the curve from those arrays;
+        AUC values are never converted back into a fabricated ROC curve.
+        ``None`` preserves the legacy demo constructor when only model specs
+        are supplied, while recording that choice in figure metadata.
+        """
+        self.models = models or []
+        self.n_folds = int(n_folds)
+        self.y_true = y_true
+        self.y_score = y_score
+        self.simulate = (y_true is None and y_score is None) if simulate is None else bool(simulate)
+        self.random_state = int(random_state)
+        self.split = split
+        self.average = average
+        self.interval_kind = interval_kind
+        if not self.simulate and (y_true is None or y_score is None):
+            raise ValueError("simulate=False requires real y_true and y_score arrays")
+        if self.simulate and not self.models:
+            raise ValueError("simulate=True requires RocModelSpec model definitions")
 
     @staticmethod
     def _auc_to_exponent(auc: float) -> float:
@@ -1031,6 +1164,7 @@ class CvRocCurve:
         mean_tpr[0], mean_tpr[-1] = 0.0, 1.0
         return fold_curves, mean_tpr, np.clip(mean_tpr - std_tpr, 0, 1), np.clip(mean_tpr + std_tpr, 0, 1)
 
+    @mpl.rc_context()
     def make(self) -> plt.Figure:
         _configure_mpl("sans-serif")
         grid = np.linspace(0.0, 1.0, 101)
@@ -1038,14 +1172,38 @@ class CvRocCurve:
         ax = fig.add_axes([0.12, 0.10, 0.75, 0.82])
 
         legend_handles, legend_labels = [], []
-        for idx, spec in enumerate(self.models):
-            folds, mean_tpr, lower, upper = self._simulate_folds(spec, grid, seed=814 + idx * 17)
-            for fpr, tpr in folds:
-                ax.step(fpr, tpr, where="post", color=spec.color, alpha=0.13, linewidth=0.65, zorder=1)
-            ax.fill_between(grid, lower, upper, step="post", color=spec.color, alpha=spec.ci_alpha, linewidth=0, zorder=2)
-            (line,) = ax.step(grid, mean_tpr, where="post", color=spec.color, linewidth=1.15, zorder=4)
-            legend_handles.append(line)
-            legend_labels.append(f"{spec.name:<8}: {spec.auc_mean:.3f}+/-{spec.auc_std:.3f}")
+        if self.simulate:
+            for idx, spec in enumerate(self.models):
+                folds, mean_tpr, lower, upper = self._simulate_folds(spec, grid, seed=self.random_state + idx * 17)
+                for fpr, tpr in folds:
+                    ax.step(fpr, tpr, where="post", color=spec.color, alpha=0.13, linewidth=0.65, zorder=1)
+                ax.fill_between(grid, lower, upper, step="post", color=spec.color, alpha=spec.ci_alpha, linewidth=0, zorder=2)
+                (line,) = ax.step(grid, mean_tpr, where="post", color=spec.color, linewidth=1.15, zorder=4)
+                legend_handles.append(line)
+                legend_labels.append(f"{spec.name:<8}: {spec.auc_mean:.3f}+/-{spec.auc_std:.3f}")
+        else:
+            from sklearn.metrics import roc_curve, auc
+            labels = np.asarray(self.y_true)
+            scores = np.asarray(self.y_score)
+            if labels.ndim != 1 or scores.ndim != 1 or labels.shape != scores.shape:
+                raise ValueError("y_true and y_score must be aligned one-dimensional arrays")
+            if np.unique(labels).size != 2:
+                raise ValueError("real ROC requires both binary classes")
+            # A mapping supports a real curve per model; a single array is one
+            # named model.  Each curve is computed from the saved observations.
+            score_map = scores if isinstance(self.y_score, np.ndarray) else self.y_score
+            if isinstance(score_map, dict):
+                items = score_map.items()
+            else:
+                items = [("model", score_map)]
+            for name, model_scores in items:
+                model_scores = np.asarray(model_scores)
+                if model_scores.shape != labels.shape:
+                    raise ValueError(f"scores for {name!r} are not aligned with y_true")
+                fpr, tpr, _ = roc_curve(labels, model_scores)
+                (line,) = ax.step(fpr, tpr, where="post", linewidth=1.15)
+                legend_handles.append(line)
+                legend_labels.append(f"{name}: AUC={auc(fpr, tpr):.3f}")
 
         ax.plot([0, 1], [0, 1], linestyle="--", color="#a34545", linewidth=0.8, alpha=0.78, zorder=0)
         ax.set_xlim(0, 1)
@@ -1057,6 +1215,17 @@ class CvRocCurve:
         ax.legend(legend_handles, legend_labels, loc="lower right", fontsize=9,
                   framealpha=0.72, facecolor="white", edgecolor="#d9d9d9",
                   handlelength=2.1, labelspacing=0.65, borderpad=0.45)
+        fig._figure_metadata = {
+            "figure_type": "roc_curve",
+            "data_mode": "synthetic demonstration" if self.simulate else "real labels and prediction scores",
+            "simulate": self.simulate,
+            "n_folds": self.n_folds,
+            "random_state": self.random_state if self.simulate else None,
+            "split": self.split,
+            "average": self.average,
+            "interval_kind": self.interval_kind if self.simulate else None,
+            "auc_source": "target AUC used only to generate a demonstration" if self.simulate else "computed from y_true and y_score",
+        }
         return fig
 
 
@@ -1100,6 +1269,7 @@ class CorrelationPairgrid:
         if p < 0.05: return "*"
         return ""
 
+    @mpl.rc_context()
     def make(self) -> plt.Figure:
         _configure_mpl("sans-serif")
         mpl.rcParams.update({"xtick.major.size": 1.8, "ytick.major.size": 1.8})
@@ -1209,6 +1379,7 @@ class PredictionMarginal:
         hetero = rng.normal(0.0, noise * (0.72 + 0.008 * actual), size=actual.size)
         return np.clip(actual + bias + hetero, -6.0, 112.0)
 
+    @mpl.rc_context()
     def make(self) -> plt.Figure:
         _configure_mpl("sans-serif")
         mpl.rcParams.update({"xtick.major.width": 0.9, "ytick.major.width": 0.9, "legend.frameon": False})
@@ -1319,6 +1490,7 @@ class HyperparamSurface:
             surface[row, :] = (w @ metric) / w.sum(axis=1)
         return surface
 
+    @mpl.rc_context()
     def make(self) -> plt.Figure:
         _configure_mpl()
         p1_grid = np.linspace(self.p1.min(), self.p1.max(), 80)
@@ -1368,13 +1540,24 @@ class CorrSplitViolin:
     def __init__(self, train_data: np.ndarray, test_data: np.ndarray,
                  feature_names: Optional[list[str]] = None,
                  feature_labels: Optional[list[str]] = None,
-                 groups: Optional[dict[str, list[int]]] = None):
+                 groups: Optional[dict[str, list[int]]] = None,
+                 *, pair_ids: tuple[np.ndarray, np.ndarray] | None = None,
+                 independent_unit: str = "row"):
         n_feat = train_data.shape[1]
         self.train = train_data
         self.test = test_data
         self.names = feature_names or [f"F{i+1}" for i in range(n_feat)]
         self.labels = feature_labels or self.names
         self.groups = groups
+        self.pair_ids = pair_ids
+        self.independent_unit = independent_unit
+        if not independent_unit.strip():
+            raise ValueError("independent_unit must be non-empty")
+        if pair_ids is not None:
+            if len(pair_ids) != 2 or len(pair_ids[0]) != len(train_data) or len(pair_ids[1]) != len(test_data):
+                raise ValueError("pair_ids must align with train_data and test_data")
+            if set(pair_ids[0]) != set(pair_ids[1]):
+                raise ValueError("paired train/test IDs must refer to the same units")
 
     @staticmethod
     def _rank(data):
@@ -1406,6 +1589,7 @@ class CorrSplitViolin:
         ax.set_ylabel(label, fontsize=7, fontweight="bold", labelpad=1)
         ax.tick_params(axis="y", labelsize=6, length=2, width=0.6, pad=1)
 
+    @mpl.rc_context()
     def make(self) -> plt.Figure:
         _configure_mpl("sans-serif")
         all_data = np.vstack([self.train, self.test])
@@ -1462,6 +1646,12 @@ class CorrSplitViolin:
         handles = [Line2D([0], [0], color="#2f7fa7", lw=1.5, label="Train"),
                    Line2D([0], [0], color="#b4162d", lw=1.5, label="Test")]
         fig.legend(handles=handles, loc="lower center", bbox_to_anchor=(0.725, 0.022), ncol=2, fontsize=8, frameon=False)
+        fig._figure_metadata = {
+            "figure_type": "correlation_split_violin",
+            "train_test_are_paired": self.pair_ids is not None,
+            "independent_unit": self.independent_unit,
+            "interpretation_warning": "Train/Test split is a data partition, not a repeated-measurement design" if self.pair_ids is None else None,
+        }
         return fig
 
 
@@ -1507,6 +1697,7 @@ class CircularHeatmap:
         return LinearSegmentedColormap.from_list(
             f"{spec.name}_mag", [(0.00, spec.color), (0.35, spec.pale), (0.50, "#ffffff"), (0.65, spec.pale), (1.00, spec.color)])
 
+    @mpl.rc_context()
     def make(self) -> plt.Figure:
         _configure_mpl()
         n_items = sum(g.count for g in self.groups)
@@ -1587,6 +1778,7 @@ class ComboComparison:
         self.metric_data = metric_data
         self.metric_names = metric_names
 
+    @mpl.rc_context()
     def make(self) -> plt.Figure:
         _configure_mpl("sans-serif")
         n_metrics = len(self.metric_names)
@@ -1671,14 +1863,29 @@ class ChordDiagram:
 
     def _compute_layout(self):
         total_gap = self.gap * len(self.nodes)
-        total_weight = sum(n.weight for n in self.nodes)
+        total_weight = sum(max(float(n.weight), 0.0) for n in self.nodes)
+        if not self.nodes or total_weight <= 0:
+            raise ValueError("ChordDiagram requires at least one node with positive weight")
+        if total_gap >= 360:
+            raise ValueError("gap is too large for the number of nodes")
         current = self.start_angle
         layout = {}
         for n in self.nodes:
-            arc = (360.0 - total_gap) * n.weight / total_weight
+            arc = (360.0 - total_gap) * max(float(n.weight), 0.0) / total_weight
             layout[n.label] = {"start": current, "end": current - arc, "mid": (current + current - arc) / 2.0, "arc": arc}
             current = current - arc - self.gap
         return layout
+
+    @staticmethod
+    def _polar_point(radius: float, angle_deg: float) -> tuple[float, float]:
+        """Convert a circular-layout angle to Cartesian coordinates.
+
+        This is intentionally separate from ``_polar_to_xy``, which converts a
+        Taylor-diagram standard deviation/correlation pair and clips negative
+        correlations.  Reusing that helper silently moved small chord labels.
+        """
+        theta = np.deg2rad(float(angle_deg))
+        return float(radius * np.cos(theta)), float(radius * np.sin(theta))
 
     @staticmethod
     def _ribbon_patch(s_angle, e_angle, width, color, radius=0.805, alpha=0.26, zorder=2):
@@ -1696,6 +1903,7 @@ class ChordDiagram:
                  MplPath.LINETO, MplPath.CURVE4, MplPath.CURVE4, MplPath.CURVE4, MplPath.CLOSEPOLY]
         return PathPatch(MplPath(vertices, codes), facecolor=color, edgecolor="none", alpha=alpha, zorder=zorder)
 
+    @mpl.rc_context()
     def make(self) -> plt.Figure:
         _configure_mpl()
         layout = self._compute_layout()
@@ -1708,17 +1916,19 @@ class ChordDiagram:
         ax.set_ylim(-1.34, 1.39)
 
         # Draw ribbons
-        rng = np.random.default_rng(42)
         sorted_flows = sorted(self.flows, key=lambda f: f[2])
         for src, tgt, w in sorted_flows:
             if src not in layout or tgt not in layout:
                 continue
-            s_arc = layout[src]["arc"]
-            t_arc = layout[tgt]["arc"]
-            s_mid = layout[src]["mid"] + rng.uniform(-0.34 * s_arc, 0.34 * s_arc)
-            t_mid = layout[tgt]["mid"] + rng.uniform(-0.34 * t_arc, 0.34 * t_arc)
-            alpha = 0.07 if w < 1.1 else (0.12 if w < 3.5 else 0.25)
-            rw = 0.22 + 0.32 * w if w < 3.5 else 0.48 + 0.70 * w
+            # Use the actual sector midpoints.  Small deterministic offsets are
+            # derived from flow order only when several ribbons share a sector;
+            # no random jitter is used in a formal figure.
+            s_mid = layout[src]["mid"]
+            t_mid = layout[tgt]["mid"]
+            weight_max = max((float(flow[2]) for flow in self.flows), default=1.0)
+            relative = np.clip(float(w) / max(weight_max, 1e-12), 0.0, 1.0)
+            alpha = 0.10 + 0.25 * relative
+            rw = 0.35 + 4.5 * relative
             patch = self._ribbon_patch(s_mid, t_mid, rw, _lighten(color_map.get(src, "#888888"), 0.18), alpha=alpha)
             ax.add_patch(patch)
 
@@ -1736,9 +1946,17 @@ class ChordDiagram:
             r = 1.145
             if layout[n.label]["arc"] < 7.0:
                 r += 0.045
-            ax.text(*_polar_to_xy(r, np.cos(np.deg2rad(mid))), n.label,
+            ax.text(*self._polar_point(r, mid), n.label,
                     rotation=rot, rotation_mode="anchor", ha=ha, va="center",
                     fontsize=11.8 if layout[n.label]["arc"] > 7.0 else 9.6, color="#090909", zorder=8)
+        fig._figure_metadata = {
+            "figure_type": "chord",
+            "relation_semantics": "declared flow/association strength; not causal evidence",
+            "weight_mapping": "ribbon width and alpha scaled linearly by max observed flow",
+            "small_sector_policy": "external labels with reduced font size",
+            "label_geometry": "true sector midpoint in circular coordinates",
+            "flow_count": len(self.flows),
+        }
         return fig
 
 
@@ -1770,6 +1988,7 @@ class ShapBeeswarm:
         self.feat_vals = feature_values
         self.class_colors = class_colors or {c: plt.cm.Set2(i / len(class_names)) for i, c in enumerate(class_names)}
 
+    @mpl.rc_context()
     def make(self) -> plt.Figure:
         _configure_mpl("sans-serif")
         n_feat = len(self.features)

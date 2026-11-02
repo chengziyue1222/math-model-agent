@@ -2,6 +2,7 @@ from __future__ import annotations
 
 import base64
 import importlib.util
+from functools import partial
 import json
 import subprocess
 import sys
@@ -34,6 +35,8 @@ def _load(name: str, relative: str):
     module = importlib.util.module_from_spec(spec)
     assert spec.loader is not None
     spec.loader.exec_module(module)
+    if hasattr(module, "validate_submission"):
+        module.validate_submission = partial(module.validate_submission, venue="CUMCM")
     return module
 
 

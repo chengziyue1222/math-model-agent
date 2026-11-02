@@ -1,4 +1,5 @@
 import importlib.util
+import json
 from pathlib import Path
 
 import pytest
@@ -118,9 +119,12 @@ def test_competition_review_accepts_pdf_without_docx(tmp_path):
     project_state._write_state(tmp_path, state)
     roles = list(project_state.COMPETITION_GATES["review"]) + ["main_pdf", "latex_compile_report"]
     evidence = [
-        _evidence(tmp_path, role, "run-manifest.json" if role == "run_manifest" else f"evidence/{role}.json")
+        _evidence(tmp_path, role, "run-manifest.json" if role == "run_manifest" else f"evidence/{role}.json",
+                  json.dumps({"questions": [{"id": "q1", "result_artifact": "q1.json", "validation_artifact": "q1-validation.json"}]}) if role == "decision_contract" else '[]' if role == "figure_inventory" else '{"status": "PASS"}')
         for role in roles
     ]
+    _evidence(tmp_path, "result", "q1.json", '{"value": 1}')
+    _evidence(tmp_path, "validation", "q1-validation.json", '{"status": "PASS"}')
     advanced = project_state.advance(tmp_path, "review", evidence, "PDF delivery")
     assert advanced["current_stage"] == "review"
     assert "main_docx" not in advanced["evidence"]
@@ -128,12 +132,42 @@ def test_competition_review_accepts_pdf_without_docx(tmp_path):
 
 def test_audit_review_still_requires_full_audit_evidence(tmp_path):
     state = project_state.initialize(tmp_path, "case", "run-manifest.json", "audit")
-    state["current_stage"] = "writing"
+    state["current_stage"] = "review"
     project_state._write_state(tmp_path, state)
-    roles = [role for role in project_state.AUDIT_GATES["review"] if role != "review_hash_binding"]
+    roles = [role for role in project_state.AUDIT_GATES["release"] if role != "review_hash_binding"]
     evidence = [
         _evidence(tmp_path, role, "run-manifest.json" if role == "run_manifest" else f"evidence/{role}.json")
         for role in roles
     ]
     with pytest.raises(ValueError, match="review_hash_binding"):
-        project_state.advance(tmp_path, "review", evidence, "missing audit binding")
+        project_state.advance(tmp_path, "release", evidence, "missing audit binding")
+
+
+@pytest.mark.parametrize('replacement_path',[False,True])
+def test_rewind_retains_reused_upstream_provenance_only_for_identical_source(tmp_path,replacement_path):
+    project_state.initialize(tmp_path,'provenance','run-manifest.json','competition')
+    project_state.advance(tmp_path,'analysis',[
+        _evidence(tmp_path,'problem_source','problem.md'),
+        _evidence(tmp_path,'task_decomposition','tasks.md')],'')
+    contract=json.dumps({'questions':[{'id':'q1','result_artifact':'result.json','validation_artifact':'verified.json'}]})
+    decision=_evidence(tmp_path,'decision_contract','decision.json',contract)
+    project_state.advance(tmp_path,'modeling',[
+        _evidence(tmp_path,'data_audit','audit.json','{"status":"PASS"}'),
+        _evidence(tmp_path,'model_selection','selection.json','{"status":"PASS"}'),decision],'')
+    quality=_evidence(tmp_path,'quality_validation','verified.json','{"status":"PASS"}')
+    project_state.advance(tmp_path,'validation',[
+        _evidence(tmp_path,'implementation','solve.py','result = 1'),
+        _evidence(tmp_path,'machine_results','result.json','{"value":1}'),quality,
+        _evidence(tmp_path,'run_manifest','run-manifest.json','{}')],'')
+    if replacement_path:
+        decision=_evidence(tmp_path,'decision_contract','another-decision.json',contract)
+    values=[_evidence(tmp_path,role,f'{role}.json','[]' if role=='figure_registry' else '{"status":"PASS"}')
+            for role in project_state.COMPETITION_GATES['writing'] if role!='quality_validation']
+    state=project_state.advance(tmp_path,'writing',[*values,quality,decision],'reuse actual prerequisites')
+    assert state['evidence']['quality_validation']['produced_stage']=='modeling'
+    assert state['evidence']['decision_contract']['produced_stage']==('validation' if replacement_path else 'analysis')
+    state=project_state.rewind(tmp_path,'validation','redraw figures; retain verified upstream inputs')
+    assert ('decision_contract' in state['evidence']) is not replacement_path
+    assert 'quality_validation' in state['evidence']
+    assert 'validation_report' not in state['evidence']
+    assert any(row['role']=='validation_report' for row in state['stale_evidence'])

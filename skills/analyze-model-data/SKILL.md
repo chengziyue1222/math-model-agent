@@ -5,6 +5,10 @@ description: Inspect, clean, analyze, and model tabular data for mathematical mo
 
 # Analyze Model Data
 
+For publication figures, preserve complete plotting arrays, units, group order, independent statistical units, denominators and missing-state rules in the existing data handoff. Record zero-order/zero-transport semantics explicitly; do not treat an unobserved rate as an observed zero.
+
+For calendar, composition or matrix figures, read `references/figure-data-handoff.md` during preparation. Save dates, grouping/order, units, denominators and missingness with the complete plotted data; perform explicit aggregation here, with prediction or decision fitting delegated to solve-model.
+
 Produce a reproducible evidence trail from raw data to model-ready outputs.
 
 ## Workflow
@@ -13,7 +17,9 @@ Produce a reproducible evidence trail from raw data to model-ready outputs.
 2. Run `scripts/profile_csv.py` for CSV inputs, then inspect domain-specific anomalies manually.
 3. Define the analysis question and evaluation metric before choosing transformations or models. For entity-by-time planning data, call `algorithms.data_diagnostics.panel_diagnostics` (or an equivalent registered implementation) to quantify temporal dependence, cross-entity correlation, support/zero inflation, and a time-ordered holdout before choosing an uncertainty model.
 4. Split train/test data before fitting imputers, scalers, encoders, or feature selectors.
+   Keep a model-selection validation partition separate from the final test; when batches or operating conditions differ, report a held-out-condition check and a paired baseline/ablation on the same evaluation units.
 5. Compare against a simple baseline and report uncertainty, not only point metrics.
+   Define the independent sampling unit separately from rows, repeated measurements, folds, seeds and parameter-grid points. Label the type of uncertainty; do not infer significance or equivalence from interval overlap alone.
 6. Save cleaned data, analysis code, configuration, figures, and a machine-readable result summary.
 7. Document every exclusion, imputation, transformation, random seed, and the evidence for or against independent sampling. Preserve a time-aware holdout or stress slice when the task contains future planning; never replace it with a random split merely because the random split scores better.
 
@@ -33,3 +39,5 @@ Read `references/analysis-standards.md` before modeling. Use `scripts/profile_cs
 ## Executable Contract
 
 For repository-managed `competition` and `audit` work, use `scripts/execute_skill.py` with the bundled runtime. Supply the `raw_data`, `data_dictionary`, and `official_problem` inputs, and produce every contracted output role: `data_profile`, `data_quality_report`, `cleaning_actions`, `eda_findings`, `leakage_report`, `processed_data_manifest`, and `data_analysis`. The profile and EDA findings must include the applicable panel/time diagnostics, not only row counts and missingness. A missing runtime blocks only the executable-contract claim, not an otherwise valid read-only analysis; report the two statuses separately. In `audit`, do not register the artifact without a successful signed Skill run.
+
+Keep an unresolved data-quality or leakage check explicit in its output report. A successful script exit cannot turn a failed validation into passing analysis evidence; supply the next stage with the current input version and the recorded unresolved issues.

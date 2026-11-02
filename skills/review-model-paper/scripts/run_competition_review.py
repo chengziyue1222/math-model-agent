@@ -21,7 +21,9 @@ from submission_preflight import validate_submission
 def main(args: argparse.Namespace) -> None:
     reports = args.project_root / "reports"
     reports.mkdir(parents=True, exist_ok=True)
-    review = review_paper(args.project_root, args.manuscript, mode="competition_paper")
+    from algorithms.venue_config import resolve_project_venue
+    policy = resolve_project_venue(args.project_root, venue=args.venue)
+    review = review_paper(args.project_root, args.manuscript, mode="competition_paper", profile=args.profile, venue=policy["venue"])
     if review.overall_status == "PASS" and args.profile == "audit":
         run_second_pass(
             args.project_root,
@@ -29,7 +31,7 @@ def main(args: argparse.Namespace) -> None:
             args.decision_contract,
             args.quality_validation,
         )
-    for issue in semantic_issues(args.project_root, args.manuscript):
+    for issue in semantic_issues(args.project_root, args.manuscript, profile=args.profile):
         if issue["severity"] == "blocking":
             review.fail(issue["gate"], issue["code"], issue["message"], "modeling")
         else:
@@ -52,6 +54,7 @@ def main(args: argparse.Namespace) -> None:
         identity_file=args.identity_file,
         identity_terms=args.identity_term,
         profile=args.profile,
+        venue=policy["venue"],
     )
     preflight_path = reports / "submission_preflight.json"
     preflight_path.write_text(
@@ -70,6 +73,7 @@ def main(args: argparse.Namespace) -> None:
         args.project_root,
         manuscript=args.manuscript,
         profile=args.profile,
+        venue=policy["venue"],
         pdf=args.pdf,
         docx=args.docx,
         official_problem=args.official_problem,
@@ -98,6 +102,7 @@ if __name__ == "__main__":
     parser = argparse.ArgumentParser(description=__doc__)
     parser.add_argument("--project-root", type=Path, required=True)
     parser.add_argument("--profile", choices=("competition", "audit"), default="competition")
+    parser.add_argument("--venue")
     parser.add_argument("--manuscript", type=Path, required=True)
     parser.add_argument("--pdf", type=Path)
     parser.add_argument("--docx", type=Path)
@@ -114,8 +119,8 @@ if __name__ == "__main__":
     parser.add_argument("--latex-compile-report", type=Path)
     parser.add_argument("--docx-render-report", type=Path)
     parser.add_argument("--visual-layout-audit", type=Path, required=True)
-    parser.add_argument("--support-archive", type=Path, required=True)
-    parser.add_argument("--support-manifest", type=Path, required=True)
+    parser.add_argument("--support-archive", type=Path)
+    parser.add_argument("--support-manifest", type=Path)
     parser.add_argument("--identity-file", type=Path)
     parser.add_argument("--identity-term", action="append", default=[])
     main(parser.parse_args())

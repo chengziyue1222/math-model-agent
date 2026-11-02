@@ -30,6 +30,12 @@ except ImportError:  # direct execution from the repository checkout
     )
 
 
+def _semantic_errors(root: Path, skill: str, records: list[dict], *, phase: str) -> list[str]:
+    """Apply only the obligations available at this Skill's current boundary."""
+    from algorithms.evidence_gates import validate_skill_boundary
+    return validate_skill_boundary(root, skill, records, phase=phase)
+
+
 def main(argv: list[str] | None = None, *, default_skill: str | None = None) -> int:
     parser = argparse.ArgumentParser(description=__doc__)
     parser.add_argument("--project-root", type=Path, required=True)
@@ -37,6 +43,7 @@ def main(argv: list[str] | None = None, *, default_skill: str | None = None) -> 
     parser.add_argument("--skill", choices=STANDARD_SKILLS, default=default_skill)
     parser.add_argument("--skill-path", required=True)
     parser.add_argument("--profile", choices=("rapid", "competition", "audit"), default="competition")
+    parser.add_argument("--venue", default=None)
     parser.add_argument("--input", action="append", default=[], metavar="ROLE=PATH")
     parser.add_argument("--output", action="append", default=[], metavar="ROLE=PATH")
     parser.add_argument("command", nargs=argparse.REMAINDER, help="command to execute; prefix with --")
@@ -61,6 +68,7 @@ def main(argv: list[str] | None = None, *, default_skill: str | None = None) -> 
         inputs=args.input,
         command_or_invocation=" ".join(command),
         profile=args.profile,
+        venue=args.venue,
     )
     if not command:
         terminal = fail_skill_run(args.project_root, start["run_id"], "no execution command supplied", exit_code=2)
@@ -71,6 +79,7 @@ def main(argv: list[str] | None = None, *, default_skill: str | None = None) -> 
         start["inputs"],
         [{"role": role} for role, _ in outputs],
         profile=args.profile,
+        venue=start["venue"],
     )
     if contract_errors:
         terminal = finish_skill_run(
@@ -82,7 +91,21 @@ def main(argv: list[str] | None = None, *, default_skill: str | None = None) -> 
         )
         print(json.dumps(terminal, ensure_ascii=False, indent=2), file=sys.stderr)
         return 1
-    completed = subprocess.run(command, cwd=args.project_root, text=True, capture_output=True, check=False)
+    if args.profile != "rapid":
+        semantic_errors = _semantic_errors(args.project_root, args.skill, start["inputs"], phase="inputs")
+        if semantic_errors:
+            terminal = finish_skill_run(
+                args.project_root, start["run_id"], status="BLOCKED",
+                warnings=["input semantic validation failed", *semantic_errors], exit_code=1,
+            )
+            print(json.dumps(terminal, ensure_ascii=False, indent=2), file=sys.stderr)
+            return 1
+    try:
+        completed = subprocess.run(command, cwd=args.project_root, text=True, capture_output=True, check=False)
+    except OSError as exc:
+        terminal = fail_skill_run(args.project_root, start["run_id"], f"command could not start: {exc}")
+        print(json.dumps(terminal, ensure_ascii=False, indent=2), file=sys.stderr)
+        return 1
     if completed.stdout:
         print(completed.stdout, end="")
     if completed.stderr:
@@ -92,6 +115,16 @@ def main(argv: list[str] | None = None, *, default_skill: str | None = None) -> 
         print(json.dumps(terminal, ensure_ascii=False, indent=2), file=sys.stderr)
         return completed.returncode
     try:
+        if args.profile != "rapid":
+            records = [*start["inputs"], *({"role": role, "path": path} for role, path in outputs)]
+            semantic_errors = _semantic_errors(args.project_root, args.skill, records, phase="outputs")
+            if semantic_errors:
+                terminal = finish_skill_run(
+                    args.project_root, start["run_id"], outputs=outputs, status="FAIL",
+                    warnings=["command succeeded; output semantic validation failed", *semantic_errors], exit_code=1,
+                )
+                print(json.dumps(terminal, ensure_ascii=False, indent=2), file=sys.stderr)
+                return 1
         terminal = finish_skill_run(args.project_root, start["run_id"], outputs=outputs)
     except (OSError, ValueError) as exc:
         terminal = fail_skill_run(args.project_root, start["run_id"], str(exc), exit_code=1)

@@ -26,7 +26,9 @@ def test_runtime_records_start_finish_and_producer_hashes(tmp_path):
     start = start_skill_run(tmp_path, "case", "solve-model", inputs=[("selected_model_plan", "input.json")], profile="audit")
     finish_skill_run(tmp_path, start["run_id"], outputs=[("result_object", "results/result_object.json")])
 
-    assert validate_skill_run(tmp_path, project_id="case", required_skills=["solve-model"]) == []
+    # This checks the trace/producers; a verified Skill request additionally
+    # needs its complete role contract and domain evidence.
+    assert validate_skill_run(tmp_path, project_id="case") == []
     registry = json.loads((tmp_path / "manifests" / "artifact-producers.json").read_text(encoding="utf-8"))
     assert registry[0]["producer_name"] == "solve-model"
     assert validate_producers(tmp_path) == []
@@ -148,7 +150,7 @@ def test_runtime_accepts_superseded_signed_run_but_checks_current_run(tmp_path):
     _write(tmp_path, "results/result_object.json", '{"value": 2}')
     second = start_skill_run(tmp_path, "case", "solve-model", inputs=[("selected_model_plan", "input.json")], profile="audit")
     finish_skill_run(tmp_path, second["run_id"], outputs=[("result_object", "results/result_object.json")])
-    assert validate_skill_run(tmp_path, project_id="case", required_skills=["solve-model"]) == []
+    assert validate_skill_run(tmp_path, project_id="case") == []
 
 
 def test_runtime_requires_each_standard_skill(tmp_path):
@@ -177,7 +179,7 @@ def test_quality_evidence_roles_are_required_across_the_competition_pipeline():
     assert {"retrieval_log", "metadata_verification", "relevance_evidence"} <= set(
         contract_for("research-model-literature")["outputs"]
     )
-    assert {"cumcm_layout_validation", "render_request"} <= set(
+    assert {"layout_validation", "render_request"} <= set(
         contract_for("write-model-paper")["outputs"]
     )
     competition_review = contract_for("review-model-paper", profile="competition")

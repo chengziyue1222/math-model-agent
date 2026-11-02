@@ -11,7 +11,7 @@ from pathlib import Path, PurePath, PureWindowsPath
 from typing import Any
 
 
-SCHEMA_VERSION = "1.1"
+SCHEMA_VERSION = "1.2"
 STAGES = ("intake", "analysis", "modeling", "validation", "writing", "review", "release")
 COMPETITION_GATES = {
     "intake": (),
@@ -30,17 +30,13 @@ COMPETITION_GATES = {
         "decision_contract",
         "quality_validation",
         "figure_inventory",
-        "cumcm_layout_validation",
+        "layout_validation",
         "visual_layout_audit",
-        "paper_review_report",
-        "submission_readiness",
-        "submission_preflight",
         "support_archive",
         "support_manifest",
-        "reproduction_report",
         "run_manifest",
     ),
-    "release": ("review_report", "submission_checklist", "run_manifest"),
+    "release": ("paper_review_report", "submission_readiness", "submission_preflight", "reproduction_report", "submission_checklist", "run_manifest"),
 }
 AUDIT_GATES = {
     **COMPETITION_GATES,
@@ -51,11 +47,10 @@ AUDIT_GATES = {
         "main_docx",
         "latex_compile_report",
         "docx_render_report",
-        "independent_content_review",
-        "review_hash_binding",
         "producer_registry",
         "signed_skill_trace",
     ),
+    "release": COMPETITION_GATES["release"] + ("independent_content_review", "review_hash_binding"),
 }
 RAPID_GATES = {
     "intake": (),
@@ -105,7 +100,7 @@ def _read_state(root: Path) -> dict[str, Any]:
     if not path.is_file():
         raise FileNotFoundError(f"project state not found: {path}")
     state = json.loads(path.read_text(encoding="utf-8"))
-    if not isinstance(state, dict) or state.get("schema_version") not in {"1.0", SCHEMA_VERSION}:
+    if not isinstance(state, dict) or state.get("schema_version") not in {"1.0", "1.1", SCHEMA_VERSION}:
         raise ValueError("unsupported or malformed project state")
     if state.get("schema_version") == "1.0":
         state["profile"] = "audit"
@@ -121,7 +116,8 @@ def _write_state(root: Path, state: dict[str, Any]) -> None:
     temporary.replace(path)
 
 
-def initialize(root: Path, project_id: str, manifest: str, profile: str = "competition") -> dict[str, Any]:
+def initialize(root: Path, project_id: str, manifest: str, profile: str = "competition",
+               venue: str = "generic-research-report") -> dict[str, Any]:
     root = root.resolve()
     if not root.is_dir():
         raise ValueError(f"project root is not a directory: {root}")
@@ -135,14 +131,21 @@ def initialize(root: Path, project_id: str, manifest: str, profile: str = "compe
     if path.exists():
         raise FileExistsError(f"project state already exists: {path}")
     now = _now()
+    _algorithms()
+    from algorithms.venue_config import load_venue_config
+    resolved_venue = load_venue_config(venue=venue)
     state = {
         "schema_version": SCHEMA_VERSION,
         "project_id": project_id,
         "profile": profile,
+        "venue": resolved_venue["venue"],
+        "venue_config": resolved_venue,
         "current_stage": "intake",
         "completed_stages": [],
         "run_manifest": manifest,
         "evidence": {},
+        "stale_evidence": [],
+        "failed_gates": [],
         "active_blocker": None,
         "blocker_history": [],
         "transitions": [],
@@ -197,9 +200,64 @@ def verify_evidence(root: Path, state: dict[str, Any]) -> list[str]:
     return errors
 
 
+def _algorithms():
+    code = Path(__file__).resolve().parents[3] / "code"
+    if code.is_dir() and str(code) not in sys.path:
+        sys.path.insert(0, str(code))
+
+
+def gate_requirements(state, target):
+    requirements = PROFILE_GATES[str(state.get("profile", "audit"))][target]
+    if state.get("venue_config", {}).get("support_package") is not True:
+        requirements = tuple(r for r in requirements if r not in {"support_archive", "support_manifest", "reproduction_report"})
+    return requirements
+
+
+def select_venue(root: Path, venue: str) -> dict[str, Any]:
+    _algorithms()
+    from algorithms.venue_config import load_venue_config
+    state = _read_state(root)
+    resolved = load_venue_config(venue=venue)
+    if state.get("venue") and state["venue"] != venue and state["current_stage"] != "intake":
+        raise ValueError("rewind to intake before changing venue")
+    state.update(schema_version=SCHEMA_VERSION, venue=venue, venue_config=resolved)
+    _write_state(root, state)
+    return state
+
+
+def rewind(root: Path, target: str, reason: str) -> dict[str, Any]:
+    root = root.resolve()
+    state = _read_state(root)
+    if target not in STAGES or STAGES.index(target) > STAGES.index(state["current_stage"]):
+        raise ValueError("rewind target must be current or earlier stage")
+    if not reason.strip():
+        raise ValueError("rewind reason must be nonempty")
+    previous = state["current_stage"]
+    # Intake edits can change all inputs. Other stages retain their prerequisite inputs.
+    # Old states did not record production stages. Infer the latest registration
+    # from transition history; unknown origins must be rechecked after a rewind.
+    inferred = {}
+    for transition in state.get("transitions", []):
+        for role in transition.get("evidence_roles", []):
+            inferred[role] = transition["from"]
+    stale = {role: record for role, record in state["evidence"].items()
+             if STAGES.index(record.get("produced_stage", inferred.get(role, target))) >= STAGES.index(target)}
+    state.setdefault("stale_evidence", []).extend(
+        {"role": role, **record, "stale_at": _now(), "reason": reason} for role, record in stale.items())
+    for role in stale:
+        del state["evidence"][role]
+    state["completed_stages"] = [s for s in state["completed_stages"] if STAGES.index(s) < STAGES.index(target)]
+    state["current_stage"] = target
+    state["transitions"].append({"from": previous, "to": target, "at": _now(), "action": "rewind", "note": reason, "stale_roles": sorted(stale)})
+    _write_state(root, state)
+    return state
+
+
 def advance(root: Path, target: str, evidence_values: list[str], note: str) -> dict[str, Any]:
     root = root.resolve()
     state = _read_state(root)
+    if not state.get("venue"):
+        raise ValueError("legacy project requires explicit venue selection using set-venue")
     if state.get("active_blocker") is not None:
         raise ValueError("cannot advance while an active blocker exists")
     stale_errors = verify_evidence(root, state)
@@ -211,8 +269,10 @@ def advance(root: Path, target: str, evidence_values: list[str], note: str) -> d
     if STAGES.index(target) != STAGES.index(current) + 1:
         raise ValueError(f"must advance exactly one stage from {current}")
     profile = str(state.get("profile", "audit"))
-    requirements = PROFILE_GATES[profile][target]
-    evidence = _parse_evidence(root, evidence_values, hash_evidence=profile == "audit")
+    requirements = gate_requirements(state, target)
+    evidence = _parse_evidence(root, evidence_values, hash_evidence=profile != "rapid")
+    if state["venue"] == "CUMCM" and "cumcm_layout_validation" in evidence:
+        evidence["layout_validation"] = evidence.pop("cumcm_layout_validation")
     expected_manifest = state["run_manifest"].replace("\\", "/")
     if "run_manifest" in requirements:
         supplied = evidence.get("run_manifest")
@@ -229,6 +289,27 @@ def advance(root: Path, target: str, evidence_values: list[str], note: str) -> d
             raise ValueError("PDF delivery requires latex_compile_report")
         if "main_docx" in delivered and "docx_render_report" not in evidence:
             raise ValueError("DOCX delivery requires docx_render_report")
+    if profile != "rapid":
+        _algorithms()
+        from algorithms.evidence_gates import validate_gate_payloads
+        errors = validate_gate_payloads(root, {**state["evidence"], **evidence},
+                                       require_results=target in {"writing", "review", "release"},
+                                       require_figures=target in {"review", "release"})
+        if errors:
+            state.setdefault("failed_gates", []).append({"to": target, "at": _now(), "errors": errors, "evidence": evidence})
+            _write_state(root, state)
+            raise ValueError("semantic gate failed: " + "; ".join(errors))
+    for role, record in evidence.items():
+        previous = state["evidence"].get(role, {})
+        origin = previous.get("produced_stage")
+        same_source = (previous.get("sha256") is not None
+                       and previous.get("sha256") == record.get("sha256")
+                       and previous.get("path") == record.get("path"))
+        # Reusing an unchanged prerequisite does not produce it again. Keep
+        # its verified origin so rewinding a consumer retains its inputs.
+        # An unknown origin, unhashed rapid evidence or another source path
+        # receives the current stage and must be rechecked after a rewind.
+        record["produced_stage"] = origin if same_source and origin in STAGES and STAGES.index(origin) <= STAGES.index(current) else current
     state["evidence"].update(evidence)
     state["completed_stages"].append(current)
     state["current_stage"] = target
@@ -279,6 +360,7 @@ def handoff(state: dict[str, Any]) -> dict[str, Any]:
     return {
         "project_id": state["project_id"],
         "profile": state.get("profile", "audit"),
+        "venue": state.get("venue"),
         "current_stage": stage,
         "status": status,
         "completed_stages": state["completed_stages"],
@@ -287,7 +369,7 @@ def handoff(state: dict[str, Any]) -> dict[str, Any]:
             {"role": role, **record} for role, record in sorted(state["evidence"].items())
         ],
         "blocker": state.get("active_blocker"),
-        "next_gate_requires": list(PROFILE_GATES[str(state.get("profile", "audit"))][next_stage]) if stage != "release" else [],
+        "next_gate_requires": list(gate_requirements(state, next_stage)) if stage != "release" else [],
     }
 
 
@@ -304,6 +386,14 @@ def main() -> int:
     init.add_argument("--project-id", required=True)
     init.add_argument("--manifest", default="run-manifest.json")
     init.add_argument("--profile", choices=tuple(PROFILE_GATES), default="competition")
+    init.add_argument("--venue", default="generic-research-report")
+    venue_parser = subparsers.add_parser("set-venue")
+    venue_parser.add_argument("--project-root", type=Path, default=Path.cwd())
+    venue_parser.add_argument("--venue", required=True)
+    rewind_parser = subparsers.add_parser("rewind")
+    rewind_parser.add_argument("--project-root", type=Path, default=Path.cwd())
+    rewind_parser.add_argument("--to", choices=STAGES, required=True)
+    rewind_parser.add_argument("--reason", required=True)
     advance_parser = subparsers.add_parser("advance")
     advance_parser.add_argument("--project-root", type=Path, default=Path.cwd())
     advance_parser.add_argument("--to", required=True, choices=STAGES)
@@ -316,7 +406,11 @@ def main() -> int:
     args = parser.parse_args()
     try:
         if args.action == "init":
-            result = initialize(args.project_root, args.project_id, args.manifest, args.profile)
+            result = initialize(args.project_root, args.project_id, args.manifest, args.profile, args.venue)
+        elif args.action == "set-venue":
+            result = select_venue(args.project_root, args.venue)
+        elif args.action == "rewind":
+            result = rewind(args.project_root, args.to, args.reason)
         elif args.action == "advance":
             result = advance(args.project_root, args.to, args.evidence, args.note)
         elif args.action == "block":
@@ -326,6 +420,9 @@ def main() -> int:
         else:
             state = _read_state(args.project_root.resolve())
             if args.action == "handoff":
+                errors = verify_evidence(args.project_root.resolve(), state)
+                if errors:
+                    raise ValueError("handoff evidence is stale: " + "; ".join(errors))
                 result = handoff(state)
             elif args.action == "verify":
                 errors = verify_evidence(args.project_root.resolve(), state)

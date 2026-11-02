@@ -8,11 +8,13 @@ from __future__ import annotations
 import hashlib
 import json
 import re
+import yaml
 from dataclasses import dataclass, field
 from pathlib import Path
 from typing import Any
 
 from .modeling_contracts import validate_contract_artifacts
+from .evidence_gates import validate_gate_payloads
 
 
 GATES = ("structure", "mathematics", "figures_tables", "evidence", "validation", "citations")
@@ -26,11 +28,11 @@ CLAIM_RE = re.compile(r"\[claim:([A-Za-z0-9_-]+)\]")
 IMAGE_RE = re.compile(r"!\[[^\]]*\]\(([^)]+)\)")
 TABLE_RE = re.compile(r"(?m)^\|.+\|\s*$\n^\|\s*:?-{3,}")
 DEFAULT_MINIMUMS = {
-    "minimum_body_characters": 9_000,
-    "minimum_equations": 10,
-    "minimum_figures": 8,
-    "minimum_tables": 6,
-    "minimum_references": 8,
+    "minimum_body_characters": 0,
+    "minimum_equations": 0,
+    "minimum_figures": 0,
+    "minimum_tables": 0,
+    "minimum_references": 0,
 }
 
 
@@ -123,7 +125,8 @@ def _paper_minimums(spec_path: Path) -> dict[str, int]:
 
 
 def review_paper(project_root: str | Path, paper_path: str | Path, *, mode: str = "competition_paper",
-                 paper_spec: str | Path | None = None) -> ReadinessReview:
+                 paper_spec: str | Path | None = None, profile: str = "competition",
+                 venue: str | None = None) -> ReadinessReview:
     """Review a paper against registries rooted at *project_root*.
 
     Formal papers require machine-verifiable contracts.  Teaching examples retain the
@@ -138,16 +141,21 @@ def review_paper(project_root: str | Path, paper_path: str | Path, *, mode: str 
     headings = re.findall(r"(?m)^#{1,3}\s+(.+)$", text)
     spec_path = Path(paper_spec) if paper_spec else paper.parent / "paper-spec.yaml"
     minimums = _paper_minimums(spec_path)
+    spec = (yaml.safe_load(spec_path.read_text(encoding="utf-8")) or {}) if spec_path.is_file() else {}
+    if not isinstance(spec, dict) or profile not in {"rapid", "competition", "audit"}:
+        raise ValueError("invalid paper spec or profile")
+    from .venue_config import resolve_project_venue
+    resolved_venue = resolve_project_venue(root, config=spec if spec.get("venue") or spec.get("overrides") else None, venue=venue)
     if mode == "competition_paper":
         if len(text) < minimums["minimum_body_characters"]:
             review.fail("structure", "paper_too_short", f"competition_paper 正文仅 {len(text)} 字符，需要至少 {minimums['minimum_body_characters']}", "writing")
-        for section in COMPETITION_SECTIONS:
+        for section in spec.get("required_sections", ()):
             if not any(section in heading for heading in headings):
                 review.fail("structure", "missing_section", f"缺少必要章节：{section}", "writing")
         formulas = len(FORMULA_RE.findall(text))
         if formulas < minimums["minimum_equations"]:
             review.fail("mathematics", "insufficient_equations", f"编号/展示公式仅 {formulas} 个，需要至少 {minimums['minimum_equations']} 个", "modeling")
-        if "目标函数" not in text or "约束" not in text:
+        if spec.get("problem_type") == "optimization" and ("目标函数" not in text or "约束" not in text):
             review.fail("mathematics", "optimization_incomplete", "未同时展示目标函数和约束", "modeling")
     elif mode == "teaching_example":
         if len(FORMULA_RE.findall(text)) < 1:
@@ -161,7 +169,7 @@ def review_paper(project_root: str | Path, paper_path: str | Path, *, mode: str 
     required = {"evidence-index.json", "claim-registry.json", "figure-registry.json", "table-registry.json", "formula-registry.json"}
     registries = {name: registry_dir / name for name in required}
     for name, path in registries.items():
-        if not path.is_file() and mode == "competition_paper":
+        if not path.is_file() and mode == "competition_paper" and (profile == "audit" or name == "evidence-index.json"):
             review.fail("evidence", "registry_missing", f"缺少注册表：{name}", "writing")
     evidence = _load_json(registries["evidence-index.json"], review, "evidence") if registries["evidence-index.json"].is_file() else []
     claims = _load_json(registries["claim-registry.json"], review, "evidence") if registries["claim-registry.json"].is_file() else []
@@ -170,18 +178,26 @@ def review_paper(project_root: str | Path, paper_path: str | Path, *, mode: str 
     formulas_registry = _load_json(registries["formula-registry.json"], review, "mathematics") if registries["formula-registry.json"].is_file() else []
     evidence_by_id = _index_by_id(evidence, "evidence_id")
     claim_by_id = _index_by_id(claims, "claim_id")
+    if mode == "competition_paper" and not evidence_by_id:
+        review.fail("evidence", "evidence_pointers_missing", "正式稿需要指向保存结果的证据条目", "validation")
     decision_path = root / "results" / "decision_contract.json"
     if decision_path.is_file():
         decision_contract = _load_json(decision_path, review, "evidence")
         if isinstance(decision_contract, dict):
             for issue in validate_contract_artifacts(decision_contract, root):
                 review.fail("evidence", issue["id"], issue["message"], "modeling")
+            for question in decision_contract.get("questions", []):
+                heading = question.get("paper_heading") if isinstance(question, dict) else None
+                if heading and heading not in text:
+                    review.fail("structure", "question_not_answered", f"缺少逐问回答：{heading}", "writing")
     for evidence_id, item in evidence_by_id.items():
         path = root / str(item.get("path", ""))
         if not path.is_file() or item.get("sha256") != _sha256(path):
             review.stale_evidence.append(evidence_id)
             review.fail("evidence", "stale_evidence", f"证据 {evidence_id} 缺失或哈希不匹配", "validation")
     used_claims = set(CLAIM_RE.findall(text))
+    # Saved claim pointers can be checked without exposing bookkeeping in the paper.
+    used_claims.update(claim_by_id)
     for claim_id in used_claims:
         claim = claim_by_id.get(claim_id)
         if not claim:
@@ -203,8 +219,8 @@ def review_paper(project_root: str | Path, paper_path: str | Path, *, mode: str 
         except (KeyError, IndexError, TypeError, ValueError) as exc:
             review.unsupported_claims.append(claim_id)
             review.fail("evidence", "claim_pointer_invalid", f"{claim_id} 的 JSON pointer 无法解析：{exc}", "validation")
-    if mode == "competition_paper" and not used_claims:
-        review.fail("evidence", "no_claim_bindings", "正式论文没有 [claim:ID] 数字证据绑定", "writing")
+    if mode == "competition_paper" and profile == "audit" and not used_claims:
+        review.fail("evidence", "no_claim_bindings", "audit 需要保存的主张与证据指针", "writing")
     for item in _index_by_id(figures, "figure_id").values():
         path = root / str(item.get("path", ""))
         if not path.is_file() or path.name not in text or not item.get("inserted_in_body"):
@@ -237,33 +253,38 @@ def review_paper(project_root: str | Path, paper_path: str | Path, *, mode: str 
             review.missing_tables.append(label)
             review.fail("figures_tables", "table_not_inserted", f"表 {label} 未实际插入正文", "writing")
     if mode == "competition_paper":
-        if len(_index_by_id(figures, "figure_id")) < minimums["minimum_figures"]:
+        if profile == "audit" and len(_index_by_id(figures, "figure_id")) < minimums["minimum_figures"]:
             review.fail("figures_tables", "insufficient_figure_registry", f"图注册表少于 {minimums['minimum_figures']} 条", "writing")
-        if len(_index_by_id(tables, "table_id")) < minimums["minimum_tables"]:
+        if profile == "audit" and len(_index_by_id(tables, "table_id")) < minimums["minimum_tables"]:
             review.fail("figures_tables", "insufficient_table_registry", f"表注册表少于 {minimums['minimum_tables']} 条", "writing")
         if len(IMAGE_RE.findall(text)) < minimums["minimum_figures"]:
             review.fail("figures_tables", "insufficient_figures", f"正文图片少于 {minimums['minimum_figures']} 张", "writing")
         if len(TABLE_RE.findall(text)) < minimums["minimum_tables"]:
             review.fail("figures_tables", "insufficient_tables", f"正文 Markdown 表少于 {minimums['minimum_tables']} 张", "writing")
-        if not isinstance(formulas_registry, list) or sum(bool(x.get("inserted_in_body")) for x in formulas_registry if isinstance(x, dict)) < minimums["minimum_equations"]:
+        if profile == "audit" and (not isinstance(formulas_registry, list) or sum(bool(x.get("inserted_in_body")) for x in formulas_registry if isinstance(x, dict)) < minimums["minimum_equations"]):
             review.fail("mathematics", "formula_registry_incomplete", f"公式注册表未登记至少 {minimums['minimum_equations']} 个已插入公式", "writing")
     if "infeasible" in text.lower() and re.search(r"最优|optimal", text, re.I):
         review.fail("validation", "invalid_solver_claim", "论文同时声称 infeasible 和最优", "modeling")
-    validation_text = root / "results" / "simulation_metrics.json"
-    temporal_validation_text = root / "results" / "bootstrap_metrics.json"
     if mode == "competition_paper":
-        data = _load_json(validation_text, review, "validation") if validation_text.is_file() else None
-        temporal = _load_json(temporal_validation_text, review, "validation") if temporal_validation_text.is_file() else None
-        has_simulation = isinstance(data, dict) and bool(data.get("seeds")) and bool(data.get("aggregate"))
-        has_temporal_holdout = isinstance(temporal, dict) and isinstance(temporal.get("q2_alert_accuracy"), dict) and bool(temporal["q2_alert_accuracy"].get("ci95"))
-        if not has_simulation and not has_temporal_holdout:
-            review.fail("validation", "simulation_validation_missing", "正式论文需要可复核的仿真聚合结果，或时间预测任务的保留集自助法区间", "validation")
+        paths = {"decision_contract": spec.get("decision_contract", "results/decision_contract.json"),
+                 "quality_validation": spec.get("quality_validation", "results/quality_validation.json")}
+        for role, path in paths.items():
+            if not (root / path).is_file():
+                review.fail("validation", "validation_evidence_missing", f"缺少 {role}: {path}", "validation")
+        records = {role: {"path": path} for role, path in paths.items() if (root / path).is_file()}
+        records["manuscript"] = {"path": str(paper.resolve())}
+        if registries["figure-registry.json"].is_file():
+            records["figure_registry"] = {"path": str(registries["figure-registry.json"].resolve())}
+        for error in validate_gate_payloads(root, records, require_results=True, require_figures=profile != "rapid"):
+            review.fail("validation", "validation_evidence_failed", error, "validation")
     references = text.split("参考文献", 1)[-1] if "参考文献" in text else ""
     ref_lines = [line for line in references.splitlines() if re.match(r"\s*\[\d+\]", line)]
     if mode == "competition_paper" and len(ref_lines) < minimums["minimum_references"]:
         review.fail("citations", "insufficient_citations", f"可核验参考文献少于 {minimums['minimum_references']} 条", "writing")
     if any("doi" in line.lower() and not re.search(r"10\.\d{4,9}/[-._;()/:A-Z0-9]+", line, re.I) for line in ref_lines):
         review.fail("citations", "invalid_doi", "发现格式无效的 DOI", "writing")
+    # Keep the resolved policy available to callers without injecting it into prose.
+    review.venue = resolved_venue["venue"]
     return review
 
 

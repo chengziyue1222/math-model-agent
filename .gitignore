@@ -10,6 +10,7 @@ build/
 
 # Virtual environments
 .venv/
+.runtime-figures*/
 venv/
 env/
 
@@ -73,3 +74,4 @@ build/
 
 # Local CUMCM identity dictionary; contains private team information.
 .cumcm-identities.json
+.pytest-case-tmp/

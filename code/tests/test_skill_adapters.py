@@ -180,12 +180,19 @@ def _review_paths(tmp_path: Path, *, audit: bool = False) -> dict[str, Path]:
         paths[name] = path
         if name == "paper_review_report":
             payload = {"overall_status": "PASS"}
+        elif name == "decision_contract":
+            payload = {"questions": [{"id": "q1", "result_artifact": "results/result_object.json", "validation_artifact": "results/quality_validation.json"}]}
+        elif name == "figure_registry":
+            payload = []
         elif path.suffix == ".json":
             payload = {"status": "PASS"}
         else:
             path.write_bytes(b"rendered")
             continue
         path.write_text(json.dumps(payload), encoding="utf-8")
+    if not audit:
+        path = tmp_path / "paper/figure-registry.json"
+        path.write_text("[]", encoding="utf-8")
     return paths
 
 

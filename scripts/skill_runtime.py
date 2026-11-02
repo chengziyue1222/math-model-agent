@@ -27,7 +27,10 @@ if __package__ in (None, ""):
 try:
     from .skill_contracts import CONTRACT_VERSION
 except ImportError:  # direct execution from the repository checkout
-    from scripts.skill_contracts import CONTRACT_VERSION
+    try:  # also support direct execution of an installed private runtime
+        from skill_contracts import CONTRACT_VERSION
+    except ModuleNotFoundError:
+        from scripts.skill_contracts import CONTRACT_VERSION
 
 
 RUNTIME_VERSION = "1.3"
@@ -235,6 +238,7 @@ def start_skill_run(
     inputs: list[str | tuple[str, str]] | None = None,
     command_or_invocation: str = "",
     profile: str = "competition",
+    venue: str | None = None,
 ) -> dict[str, Any]:
     """Append the required start event and return its stable run identifier."""
     root = Path(project_root).resolve()
@@ -245,7 +249,9 @@ def start_skill_run(
     if profile not in {"rapid", "competition", "audit"}:
         raise ValueError(f"unknown workflow profile: {profile}")
     audit = profile == "audit"
-    input_records = _input_records(root, inputs or [], hash_files=audit)
+    input_records = _input_records(root, inputs or [], hash_files=profile != "rapid")
+    from algorithms.venue_config import resolve_project_venue
+    resolved_venue = resolve_project_venue(root, venue=venue)
     implementation_hashes = _implementation_hashes(skill_path) if audit else {}
     run_id = uuid.uuid4().hex
     snapshot_file = _write_snapshot(root, run_id, _project_snapshot(root)) if audit else None
@@ -254,6 +260,7 @@ def start_skill_run(
         "runtime_version": RUNTIME_VERSION,
         "contract_version": CONTRACT_VERSION,
         "profile": profile,
+        "venue": resolved_venue["venue"],
         "run_id": run_id,
         "project_id": project_id,
         "skill": skill,
@@ -315,7 +322,7 @@ def finish_skill_run(
         record = _relative_record(
             root,
             relative,
-            hash_file=start.get("profile", "audit") == "audit",
+            hash_file=start.get("profile", "audit") != "rapid",
         )
         record["role"] = role
         output_records.append(record)
@@ -335,6 +342,7 @@ def finish_skill_run(
         "runtime_version": RUNTIME_VERSION,
         "contract_version": start.get("contract_version", CONTRACT_VERSION),
         "profile": start.get("profile", "audit"),
+        "venue": start.get("venue", "generic-research-report"),
         "run_id": run_id,
         "project_id": start["project_id"],
         "skill": start["skill"],
@@ -467,18 +475,30 @@ def validate_skill_run(
             finished[run_id] = event
         else:
             errors.append(f"unknown trace event at {index}")
-    # A project legitimately reruns downstream Skills after correcting an input.
-    # Historical events remain signed audit evidence, but only the newest
-    # successful run of each Skill is the current artifact assertion.  Requiring
-    # every historical hash to equal today's files would make any honest rerun
-    # permanently fail validation and encourage trace deletion.
-    latest_successful: dict[str, str] = {}
+    # Current means the latest appended start for this project, Skill and profile,
+    # including an attempt that is still running or did not succeed. An older
+    # PASS must not hide a failed retry. Historical signatures/snapshots remain
+    # checkable without requiring historical output hashes to match new outputs.
+    current_runs: dict[tuple[str, str, str], str] = {}
     for run_id, start in starts.items():
-        final = finished.get(run_id)
-        if final and final.get("skill") == start.get("skill") and final.get("status") == "PASS":
-            latest_successful[str(start.get("skill"))] = run_id
+        group = (str(start.get("project_id")), str(start.get("skill")), str(start.get("profile", "audit")))
+        current_runs[group] = run_id
 
-    passed = set(latest_successful)
+    # A stage request checks its required producers. Later stages may be
+    # deliberately stale during a rewind; the release request must name all
+    # required Skills. Trace authentication and historical structure still
+    # cover the entire log below. An unscoped request keeps checking every run.
+    requested = set(required_skills or [])
+    current_ids = {
+        run_id for group, run_id in current_runs.items()
+        if not requested or group[1] in requested
+    }
+    passed = {
+        str(starts[run_id].get("skill"))
+        for run_id in current_ids
+        if finished.get(run_id, {}).get("status") == "PASS"
+        and finished[run_id].get("skill") == starts[run_id].get("skill")
+    }
     for run_id, start in starts.items():
         audit = start.get("profile", "audit") == "audit"
         if verify_files and audit:
@@ -490,12 +510,36 @@ def validate_skill_run(
                 errors.append(f"filesystem_snapshot_hash_mismatch: {run_id}")
         final = finished.get(run_id)
         if final is None:
-            errors.append(f"unfinished skill run: {run_id}")
+            if run_id in current_ids:
+                errors.append(f"unfinished skill run: {run_id}")
             continue
         if final.get("skill") != start.get("skill") or final.get("status") not in TERMINAL_STATUSES:
             errors.append(f"invalid terminal record: {run_id}")
             continue
-        if verify_files and audit and latest_successful.get(str(start.get("skill"))) == run_id:
+        if run_id in current_ids and final.get("status") != "PASS":
+            errors.append(f"current_skill_run_not_passed: {start.get('skill')} ({run_id}): {final.get('status')}")
+        if (run_id in current_ids and final.get("status") == "PASS"
+                and start.get("skill") in (required_skills or []) and start.get("profile", "audit") != "rapid"):
+            try:
+                try:
+                    from .skill_contracts import validate_terminal_run
+                except ImportError:
+                    try:
+                        from skill_contracts import validate_terminal_run
+                    except ModuleNotFoundError:
+                        from scripts.skill_contracts import validate_terminal_run
+                contract_errors = validate_terminal_run(final)
+                errors.extend(f"current_skill_contract_invalid: {run_id}: {error}" for error in contract_errors)
+                # Preserve legacy contract interpretation. Only current contract
+                # assertions receive the newly defined formal semantic boundary.
+                if not contract_errors and str(final.get("contract_version", "1.1")) == CONTRACT_VERSION:
+                    from algorithms.evidence_gates import validate_skill_boundary
+                    semantic_errors = validate_skill_boundary(
+                        root, str(start.get("skill")), [*start.get("inputs", []), *final.get("outputs", [])], phase="outputs")
+                    errors.extend(f"current_skill_semantic_invalid: {run_id}: {error}" for error in semantic_errors)
+            except (OSError, ValueError, TypeError, KeyError) as exc:
+                errors.append(f"current_skill_validation_error: {run_id}: {exc}")
+        if verify_files and start.get("profile", "audit") != "rapid" and run_id in current_ids and final.get("status") == "PASS":
             for label, records in (("input", start.get("inputs", [])), ("output", final.get("outputs", []))):
                 for item in records:
                     if not isinstance(item, dict):
@@ -507,7 +551,7 @@ def validate_skill_run(
                     if label == "input" and item.get("role") == "skill_trace":
                         continue
                     path = root / str(item.get("path", ""))
-                    if not path.is_file() or item.get("sha256") != _sha256(path):
+                    if not path.is_file() or ("sha256" in item and item.get("sha256") != _sha256(path)):
                         errors.append(f"{label}_hash_mismatch: {item.get('path')} ({run_id})")
     for skill in required_skills or []:
         if skill not in STANDARD_SKILLS:
@@ -536,6 +580,7 @@ def main(argv: list[str] | None = None) -> int:
     start.add_argument("--skill", choices=STANDARD_SKILLS, required=True)
     start.add_argument("--skill-path")
     start.add_argument("--profile", choices=("rapid", "competition", "audit"), default="competition")
+    start.add_argument("--venue")
     start.add_argument("--input", action="append", default=[])
     start.add_argument("--command", default="")
     finish = commands.add_parser("finish")
@@ -576,6 +621,7 @@ def main(argv: list[str] | None = None) -> int:
                 inputs=args.input,
                 command_or_invocation=args.command,
                 profile=args.profile,
+                venue=args.venue,
             )
             print(json.dumps(result, ensure_ascii=False, indent=2))
             return 0

@@ -5,6 +5,12 @@ description: Search, verify, synthesize, and cite literature for mathematical mo
 
 # Research Model Literature
 
+For national-award design references, cross-check official showcase identity with award evidence, record the exact PDF/printed pages actually viewed, and exclude inaccessible or unverified papers from completed samples. Keep design notes separate from model facts and prohibit reference-solution numbers from entering the independent solve.
+
+Verify document completeness separately from award identity: compare page order and missing pages when a mirror differs from the official display. An abridged journal version may connect authorship but cannot replace unread contest pages. End a candidate search when independent routes add no identity evidence, then seek another eligible sample; never fill the count from a provincial award or a repository's unsupported label.
+
+Attach external parameters and supported claims to existing evidence pointers, keeping source identity verification separate from content support. Ordinary chart types do not require invented citations; read `references/figure-source-handoff.md` when an external method, scale or parameter changes the plotted interpretation.
+
 Build a traceable evidence base for modeling choices and parameters.
 
 ## Workflow
@@ -15,6 +21,7 @@ Build a traceable evidence base for modeling choices and parameters.
 4. For every candidate record `origin` (`SEARCHED`, `USER_SUPPLIED`, or `MANUALLY_ENTERED`), `retrieval_provider`, UTC `retrieval_timestamp`, `source_fetch_status`, metadata-verification status/evidence, and content-relevance evidence. `USER_SUPPLIED` is not equivalent to `VERIFIED`.
 5. Cluster findings by method and compare assumptions, datasets, metrics, limitations, decision coupling, uncertainty semantics, and validation design. Treat competition exemplars as style/method evidence only: never recover their hidden numerical solution, named entities, or tuned parameters.
 6. Separate established findings, source-supported inference, and open questions.
+   For each intended citation, record the exact supported claim, source locator, reading depth and transfer limits. Bibliographic identity and content support are separate checks; source-service failure is not proof of a fabricated reference.
 7. Validate candidate identities and duplicates with `algorithms.modeling_contracts.validate_source_records`, then generate BibTeX with `records_to_bibtex` only from passing records. Record transferable design patterns separately from problem-specific outputs so that a later project cannot inherit an exemplar's answer.
 
 ## Integrity Rules

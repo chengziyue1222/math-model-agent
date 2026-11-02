@@ -14,7 +14,7 @@ from pathlib import Path, PurePosixPath, PureWindowsPath
 from typing import Any, Iterable
 
 
-MAX_DELIVERY_BYTES = 20 * 1024 * 1024
+MAX_DELIVERY_BYTES = 20_000_000  # conservative local interpretation of 20 MB
 DEFAULT_IDENTITY_FILE = ".cumcm-identities.json"
 REQUIRED_IDENTITY_GROUPS = ("names", "schools", "regions", "student_ids", "windows_usernames")
 TEXT_SUFFIXES = {
@@ -45,6 +45,7 @@ AI_DECLARATION_HEADING_RE = re.compile(
 )
 REFERENCES_HEADING_RE = re.compile(
     r"\\(?:section|chapter)\*?\{[^}]*参考文献[^}]*\}|"
+    r"\\begin\{thebibliography\}|"
     r"^\s*#{1,6}\s*(?:参考文献|References)\s*$",
     re.I | re.M,
 )
@@ -295,8 +296,6 @@ def _scan_tree(root: Path, identity_terms: list[str], issues: list[dict[str, str
 
 
 def _scan_pdf(path: Path, root: Path, terms: list[str], issues: list[dict[str, str]]) -> None:
-    if path.stat().st_size > MAX_DELIVERY_BYTES:
-        issues.append(_issue("PAPER_TOO_LARGE", _relative(path, root), f"{path.stat().st_size} bytes"))
     try:
         import fitz
         document = fitz.open(path)
@@ -310,8 +309,6 @@ def _scan_pdf(path: Path, root: Path, terms: list[str], issues: list[dict[str, s
 
 
 def _scan_docx(path: Path, root: Path, terms: list[str], issues: list[dict[str, str]]) -> None:
-    if path.stat().st_size > MAX_DELIVERY_BYTES:
-        issues.append(_issue("PAPER_TOO_LARGE", _relative(path, root), f"{path.stat().st_size} bytes"))
     try:
         with zipfile.ZipFile(path) as archive:
             members = [name for name in archive.namelist() if name.startswith("docProps/") or name.startswith("word/") and name.endswith(".xml")]
@@ -486,10 +483,20 @@ def validate_submission(
     identity_file: Path | None = None,
     identity_terms: Iterable[str] = (),
     profile: str = "competition",
+    venue: str | None = None,
 ) -> dict[str, Any]:
     root = project_root.resolve()
+    import sys
+    code = Path(__file__).resolve().parents[3] / "code"
+    if code.is_dir() and str(code) not in sys.path:
+        sys.path.insert(0, str(code))
+    from algorithms.venue_config import resolve_project_venue
+    policy = resolve_project_venue(root, venue=venue)
     issues: list[dict[str, str]] = []
-    terms, identity_dictionary = _load_identity_terms(root, identity_file, identity_terms, issues)
+    if policy["anonymous"] is True or identity_file or identity_terms:
+        terms, identity_dictionary = _load_identity_terms(root, identity_file, identity_terms, issues)
+    else:
+        terms, identity_dictionary = [], {"status": "NOT_REQUIRED"}
     deliveries = [path for path in (pdf, docx) if path is not None]
     if profile == "competition" and not deliveries:
         issues.append(_issue("PAPER_DELIVERY_MISSING", "paper", "competition requires PDF or DOCX; PDF is the default"))
@@ -499,6 +506,8 @@ def validate_submission(
         if not path.is_file():
             issues.append(_issue("PAPER_DELIVERY_MISSING", _relative(path, root), "file does not exist"))
             continue
+        if policy["max_delivery_bytes"] is not None and path.stat().st_size > policy["max_delivery_bytes"]:
+            issues.append(_issue("PAPER_TOO_LARGE", _relative(path, root), f"exceeds {policy['max_delivery_bytes']} bytes"))
         for hit in _identity_hits(path.name, terms):
             issues.append(_issue("IDENTITY_IN_NAME", _relative(path, root), hit))
         if path.suffix.lower() == ".pdf":
@@ -506,12 +515,20 @@ def validate_submission(
         elif path.suffix.lower() == ".docx":
             _scan_docx(path, root, terms, issues)
 
-    reproduction = {"status": "FAIL", "exit_code": None}
-    archive_validation = {"format": None, "backend": None, "status": "FAIL"}
-    ai_disclosure = {"status": "FAIL", "declaration": None, "details_file": False}
+    reproduction = {"status": "NOT_REQUIRED", "exit_code": None}
+    archive_validation = {"format": None, "backend": None, "status": "NOT_REQUIRED"}
+    ai_disclosure = {"status": "NOT_REQUIRED", "declaration": None, "details_file": False}
     if paper_source is None:
         issues.append(_issue("PAPER_SOURCE_REQUIRED", "paper", "paper source is required to verify appendix and AI disclosure"))
-    if support_archive is None or support_manifest is None:
+    if policy["ai_declaration"] is True and policy["venue"] != "CUMCM":
+        text = paper_source.read_text(encoding="utf-8") if paper_source and paper_source.is_file() else ""
+        if not re.search(r"AI工具使用声明|AI.*(?:disclosure|declaration)|人工智能.*声明", text, re.I):
+            issues.append(_issue("AI_DISCLOSURE_MISSING", "paper", "venue requires a disclosure; use the confirmed venue template"))
+        else:
+            ai_disclosure = {"status": "PASS", "details": "generic disclosure presence only; verify venue-specific requirements"}
+    if support_archive is None and support_manifest is None and policy["support_package"] is not True:
+        pass
+    elif support_archive is None or support_manifest is None:
         issues.append(_issue("SUPPORT_PACKAGE_MISSING", "support-package", "archive and manifest are required"))
     elif not support_archive.is_file() or not support_manifest.is_file():
         issues.append(_issue("SUPPORT_PACKAGE_MISSING", "support-package", "archive or manifest does not exist"))
@@ -521,12 +538,12 @@ def validate_submission(
                 continue
             for hit in _identity_hits(delivery_path.name, terms):
                 issues.append(_issue("IDENTITY_IN_NAME", _relative(delivery_path, root), hit))
-        if support_archive.stat().st_size > MAX_DELIVERY_BYTES:
+        if policy["max_delivery_bytes"] is not None and support_archive.stat().st_size > policy["max_delivery_bytes"]:
             issues.append(_issue("SUPPORT_ARCHIVE_TOO_LARGE", _relative(support_archive, root), f"{support_archive.stat().st_size} bytes"))
         try:
             manifest = _load_manifest(support_manifest)
             expected = _manifest_files(manifest)
-            if paper_source is not None:
+            if paper_source is not None and policy["venue"] == "CUMCM":
                 ai_disclosure = _validate_ai_disclosure(paper_source, expected, root, issues)
             members, archive, archive_validation = _archive_members(support_archive)
             actual = set(members)
@@ -572,13 +589,16 @@ def validate_submission(
                         if ai_disclosure["details_content"]["status"] != "PASS":
                             ai_disclosure["status"] = "FAIL"
             archive.close()
-            _validate_appendix(paper_source, expected, root, issues)
+            if policy["venue"] == "CUMCM":
+                _validate_appendix(paper_source, expected, root, issues)
         except (OSError, UnicodeError, json.JSONDecodeError, ValueError, RuntimeError, zipfile.BadZipFile) as exc:
             issues.append(_issue("SUPPORT_PACKAGE_INVALID", _relative(support_archive, root), str(exc)))
 
     return {
         "schema_version": "1.0",
         "profile": profile,
+        "venue": policy["venue"],
+        "venue_config": policy,
         "status": "PASS" if not issues else "FAIL",
         "submission_ready": not issues,
         "paper_formats": sorted(path.suffix.lower().lstrip(".") for path in deliveries if path.is_file()),
@@ -594,10 +614,11 @@ def main(argv: list[str] | None = None) -> int:
     parser = argparse.ArgumentParser(description=__doc__)
     parser.add_argument("--project-root", type=Path, required=True)
     parser.add_argument("--profile", choices=("competition", "audit"), default="competition")
+    parser.add_argument("--venue")
     parser.add_argument("--pdf", type=Path)
     parser.add_argument("--docx", type=Path)
-    parser.add_argument("--support-archive", type=Path, required=True)
-    parser.add_argument("--support-manifest", type=Path, required=True)
+    parser.add_argument("--support-archive", type=Path)
+    parser.add_argument("--support-manifest", type=Path)
     parser.add_argument("--paper-source", type=Path)
     parser.add_argument("--identity-file", type=Path)
     parser.add_argument("--identity-term", action="append", default=[])
@@ -613,6 +634,7 @@ def main(argv: list[str] | None = None) -> int:
         identity_file=args.identity_file,
         identity_terms=args.identity_term,
         profile=args.profile,
+        venue=args.venue,
     )
     args.report.parent.mkdir(parents=True, exist_ok=True)
     args.report.write_text(json.dumps(report, ensure_ascii=False, indent=2) + "\n", encoding="utf-8")

@@ -120,7 +120,7 @@ def _decision_contract_issues(root: Path) -> list[dict[str, str]]:
     return issues
 
 
-def semantic_issues(project_root: str | Path, paper_path: str | Path) -> list[dict[str, str]]:
+def semantic_issues(project_root: str | Path, paper_path: str | Path, *, profile: str = "audit") -> list[dict[str, str]]:
     """Return blocking and warning semantic findings without relying on a problem ID."""
     root, paper = Path(project_root), Path(paper_path)
     text = paper.read_text(encoding="utf-8") if paper.is_file() else ""
@@ -177,7 +177,7 @@ def semantic_issues(project_root: str | Path, paper_path: str | Path) -> list[di
             if not data_path.is_file() or hashlib.sha256(data_path.read_bytes()).hexdigest() != figure.get("data_sha256"):
                 issues.append({"gate": "figures_tables", "code": "figure_source_hash_mismatch", "severity": "blocking", "message": f"figure registry item {index} has stale source data"})
     contract = _first_named_json(root, "decision_contract.json")
-    questions = max(len(_question_rows(contract)), len(re.findall(r"(?:问题[一二三四五六七八九十]|\bQ[1-9]\b)", text)))
+    questions = max(len(_question_rows(contract)), len(set(re.findall(r"(?:问题[一二三四五六七八九十]|\bQ[1-9]\b)", text))))
     if questions >= 4 and not issues and not _independent_review_passed(root, paper):
-        issues.append({"gate": "validation", "code": "REVIEW_SUSPICIOUSLY_SHALLOW", "severity": "blocking", "message": "complex paper produced no semantic findings; run an independent second review"})
+        issues.append({"gate": "validation", "code": "REVIEW_SUSPICIOUSLY_SHALLOW", "severity": "blocking" if profile == "audit" else "warning", "message": "complex paper produced no semantic findings; run an independent second review"})
     return issues

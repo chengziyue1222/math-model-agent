@@ -14,6 +14,8 @@ def parse_args() -> argparse.Namespace:
     parser.add_argument("paper_path")
     parser.add_argument("--project-root", type=Path)
     parser.add_argument("--mode", choices=("brief_report", "teaching_example", "competition_paper"))
+    parser.add_argument("--profile", choices=("rapid", "competition", "audit"), default="competition")
+    parser.add_argument("--venue")
     parser.add_argument("--report-dir", type=Path)
     parser.add_argument("--figures-dir", default="figures")
     parser.add_argument("--results-file")
@@ -35,9 +37,9 @@ def main() -> int:
             print("Markdown review requires --project-root and --mode", file=sys.stderr)
             return 2
         from algorithms.paper_readiness import review_paper, write_review_report
-        review = review_paper(args.project_root, args.paper_path, mode=args.mode)
+        review = review_paper(args.project_root, args.paper_path, mode=args.mode, profile=args.profile, venue=args.venue)
         from algorithms.adversarial_review import semantic_issues
-        for issue in semantic_issues(args.project_root, args.paper_path):
+        for issue in semantic_issues(args.project_root, args.paper_path, profile=args.profile):
             if issue["severity"] == "blocking":
                 review.fail(issue["gate"], issue["code"], issue["message"], "modeling")
             else:
